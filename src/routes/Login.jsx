@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useState, useEffect } from 'react'
 import '../styles/Login.css'
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
@@ -31,7 +32,33 @@ function Copyright(props) {
 
 const defaultTheme = createTheme();
 
+
+
 export default function Login() {
+
+    const [googleAuthClicked, setGoogleAuthClicked] = useState(false);
+
+
+
+
+    function handleGoogleClick () {
+        setGoogleAuthClicked(true)
+    }
+/* 
+    useEffect(() => {
+      
+        fetch('http://localhost:5000/auth/google')
+          .then((res) => res.json())
+          .then((jsondata) => {
+            console.log(jsondata)
+          })
+          .catch((err) => {
+            console.log(err.message);
+          }); 
+
+    }, [googleAuthClicked]) */
+
+
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
@@ -92,15 +119,18 @@ export default function Login() {
             >
               Sign In
             </Button>
+            <a href="/auth/google">
             <Button
              id="googleSignInBtn"
-              type="submit"
+              type="button"
+              onClick={handleGoogleClick}
               fullWidth
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
             >
               Sign In With Google
             </Button>
+            </a>
             <Grid container>
               <Grid item xs>
                 <Link href="#" variant="body2">

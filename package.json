@@ -14,6 +14,7 @@
     "@emotion/styled": "^11.11.0",
     "@mui/icons-material": "^5.14.16",
     "@mui/material": "^5.14.17",
+    "passport-google-oauth20": "^2.0.0",
     "react": "^18.2.0",
     "react-bootstrap-icons": "^1.10.3",
     "react-dom": "^18.2.0",
