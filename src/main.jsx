@@ -3,8 +3,10 @@ import ReactDOM from 'react-dom/client'
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import App from './App.jsx'
 import ErrorPage from "./routes/Error-Page.jsx";
-import Leaderboard from "./routes/Leaderboard.jsx";
-import HomePage from './routes/HomePage.jsx';
+import Profile from "./routes/Profile.jsx";
+import Messages from './routes/Messages.jsx';
+import Login from './routes/Login.jsx';
+import Login2 from './routes/Login2.jsx';
 
 
 const router = createBrowserRouter([
@@ -13,8 +15,8 @@ const router = createBrowserRouter([
     errorElement: <ErrorPage />,
     element: <App />,
     children: [
-      { index: true, element: <HomePage/> },
-      { path: "leaderboard", element: <Leaderboard />},
+      { index: true, element: <Login/> },
+      { path: "profile", element: <Profile />},
     ],
   },
 ]);

@@ -1,0 +1,32 @@
+.css-1t8l2tu-MuiInputBase-input-MuiOutlinedInput-input{
+    color: auto !important;
+}
+
+.css-ijul54-MuiTypography-root{
+    color: inherit !important;
+}
+
+.css-i4bv87-MuiSvgIcon-root{
+    fill: var(--bs-emphasis-color) !important;
+
+}
+
+.css-14s5rfu-MuiFormLabel-root-MuiInputLabel-root{
+    color: inherit !important;
+}
+
+.css-1d3z3hw-MuiOutlinedInput-notchedOutline{
+     border-color: var(--bs-secondary-color) !important; 
+}
+
+.css-md26zr-MuiInputBase-root-MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline{
+     border-color: #1976d2 !important; 
+}
+
+#lockIcon1{
+    fill: white !important;
+}
+
+#googleSignInBtn{
+    background-color: red;
+}
