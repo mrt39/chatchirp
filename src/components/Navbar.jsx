@@ -12,7 +12,6 @@ const Navbar = () => {
 
   useEffect(() => {
     setcurrentRoute(location.pathname)
-    console.log(currentRoute);
   }, [location]); // Only re-run the effect if count changes
 
 

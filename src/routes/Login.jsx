@@ -42,7 +42,7 @@ export default function Login() {
 
 
     function handleGoogleClick () {
-        setGoogleAuthClicked(true)
+        window.open("http://localhost:5000/auth/google", "_self");
     }
 /* 
     useEffect(() => {
@@ -119,7 +119,7 @@ export default function Login() {
             >
               Sign In
             </Button>
-            <a href="/auth/google">
+            
             <Button
              id="googleSignInBtn"
               type="button"
@@ -130,7 +130,7 @@ export default function Login() {
             >
               Sign In With Google
             </Button>
-            </a>
+
             <Grid container>
               <Grid item xs>
                 <Link href="#" variant="body2">

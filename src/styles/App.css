@@ -19,6 +19,12 @@ body {
   display: flex;
 }
 
+.circularProgressContainer{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 5rem;
+}
 
 
 /* color mode button */
