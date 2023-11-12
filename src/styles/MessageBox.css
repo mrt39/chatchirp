@@ -13,3 +13,7 @@
     width: 20%;
     overflow: auto;
 }
+
+.cs-message-group__footer{
+    justify-content: flex-end;
+}

@@ -1,0 +1,13 @@
+.activeContactsBox{
+    color: #2b6a9b !important;
+    background-color: #d5e7f5;
+}
+
+.activeContactsBox:hover{
+    color: #2b6a9b !important;
+    background-color: #d5e7f5;
+}
+
+.cs-conversation__name, .cs-conversation__info{
+    color: inherit;
+}

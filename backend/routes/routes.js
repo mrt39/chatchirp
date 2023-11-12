@@ -1,7 +1,7 @@
 const router = require("express").Router();
 const passport = require("passport");
 /* grab the User model that's exported in passport.js */
-const {User} = require( "../passport.js")
+const {User, Message} = require( "../passport.js")
 
 const CLIENT_URL = "http://localhost:5173/";
 
@@ -68,9 +68,21 @@ router.get("/messagebox", async (req, res) => {
 
 
  
-router.post("/register", async (req, res) => {
+router.post("/message/", async (req, res) => {
 
     console.log(req.body)
+    try {
+      const newMessage = new Message({
+          from: req.body.input,
+          to: req.body.time,
+          message: req.body.scene,
+      });
+      const result = newMessage.save();
+      res.send(result)
+
+  } catch (e) {
+      res.send("Something Went Wrong");
+  }
  
 });
 
