@@ -1,0 +1,15 @@
+.MessagesPageContainer{
+    display: flex;
+    width: 100%;
+}
+
+
+.css-1d6a3hl-MuiPaper-root-MuiAppBar-root { 
+    position: static !important;
+}
+
+
+.css-6h3a61-MuiPaper-root{
+    width: 20%;
+    overflow: auto;
+}

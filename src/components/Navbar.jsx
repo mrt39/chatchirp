@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import * as Icon from 'react-bootstrap-icons';
 import '../styles/Navbar.css'
 
-const Navbar = () => {
+const Navbar = ({user}) => {
 
   const [currentRoute, setcurrentRoute] = useState(useLocation())
 
@@ -54,7 +54,7 @@ const Navbar = () => {
       </ul>
       <div className="dropdown border-top">
         <a href="#" className="d-flex align-items-center justify-content-center p-3 link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-          <img src="https://github.com/mdo.png" alt="mdo" width="24" height="24" className="rounded-circle"/>
+          <img src={user.picture} alt="mdo" width="30" height="30" className="rounded-circle"/>
         </a>
         <ul className="dropdown-menu text-small shadow">
           <li><a className="dropdown-item" href="#">New project...</a></li>

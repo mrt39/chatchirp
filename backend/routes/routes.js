@@ -1,5 +1,7 @@
 const router = require("express").Router();
 const passport = require("passport");
+/* grab the User model that's exported in passport.js */
+const {User} = require( "../passport.js")
 
 const CLIENT_URL = "http://localhost:5173/";
 
@@ -51,12 +53,19 @@ router.get("/checkifloggedout", function(req, res){
     }
 });
 
+router.get("/messagebox", async (req, res) => {
 
-router.get("/leaderboard/:scenename", async (req, res) => {
+/*   const sceneName = req.params.scenename // access URL variable
+ */
+  try {
+    const users = await User.find();
+    res.send(users);
 
-    const sceneName = req.params.scenename // access URL variable
-
+  } catch (err) {
+    res.send(err);
+  }
 })
+
 
  
 router.post("/register", async (req, res) => {

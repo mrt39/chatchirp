@@ -13,14 +13,18 @@ mongoose.connect('mongodb://127.0.0.1:27017/chatChirpUserDB');
 
 const userSchema = new mongoose.Schema ({
     email: String,
+    name: String,
     password: String,
     googleId: String,
+    picture: String,
 });
 
 userSchema.plugin(passportLocalMongoose);
 userSchema.plugin(findOrCreate);
 
 const User = new mongoose.model("User", userSchema);
+//exporting User in order to use it in routes.js 
+module.exports = { User }
 
 passport.use(User.createStrategy());
 
@@ -47,8 +51,10 @@ passport.use(new GoogleStrategy({
   },
   function(accessToken, refreshToken, profile, cb) {
     console.log(profile);
-    User.findOrCreate({ googleId: profile.id }, function (err, user) {
+    User.findOrCreate({ googleId: profile.id, name: profile.displayName, picture: profile["_json"].picture, email: profile["_json"].email  }, function (err, user) {
       return cb(err, user);
     });
   }
 ));
+
+
