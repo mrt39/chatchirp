@@ -66,6 +66,32 @@ router.get("/messagebox", async (req, res) => {
   }
 })
 
+router.get("/messagesfrom/:userid_messagingid", async (req, res) => {
+
+
+     const route = req.params.userid_messagingid // access URL variable
+     //id's in the route will be divided by "_", so we are splitting it into two parts
+     const ids = route.split('_');
+     const userID= ids[0]
+     const messagedPersonID= ids[1]
+     console.log("User: " + userID + " . Messaged person: " + messagedPersonID )
+   
+    try {
+      const user = await User.find({_id: userID});
+      const messagedPerson = await User.find({_id: messagedPersonID});
+      //get both messages FROM and TO clicked (selected) person.
+      const messagesFromClickedPerson = await Message.find({to: user, from: messagedPerson});
+      const messagesFromUser = await Message.find({to: messagedPerson, from: user});
+      //combine the two arrays
+      const allMessagesBetween = messagesFromClickedPerson.concat(messagesFromUser);
+      //send messages
+      res.send(allMessagesBetween);
+  
+    } catch (err) {
+      res.send(err);
+    }
+  })
+
 
  
 router.post("/messagesent", async (req, res) => {

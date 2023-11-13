@@ -3,6 +3,7 @@ const passport = require("passport");
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 
 
+
 /* MONGOOSE */
 const mongoose = require("mongoose");
 const passportLocalMongoose = require("passport-local-mongoose")
@@ -34,8 +35,10 @@ const messageSchema = new mongoose.Schema ({
     message: `The user you're trying to send the message to does not exist.`
   }, },
   date: {
+    /* store current date as miliseconds from epoch:
+     https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date */
     type: String,
-    default:  new Date()
+    default: Date.now 
 },
   message: String,
   image: { sparse: true, type: Buffer, contentType: String},
@@ -46,21 +49,21 @@ const Message = new mongoose.model("Message", messageSchema);
 //exporting User and Message models in order to use them in routes.js 
 module.exports = { User, Message }
 
-/* const message1 = new Message({
+const message1 = new Message({
   from:   {
-    "email": "chriscarter19822@gmail.com",
-    "password": "String",
-    "name": "Chris Carter",
-    "googleId": "108002578840135619377",
-    "picture": "https://lh3.googleusercontent.com/a/ACg8ocLLPPXlAAwIxKtAaqqquVYMlOR21Tc9frgKGTO1Rilvkg=s96-c",
+    "_id" : "654fc2232a87fa5b771aad65",
+    "email": "jtaylor8719@gmail.com",
+    "name": "Jared Taylor",
+    "googleId": "102024138481994704258",
+    "picture": "https://lh3.googleusercontent.com/a/ACg8ocJifjrCrE7knHHIMB9bwIzhpTqIOZJ_ZX2ePZ0xZM7U=s96-c",
     "__v": 0
 },
   to:  {
-    "email": "binutokencommunity@gmail.com",
-    "password": "String",
-    "name": "Binu Token",
-    "googleId": "114949457437636203595",
-    "picture": "https://lh3.googleusercontent.com/a/ACg8ocKCgwq6zZsd1zl4JOYW-BnvYAeR-8FkMyFcfHHZoOvj=s96-c",
+    "_id" : "654fc1cc2a87fa5b771aad5f",
+    "email": "chriscarter19822@gmail.com",
+    "name": "Chris Carter",
+    "googleId": "108002578840135619377",
+    "picture": "https://lh3.googleusercontent.com/a/ACg8ocLLPPXlAAwIxKtAaqqquVYMlOR21Tc9frgKGTO1Rilvkg=s96-c",
     "__v": 0
 },
   message: "binu to the moon",
@@ -68,19 +71,19 @@ module.exports = { User, Message }
 
 const message2 = new Message({
   from:  {
+    "_id" : "654fc2232a87fa5b771aad65",
     "email": "jtaylor8719@gmail.com",
-    "password": "String",
     "name": "Jared Taylor",
     "googleId": "102024138481994704258",
     "picture": "https://lh3.googleusercontent.com/a/ACg8ocJifjrCrE7knHHIMB9bwIzhpTqIOZJ_ZX2ePZ0xZM7U=s96-c",
     "__v": 0
 },
   to:   {
-    "email": "yorutiwa@gmail.com",
-    "password": "String",
-    "name": "Kingo Disc",
-    "googleId": "103839412898420553185",
-    "picture": "https://lh3.googleusercontent.com/a/ACg8ocKfP2_WYhFqUyW6nD56HUBbtXqa5yy0A7O93EjPR2KM=s96-c",
+    "_id" : "654fc1cc2a87fa5b771aad5f",
+    "email": "chriscarter19822@gmail.com",
+    "name": "Chris Carter",
+    "googleId": "108002578840135619377",
+    "picture": "https://lh3.googleusercontent.com/a/ACg8ocLLPPXlAAwIxKtAaqqquVYMlOR21Tc9frgKGTO1Rilvkg=s96-c",
     "__v": 0
 },
   message: "wassup mang",
@@ -88,32 +91,33 @@ const message2 = new Message({
 
 const message3 = new Message({
   from:   {
+    "_id" : "654fc1e52a87fa5b771aad62",
     "email": "binutokencommunity@gmail.com",
-    "password": "String",
     "name": "Binu Token",
     "googleId": "114949457437636203595",
     "picture": "https://lh3.googleusercontent.com/a/ACg8ocKCgwq6zZsd1zl4JOYW-BnvYAeR-8FkMyFcfHHZoOvj=s96-c",
     "__v": 0
 },
   to:   {
-    "email": "yorutiwa@gmail.com",
-    "password": "String",
-    "name": "Kingo Disc",
-    "googleId": "103839412898420553185",
-    "picture": "https://lh3.googleusercontent.com/a/ACg8ocKfP2_WYhFqUyW6nD56HUBbtXqa5yy0A7O93EjPR2KM=s96-c",
+    "_id" : "654fc1cc2a87fa5b771aad5f",
+    "email": "chriscarter19822@gmail.com",
+    "name": "Chris Carter",
+    "googleId": "108002578840135619377",
+    "picture": "https://lh3.googleusercontent.com/a/ACg8ocLLPPXlAAwIxKtAaqqquVYMlOR21Tc9frgKGTO1Rilvkg=s96-c",
     "__v": 0
 },
-  message: "ayo yoru is that you yo",
+  message: "ayo chris is that you yo",
 });
 
 
-
-const defaultMessages = [message1, message2, message3]; */
-
-/* 
 Message.create(message1);
-Message.create(message2);
-Message.create(message3); */
+setTimeout(function(){
+  Message.create(message2);
+}, 100);
+setTimeout(function(){
+  Message.create(message3);
+}, 100);
+ 
 
 
 
