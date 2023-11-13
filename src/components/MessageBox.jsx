@@ -20,12 +20,21 @@ import {
 } from "@chatscope/chat-ui-kit-react";
 import ContactsBox from "./ContactsBox";
 import MessageInputBox from "./MessageInputBox.jsx";
+import CircularProgress from '@mui/material/CircularProgress';
+import Box from '@mui/material/Box';
 import '../styles/MessageBox.css'
 
 
 const MessageBox = ({currentUser}) => {
 
     const [selectedPerson, setSelectedPerson] = useState();
+    //messages between user and selected person
+    const [messagesBetween, setMessagesBetween] = useState();
+
+    const [loading, setLoading] = useState(true);
+
+    /* message sent from messageinputbox component */
+    const [messageSent, setMessageSent] = useState(false)
 
     const [sidebarVisible, setSidebarVisible] = useState(false);
     const [sidebarStyle, setSidebarStyle] = useState({});
@@ -66,7 +75,40 @@ const MessageBox = ({currentUser}) => {
       }
     }, [sidebarVisible, setSidebarVisible, setConversationContentStyle, setConversationAvatarStyle, setSidebarStyle, setChatContainerStyle]);
 
+    /* when selected person changes, set loading state to true */
+    useEffect(() => {
+      setLoading(true)
+    }, [selectedPerson]); 
 
+
+    /* handling the messages between user and clicked person */
+    useEffect(() => {
+      const getMessages = () => {
+          fetch('http://localhost:5000/messagesfrom/' + currentUser["_id"] + '_' +selectedPerson["_id"]  ,{
+          method: 'GET',
+          })
+          .then(response => {
+              console.log(response)
+              if (response.ok) {
+              return response.json(); // Parse JSON when the response is successful
+              }
+              throw new Error('Network response was not ok.');
+          })
+          .then(data => {
+            setMessagesBetween(data)
+            console.log(data)
+            setLoading(false); // Set loading to false once the data is received
+          })
+          .catch(error => {
+            console.error('Error:', error);
+            setLoading(false); 
+          });
+      };
+      //run when the user clicks on a person 
+        if (selectedPerson){
+          getMessages();
+        }
+      }, [selectedPerson, messageSent]); 
 
 
     
@@ -83,139 +125,69 @@ const MessageBox = ({currentUser}) => {
               selectedPerson={selectedPerson}
               setSelectedPerson={setSelectedPerson}
               />
-             
+          {/* display only if user selects a person */}
+          {selectedPerson? 
              <ChatContainer style={chatContainerStyle}>
+
                <ConversationHeader>
                  <ConversationHeader.Back  onClick={handleBackClick}/>
-                 <Avatar /* src={zoeIco} */ name="Zoe" />
-                 <ConversationHeader.Content userName="Zoe" info="Active 10 mins ago" />
+                 <Avatar  src={selectedPerson.picture}  name={selectedPerson.name} />
+                 <ConversationHeader.Content userName={selectedPerson.name} info="Active 10 mins ago" />
                  <ConversationHeader.Actions>
                       <EllipsisButton orientation="vertical" />
                  </ConversationHeader.Actions>          
                </ConversationHeader>
 
-
+            {loading?
+              <div className='circularProgressContainer'>
+              <Box sx={{ display: 'flex' }}>
+                  <CircularProgress size="5rem" />
+              </Box>
+              </div>
+              :
                <MessageList >
 
                  <MessageList.Content>
 
                 <MessageSeparator content="Saturday, 30 November 2019" />
-
-               <MessageGroup direction="incoming">          
+               {//sort data according to time, in ascending order
+              messagesBetween.sort((message1, message2) => (message1.date > message2.date) ? 1 : (message1.date < message2.date) ? -1 : 0)
+              .map((message) => (
+               <MessageGroup 
+               key = {message["_id"]}
+                /* "incoming" or "outgoing" */
+               direction={(message.from[0]["_id"]===selectedPerson["_id"]? "incoming" :"outgoing")}
+               >          
                   <Avatar /* src={joeIco} */ name={"Joe"} />          
                   <MessageGroup.Messages>
                     <Message model={{
-                  message: "Hello my friend",
+                  message: message.message,
                   sentTime: "15 mins ago",
-                  sender: "Joe"
+                  sender: "Joe",
+                  direction: (message.from[0]["_id"]===selectedPerson["_id"]? "incoming" :"outgoing"),
+                  position: "single",
                 }} />
                   </MessageGroup.Messages>    
                   <MessageGroup.Footer >23:50</MessageGroup.Footer>          
               </MessageGroup>
-
-                        <Message model={{
-                  message: "Hello my friend",
-                  sentTime: "15 mins ago",
-                  sender: "Zoe",
-                  direction: "incoming",
-                  position: "single"
-                }}>
-                          <Avatar /* src={zoeIco}  */name="Zoe" />
-                        </Message>
-                        <Message model={{
-                  message: "Hello my friend",
-                  sentTime: "15 mins ago",
-                  sender: "Patrik",
-                  direction: "outgoing",
-                  position: "single"
-                }} avatarSpacer />
-                        <Message model={{
-                  message: "Hello my friend",
-                  sentTime: "15 mins ago",
-                  sender: "Zoe",
-                  direction: "incoming",
-                  position: "first"
-                }} avatarSpacer />
-                        <Message model={{
-                  message: "Hello my friend",
-                  sentTime: "15 mins ago",
-                  sender: "Zoe",
-                  direction: "incoming",
-                  position: "normal"
-                }} avatarSpacer />
-                        <Message model={{
-                  message: "Hello my friend",
-                  sentTime: "15 mins ago",
-                  sender: "Zoe",
-                  direction: "incoming",
-                  position: "normal"
-                }} avatarSpacer />
-                        <Message model={{
-                  message: "Hello my friend",
-                  sentTime: "15 mins ago",
-                  sender: "Zoe",
-                  direction: "incoming",
-                  position: "last"
-                }}>
-                          <Avatar/*  src={zoeIco} */ name="Zoe" />
-                        </Message>
-                        <Message model={{
-                  message: "Hello my friend",
-                  sentTime: "15 mins ago",
-                  sender: "Patrik",
-                  direction: "outgoing",
-                  position: "first"
-                }} />
-                        <Message model={{
-                  message: "Hello my friend",
-                  sentTime: "15 mins ago",
-                  sender: "Patrik",
-                  direction: "outgoing",
-                  position: "normal"
-                }} />
-                        <Message model={{
-                  message: "Hello my friend",
-                  sentTime: "15 mins ago",
-                  sender: "Patrik",
-                  direction: "outgoing",
-                  position: "normal"
-                }} />
-                        <Message model={{
-                  message: "Hello my friend",
-                  sentTime: "15 mins ago",
-                  sender: "Patrik",
-                  direction: "outgoing",
-                  position: "last"
-                }} />
-                        
-                        <Message model={{
-                  message: "Hello my friend",
-                  sentTime: "15 mins ago",
-                  sender: "Zoe",
-                  direction: "incoming",
-                  position: "first"
-                }} avatarSpacer />
-                        <Message model={{
-                  message: "Hello my friend",
-                  sentTime: "15 mins ago",
-                  sender: "Zoe",
-                  direction: "incoming",
-                  position: "last"
-                }}>
-                   <Avatar /* src={zoeIco} */ name="Zoe" />
-                 </Message>
+               ))
+              }
 
 
                 <MessageInputBox
                 currentUser={currentUser}
-                selectedPerson={selectedPerson}                
+                selectedPerson={selectedPerson} 
+                messageSent={messageSent}   
+                setMessageSent={setMessageSent}            
                 />
                 </MessageList.Content>
 
                </MessageList>
+            }
 
-
-             </ChatContainer>                         
+             </ChatContainer>
+        : <p>SELECT A PERSON TO TALK YO!</p> 
+        }                         
            </MainContainer>
          </div>;
          }

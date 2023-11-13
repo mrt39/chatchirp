@@ -10,12 +10,12 @@ import '../styles/MessageInputBox.css'
 
 
 
-const MessageInputBox = ({currentUser, selectedPerson}) => {
+const MessageInputBox = ({currentUser, selectedPerson, messageSent, setMessageSent}) => {
 
     // Set initial message input value to an empty string                                                                     
     const [messageInputValue, setMessageInputValue] = useState("");
     const [imageFile, setimageFile] = useState();
-    const [messageSent, setMessageSent] = useState(false)
+
 
     function handleSend(){
         setMessageSent(true)
@@ -64,6 +64,10 @@ const MessageInputBox = ({currentUser, selectedPerson}) => {
         console.log(selectedPerson)
       }
 
+/* when selected person changes, clear input box */
+    useEffect(() => {
+        setMessageInputValue("")
+      }, [selectedPerson]); 
 
 
     return (
