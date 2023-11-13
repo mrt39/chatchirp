@@ -7,13 +7,15 @@ import MessageBox from "../components/MessageBox.jsx"
 
 
 
-const Messages = () => {
+const Messages = ({currentUser}) => {
 
 
     return (
         <div className='MessagesPageContainer'>
             {/* <ContactsBox/>  */}
-           <MessageBox/> 
+           <MessageBox
+           currentUser = {currentUser}
+           /> 
          <h1>This is the HomePage!</h1> 
          
         </div>

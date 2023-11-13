@@ -13,7 +13,7 @@ import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 
 const App = () => {
-  const [user, setUser] = useState(null);
+  const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
 
@@ -37,7 +37,7 @@ const App = () => {
         })
         .then(data => {
           console.log(data)
-          setUser(data)
+          setCurrentUser(data)
           setLoading(false); // Set loading to false once the data is received
         })
         .catch(error => {
@@ -60,19 +60,19 @@ const App = () => {
   return (
     <BrowserRouter>
       <div className='appContainer'>
-      {user && <Navbar user={user} />} {/* Render Navbar if user is logged in */}
+      {currentUser && <Navbar user={currentUser} />} {/* Render Navbar if user is logged in */}
         <Routes>
           <Route 
           path="/" 
-          element={user ? <Messages user={user}/> : <Navigate to="/login" /> } 
+          element={currentUser ? <Messages currentUser={currentUser}/> : <Navigate to="/login" /> } 
           />
           <Route
             path="/login"
-            element={user ? <Navigate to="/" /> : <Login />}
+            element={currentUser ? <Navigate to="/" /> : <Login />}
           />
           <Route
             path="/profile"
-            element={user ? <Profile user={user}/> : <Navigate to="/login" />}
+            element={currentUser ? <Profile user={currentUser}/> : <Navigate to="/login" />}
           /> 
         </Routes>
       </div>

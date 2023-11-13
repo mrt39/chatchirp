@@ -1,17 +1,16 @@
 /* eslint-disable react/prop-types */
 import { useOutletContext } from "react-router-dom";
 import { useState, useEffect, useCallback  } from 'react'
-import styles from "@chatscope/chat-ui-kit-styles/dist/default/styles.min.css";
 import {
   MainContainer,
   ChatContainer,
   MessageList,
   Message,
-  MessageInput,
   Search,
   ConversationList,
   Sidebar,
   Conversation,
+  MessageInput,
   MessageGroup,
   Avatar,
   ConversationHeader,
@@ -20,12 +19,13 @@ import {
   MessageSeparator,
 } from "@chatscope/chat-ui-kit-react";
 import ContactsBox from "./ContactsBox";
+import MessageInputBox from "./MessageInputBox.jsx";
+import '../styles/MessageBox.css'
 
 
-const MessageBox = () => {
+const MessageBox = ({currentUser}) => {
 
-    // Set initial message input value to an empty string                                                                     
-    const [messageInputValue, setMessageInputValue] = useState("");
+    const [selectedPerson, setSelectedPerson] = useState();
 
     const [sidebarVisible, setSidebarVisible] = useState(false);
     const [sidebarStyle, setSidebarStyle] = useState({});
@@ -40,6 +40,7 @@ const MessageBox = () => {
         setSidebarVisible(false);
       }
     }, [sidebarVisible, setSidebarVisible]);
+
     useEffect(() => {
       if (sidebarVisible) {
         setSidebarStyle({
@@ -66,7 +67,7 @@ const MessageBox = () => {
     }, [sidebarVisible, setSidebarVisible, setConversationContentStyle, setConversationAvatarStyle, setSidebarStyle, setChatContainerStyle]);
 
 
-    
+
 
     
     return <div style={{ width: "100%"
@@ -79,6 +80,8 @@ const MessageBox = () => {
               handleConversationClick={handleConversationClick}
               conversationAvatarStyle={conversationAvatarStyle}
               conversationContentStyle={conversationContentStyle}
+              selectedPerson={selectedPerson}
+              setSelectedPerson={setSelectedPerson}
               />
              
              <ChatContainer style={chatContainerStyle}>
@@ -94,7 +97,9 @@ const MessageBox = () => {
 
                <MessageList >
 
-               <MessageSeparator content="Saturday, 30 November 2019" />
+                 <MessageList.Content>
+
+                <MessageSeparator content="Saturday, 30 November 2019" />
 
                <MessageGroup direction="incoming">          
                   <Avatar /* src={joeIco} */ name={"Joe"} />          
@@ -108,101 +113,108 @@ const MessageBox = () => {
                   <MessageGroup.Footer >23:50</MessageGroup.Footer>          
               </MessageGroup>
 
-                 <Message model={{
-           message: "Hello my friend",
-           sentTime: "15 mins ago",
-           sender: "Zoe",
-           direction: "incoming",
-           position: "single"
-         }}>
-                   <Avatar /* src={zoeIco}  */name="Zoe" />
-                 </Message>
-                 <Message model={{
-           message: "Hello my friend",
-           sentTime: "15 mins ago",
-           sender: "Patrik",
-           direction: "outgoing",
-           position: "single"
-         }} avatarSpacer />
-                 <Message model={{
-           message: "Hello my friend",
-           sentTime: "15 mins ago",
-           sender: "Zoe",
-           direction: "incoming",
-           position: "first"
-         }} avatarSpacer />
-                 <Message model={{
-           message: "Hello my friend",
-           sentTime: "15 mins ago",
-           sender: "Zoe",
-           direction: "incoming",
-           position: "normal"
-         }} avatarSpacer />
-                 <Message model={{
-           message: "Hello my friend",
-           sentTime: "15 mins ago",
-           sender: "Zoe",
-           direction: "incoming",
-           position: "normal"
-         }} avatarSpacer />
-                 <Message model={{
-           message: "Hello my friend",
-           sentTime: "15 mins ago",
-           sender: "Zoe",
-           direction: "incoming",
-           position: "last"
-         }}>
-                   <Avatar/*  src={zoeIco} */ name="Zoe" />
-                 </Message>
-                 <Message model={{
-           message: "Hello my friend",
-           sentTime: "15 mins ago",
-           sender: "Patrik",
-           direction: "outgoing",
-           position: "first"
-         }} />
-                 <Message model={{
-           message: "Hello my friend",
-           sentTime: "15 mins ago",
-           sender: "Patrik",
-           direction: "outgoing",
-           position: "normal"
-         }} />
-                 <Message model={{
-           message: "Hello my friend",
-           sentTime: "15 mins ago",
-           sender: "Patrik",
-           direction: "outgoing",
-           position: "normal"
-         }} />
-                 <Message model={{
-           message: "Hello my friend",
-           sentTime: "15 mins ago",
-           sender: "Patrik",
-           direction: "outgoing",
-           position: "last"
-         }} />
-                 
-                 <Message model={{
-           message: "Hello my friend",
-           sentTime: "15 mins ago",
-           sender: "Zoe",
-           direction: "incoming",
-           position: "first"
-         }} avatarSpacer />
-                 <Message model={{
-           message: "Hello my friend",
-           sentTime: "15 mins ago",
-           sender: "Zoe",
-           direction: "incoming",
-           position: "last"
-         }}>
+                        <Message model={{
+                  message: "Hello my friend",
+                  sentTime: "15 mins ago",
+                  sender: "Zoe",
+                  direction: "incoming",
+                  position: "single"
+                }}>
+                          <Avatar /* src={zoeIco}  */name="Zoe" />
+                        </Message>
+                        <Message model={{
+                  message: "Hello my friend",
+                  sentTime: "15 mins ago",
+                  sender: "Patrik",
+                  direction: "outgoing",
+                  position: "single"
+                }} avatarSpacer />
+                        <Message model={{
+                  message: "Hello my friend",
+                  sentTime: "15 mins ago",
+                  sender: "Zoe",
+                  direction: "incoming",
+                  position: "first"
+                }} avatarSpacer />
+                        <Message model={{
+                  message: "Hello my friend",
+                  sentTime: "15 mins ago",
+                  sender: "Zoe",
+                  direction: "incoming",
+                  position: "normal"
+                }} avatarSpacer />
+                        <Message model={{
+                  message: "Hello my friend",
+                  sentTime: "15 mins ago",
+                  sender: "Zoe",
+                  direction: "incoming",
+                  position: "normal"
+                }} avatarSpacer />
+                        <Message model={{
+                  message: "Hello my friend",
+                  sentTime: "15 mins ago",
+                  sender: "Zoe",
+                  direction: "incoming",
+                  position: "last"
+                }}>
+                          <Avatar/*  src={zoeIco} */ name="Zoe" />
+                        </Message>
+                        <Message model={{
+                  message: "Hello my friend",
+                  sentTime: "15 mins ago",
+                  sender: "Patrik",
+                  direction: "outgoing",
+                  position: "first"
+                }} />
+                        <Message model={{
+                  message: "Hello my friend",
+                  sentTime: "15 mins ago",
+                  sender: "Patrik",
+                  direction: "outgoing",
+                  position: "normal"
+                }} />
+                        <Message model={{
+                  message: "Hello my friend",
+                  sentTime: "15 mins ago",
+                  sender: "Patrik",
+                  direction: "outgoing",
+                  position: "normal"
+                }} />
+                        <Message model={{
+                  message: "Hello my friend",
+                  sentTime: "15 mins ago",
+                  sender: "Patrik",
+                  direction: "outgoing",
+                  position: "last"
+                }} />
+                        
+                        <Message model={{
+                  message: "Hello my friend",
+                  sentTime: "15 mins ago",
+                  sender: "Zoe",
+                  direction: "incoming",
+                  position: "first"
+                }} avatarSpacer />
+                        <Message model={{
+                  message: "Hello my friend",
+                  sentTime: "15 mins ago",
+                  sender: "Zoe",
+                  direction: "incoming",
+                  position: "last"
+                }}>
                    <Avatar /* src={zoeIco} */ name="Zoe" />
                  </Message>
+
+
+                <MessageInputBox
+                currentUser={currentUser}
+                selectedPerson={selectedPerson}                
+                />
+                </MessageList.Content>
+
                </MessageList>
 
 
-               <MessageInput placeholder="Type message here" value={messageInputValue} onChange={val => setMessageInputValue(val)} />
              </ChatContainer>                         
            </MainContainer>
          </div>;

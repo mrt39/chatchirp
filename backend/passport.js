@@ -25,8 +25,14 @@ userSchema.plugin(findOrCreate);
 const User = new mongoose.model("User", userSchema);
 
 const messageSchema = new mongoose.Schema ({
-  from: [userSchema],
-  to: [userSchema],
+  from: {type: [userSchema], required: true, unique: false },
+  to: {type: [userSchema], validate: {
+    validator: function() {
+      /* the "to" array must be bigger than two = a RECEIVER must be selected! */
+      return this.to.length > 0;
+    },
+    message: `The user you're trying to send the message to does not exist.`
+  }, },
   date: {
     type: String,
     default:  new Date()
@@ -40,7 +46,7 @@ const Message = new mongoose.model("Message", messageSchema);
 //exporting User and Message models in order to use them in routes.js 
 module.exports = { User, Message }
 
-const message1 = new Message({
+/* const message1 = new Message({
   from:   {
     "email": "chriscarter19822@gmail.com",
     "password": "String",
@@ -102,12 +108,12 @@ const message3 = new Message({
 
 
 
-const defaultMessages = [message1, message2, message3];
+const defaultMessages = [message1, message2, message3]; */
 
-
+/* 
 Message.create(message1);
 Message.create(message2);
-Message.create(message3);
+Message.create(message3); */
 
 
 

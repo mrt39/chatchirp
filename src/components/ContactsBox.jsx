@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import { useState, useEffect, useCallback  } from 'react'
+import { useState, useEffect} from 'react'
 import styles from "@chatscope/chat-ui-kit-styles/dist/default/styles.min.css";
 import {
   Search,
@@ -15,18 +15,19 @@ import '../styles/ContactsBox.css'
 
 
 
-const ContactsBox = ({sidebarStyle, handleConversationClick, conversationAvatarStyle, conversationContentStyle}) => {
+const ContactsBox = ({sidebarStyle, handleConversationClick, conversationAvatarStyle, conversationContentStyle, selectedPerson, setSelectedPerson}) => {
 
     /* Contacts Box (sidebar) Messages */
     const [contactsBoxPeople, setContactsBoxPeople] = useState();
     const [loading, setLoading] = useState(true);
-    const [selectedPerson, setSelectedPerson] = useState();
+
 
 
     //clicked person becomes the "selectedPerson" state
     function handleSelectedPerson(selectedPersonId){
         const foundperson = contactsBoxPeople.find(( person ) => person["_id"] === selectedPersonId);
         setSelectedPerson(foundperson);
+        console.log(selectedPerson)
     }
 
 
@@ -44,7 +45,6 @@ const ContactsBox = ({sidebarStyle, handleConversationClick, conversationAvatarS
             })
             .then(data => {
                 setContactsBoxPeople(data)
-                console.log(contactsBoxPeople)
                 setLoading(false); // Set loading to false once the data is received
             })
             .catch(error => {
@@ -70,7 +70,11 @@ const ContactsBox = ({sidebarStyle, handleConversationClick, conversationAvatarS
                 :
                 contactsBoxPeople.map(({ _id, email, name, picture }) => (
                     <Conversation 
-                    className={(selectedPerson["_id"]===_id? "activeContactsBox" :"")}
+                    /* if there is a selected person, change class to highlight it */
+                    className={
+                        selectedPerson?
+                            (selectedPerson["_id"]===_id? "activeContactsBox" :"")
+                        :""}
                     key={_id} 
                     onClick={function()  {handleConversationClick(); handleSelectedPerson(_id)}}
                     lastActivityTime="43 min"
