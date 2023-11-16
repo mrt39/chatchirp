@@ -6,6 +6,7 @@ import {
   ConversationList,
   Sidebar,
   Conversation,
+  Loader,
   Avatar,
 } from "@chatscope/chat-ui-kit-react";
 import CircularProgress from '@mui/material/CircularProgress';
@@ -59,13 +60,18 @@ const ContactsBox = ({sidebarStyle, handleConversationClick, conversationAvatarS
                 <Sidebar position="left" scrollable={false} style={sidebarStyle}>
                 <Search placeholder="Search..." />
                 <ConversationList>           
-                        {/* MAP all the conversations */}
+                {/* MAP all the conversations */}
                 {loading?
-                <div className='circularProgressContainer'>
+                
+                /* using as="Conversation2" to give the ConversationList component a child component that it allows
+                solving the  "div" is not a valid child" error.
+                https://chatscope.io/storybook/react/?path=/docs/documentation-recipes--page#changing-component-type-to-allow-place-it-in-container-slot */
+                <div as="Conversation2" className='circularProgressContainer'>
                 <Box sx={{ display: 'flex' }}>
                     <CircularProgress size="5rem" />
                 </Box>
                 </div>
+               
 
                 :
                 contactsBoxPeople.map(({ _id, email, name, picture }) => (

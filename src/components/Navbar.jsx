@@ -24,16 +24,16 @@ const Navbar = ({user}) => {
       <ul className="nav nav-pills nav-flush flex-column mb-auto text-center">
       <Link className="" to="/">
         <li className="nav-item">
-          <a href="#" className={(currentRoute==="/"? "active" :"") + " nav-link py-3 border-bottom rounded-0"} aria-current="page" title="Messages"  data-bs-placement="right">
+          <div href="#" className={(currentRoute==="/"? "active" :"") + " nav-link py-3 border-bottom rounded-0"} aria-current="page" title="Messages"  data-bs-placement="right">
           <Icon.ChatLeftDots className="bi pe-none" width="24" height="24" aria-label="Messages"/>          
-          </a>
+          </div>
         </li>
       </Link>
        <Link className="" to="/profile">
         <li>
-          <a href="#" className={(currentRoute==="/profile"? "active" :"") + " nav-link py-3 border-bottom rounded-0"} title="Profile" data-bs-placement="right">
+          <div href="#" className={(currentRoute==="/profile"? "active" :"") + " nav-link py-3 border-bottom rounded-0"} title="Profile" data-bs-placement="right">
             <Icon.PersonCircle  className="bi pe-none" width="24" height="24" aria-label="Profile"/>
-          </a>
+          </div>
         </li>
       </Link>
         <li>

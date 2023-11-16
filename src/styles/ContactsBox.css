@@ -11,3 +11,15 @@
 .cs-conversation__name, .cs-conversation__info{
     color: inherit;
 }
+
+.cs-main-container>.cs-sidebar.cs-sidebar--left{
+    max-width: 320px !important;
+}
+
+@media (max-width: 768px) {
+
+.cs-main-container--responsive .cs-search{
+    display: flex;
+}
+}
+

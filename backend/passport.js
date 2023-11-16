@@ -1,8 +1,8 @@
 const passport = require("passport");
 //google auth
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
-
-
+//dayjs
+const dayjs = require('dayjs')
 
 /* MONGOOSE */
 const mongoose = require("mongoose");
@@ -38,7 +38,7 @@ const messageSchema = new mongoose.Schema ({
     /* store current date as miliseconds from epoch:
      https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date */
     type: String,
-    default: Date.now 
+    default: Date.now
 },
   message: String,
   image: { sparse: true, type: Buffer, contentType: String},

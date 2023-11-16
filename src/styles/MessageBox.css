@@ -3,7 +3,6 @@
     width: 100%;
 }
 
-
 .css-1d6a3hl-MuiPaper-root-MuiAppBar-root { 
     position: static !important;
 }
@@ -16,4 +15,16 @@
 
 .cs-message-group__footer{
     justify-content: flex-end;
+}
+
+.messageListContent{
+    margin-bottom: 5rem;
+}
+
+
+@media (max-width: 768px) {
+
+.noPersonSelectedContainer{
+    display: none;
+}
 }

@@ -23,6 +23,7 @@ import MessageInputBox from "./MessageInputBox.jsx";
 import CircularProgress from '@mui/material/CircularProgress';
 import Box from '@mui/material/Box';
 import '../styles/MessageBox.css'
+import dayjs from 'dayjs'
 
 
 const MessageBox = ({currentUser}) => {
@@ -30,13 +31,15 @@ const MessageBox = ({currentUser}) => {
     const [selectedPerson, setSelectedPerson] = useState();
     //messages between user and selected person
     const [messagesBetween, setMessagesBetween] = useState();
+    //message days, to categorize the display of message under different days
+    const [messageDays, setMessageDays] = useState();
 
     const [loading, setLoading] = useState(true);
 
     /* message sent from messageinputbox component */
     const [messageSent, setMessageSent] = useState(false)
 
-    const [sidebarVisible, setSidebarVisible] = useState(false);
+    const [sidebarVisible, setSidebarVisible] = useState(true);
     const [sidebarStyle, setSidebarStyle] = useState({});
     const [chatContainerStyle, setChatContainerStyle] = useState({});
     const [conversationContentStyle, setConversationContentStyle] = useState({});
@@ -97,6 +100,10 @@ const MessageBox = ({currentUser}) => {
           .then(data => {
             setMessagesBetween(data)
             console.log(data)
+/*             console.log(data[0].date)
+            console.log(dayjs(data[1].date))
+            console.log(dayjs(data[0].date).isSame(dayjs(data[5].date), "day")) */
+            getUniqueDays(data)
             setLoading(false); // Set loading to false once the data is received
           })
           .catch(error => {
@@ -110,6 +117,37 @@ const MessageBox = ({currentUser}) => {
         }
       }, [selectedPerson, messageSent]); 
 
+
+      /* get the unique days in message history */
+    function getUniqueDays(messageHistory){
+      var uniqueArray = messageHistory.filter((value, index, self) =>
+      index === self.findIndex((t) => (
+        // check if the dates are same on a day basis, with isSame function of dayjs
+        // https://day.js.org/docs/en/query/is-same 
+        dayjs(parseInt(t.date)).isSame(dayjs(parseInt(value.date)), "day")
+      ))
+    )
+
+    console.log(uniqueArray)
+
+    //sort the dates in ascending order
+    let sortedDates = uniqueArray.sort((message1, message2) => (message1.date > message2.date) ? 1 : (message1.date < message2.date) ? -1 : 0)
+
+    //turning the dates in the arrays into day.js objects, with day-month-year format
+    let messageDays = sortedDates.map(a => dayjs(parseInt(a.date)).format("D MMMM YYYY"));
+
+    console.log(messageDays)
+    setMessageDays(messageDays)
+    
+    }
+
+
+    //function for dividing messages into categories, based on the DAYS they've been sent
+    function displayMessagesOnCertainDay(firstDate, secondDate){
+      
+      //returns true if the day from the firstDate and secondDate are the same
+       return dayjs(firstDate).isSame(dayjs(parseInt(secondDate)), "day") 
+    }
 
     
     return <div style={{ width: "100%"
@@ -139,7 +177,10 @@ const MessageBox = ({currentUser}) => {
                </ConversationHeader>
 
             {loading?
-              <div className='circularProgressContainer'>
+                /* using as="Conversation2" to give the ConversationList component a child component that it allows
+                solving the  "div" is not a valid child" error.
+                https://chatscope.io/storybook/react/?path=/docs/documentation-recipes--page#changing-component-type-to-allow-place-it-in-container-slot */
+              <div as="InputToolbox2" className='circularProgressContainer'>
               <Box sx={{ display: 'flex' }}>
                   <CircularProgress size="5rem" />
               </Box>
@@ -147,31 +188,36 @@ const MessageBox = ({currentUser}) => {
               :
                <MessageList >
 
-                 <MessageList.Content>
-
-                <MessageSeparator content="Saturday, 30 November 2019" />
+                 <MessageList.Content className="messageListContent">
+            {messageDays.map((day) => (
+              <div key={day}>
+              {/* Produces a seperator for each seperate day of messaging between the selectedPerson and user */}
+                <MessageSeparator  content={day} />            
                {//sort data according to time, in ascending order
               messagesBetween.sort((message1, message2) => (message1.date > message2.date) ? 1 : (message1.date < message2.date) ? -1 : 0)
+              //divide messages into days, display each day under the "day" variable that's mapped above from messageDays
               .map((message) => (
-               <MessageGroup 
-               key = {message["_id"]}
-                /* "incoming" or "outgoing" */
-               direction={(message.from[0]["_id"]===selectedPerson["_id"]? "incoming" :"outgoing")}
-               >          
-                  <Avatar /* src={joeIco} */ name={"Joe"} />          
-                  <MessageGroup.Messages>
-                    <Message model={{
-                  message: message.message,
-                  sentTime: "15 mins ago",
-                  sender: "Joe",
-                  direction: (message.from[0]["_id"]===selectedPerson["_id"]? "incoming" :"outgoing"),
-                  position: "single",
-                }} />
-                  </MessageGroup.Messages>    
-                  <MessageGroup.Footer >23:50</MessageGroup.Footer>          
-              </MessageGroup>
+                displayMessagesOnCertainDay(day, message.date)&&
+                  <MessageGroup 
+                  key = {message["_id"]}
+                  direction={(message.from[0]["_id"]===selectedPerson["_id"]? "incoming" :"outgoing")}
+                  >          
+                      <Avatar /* src={joeIco} */ name={"Joe"} />          
+                      <MessageGroup.Messages>
+                        <Message model={{
+                      message: message.message,
+                      sentTime: "15 mins ago",
+                      sender: "Joe",
+                      direction: (message.from[0]["_id"]===selectedPerson["_id"]? "incoming" :"outgoing"),
+                      position: "single",
+                    }} />
+                      </MessageGroup.Messages>    
+                      <MessageGroup.Footer >23:50</MessageGroup.Footer>          
+                  </MessageGroup>
                ))
               }
+              </div>
+            ))}
 
 
                 <MessageInputBox
@@ -186,7 +232,8 @@ const MessageBox = ({currentUser}) => {
             }
 
              </ChatContainer>
-        : <p>SELECT A PERSON TO TALK YO!</p> 
+        : <p className="noPersonSelectedContainer">SELECT A PERSON TO TALK YO!</p> 
+        
         }                         
            </MainContainer>
          </div>;
