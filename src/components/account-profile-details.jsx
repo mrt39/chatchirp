@@ -20,6 +20,7 @@ export const AccountProfileDetails = ({user}) => {
   const [values, setValues] = useState({
     name: user.name,
     email: user.email,
+    bio: user.bio,
   });
 
   function handleChange (event) {
@@ -60,7 +61,7 @@ export const AccountProfileDetails = ({user}) => {
             let result = await fetch(
             'http://localhost:5000/editprofile/' + user["_id"], {
                 method: 'PATCH',
-                body: JSON.stringify({ name: values.name, email: values.email}), 
+                body: JSON.stringify({ name: values.name, email: values.email, bio: values.bio}), 
                 headers: {
                     'Content-Type': 'application/json',
                     "Access-Control-Allow-Origin": "*",
@@ -123,6 +124,22 @@ export const AccountProfileDetails = ({user}) => {
                   type="email"
                   onChange={handleChange}
                   value={values.email}
+                />
+              </Grid>
+              <Grid
+                xs={12}
+                md={12}
+              >
+                <TextField
+                    fullWidth
+                    id="bio"
+                    label="Bio"
+                    name="bio"
+                    multiline
+                    rows={4}
+                    placeholder="Enter Your Bio"
+                    onChange={handleChange}
+                    value={values.bio}
                 />
               </Grid>
 

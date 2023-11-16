@@ -18,6 +18,7 @@ const userSchema = new mongoose.Schema ({
     password: String,
     googleId: String,
     picture: String,
+    bio: String,
 });
 
 userSchema.plugin(passportLocalMongoose);
@@ -149,9 +150,10 @@ passport.use(new GoogleStrategy({
 async function(accessToken, refreshToken, profile, done) {
     console.log(profile);
     const existingUser = await User.findOne({ googleId: profile.id });
-
+    /* if the user exists with the same id, log in */
     if (existingUser) { 
       done(null, existingUser);
+    /* otherwise, create new user */
     } else {
     const user = await new User({ googleId: profile.id, name: profile.displayName, picture: profile["_json"].picture, email: profile["_json"].email  }).save();
       done(null, user);

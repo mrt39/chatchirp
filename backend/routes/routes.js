@@ -125,6 +125,7 @@ router.patch("/editprofile/:userid", async (req, res) => {
   try {
     user.name= req.body.name
     user.email= req.body.email
+    user.bio= req.body.bio
    
     const result = await user.save();
     res.send(result)
