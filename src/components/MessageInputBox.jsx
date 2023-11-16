@@ -24,8 +24,6 @@ const MessageInputBox = ({currentUser, selectedPerson, messageSent, setMessageSe
       /* effect for handling sending message */
       useEffect(() => {
         async function postMessage() {
-  
-            /* let date = moment().format("MMMM Do YYYY, k:mm:ss") */
             
             //on submit, clean the word with the profanity cleaner package
             //https://www.npmjs.com/package/profanity-cleaner

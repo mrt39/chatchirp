@@ -80,11 +80,13 @@ router.get("/messagesfrom/:userid_messagingid", async (req, res) => {
       const user = await User.find({_id: userID});
       const messagedPerson = await User.find({_id: messagedPersonID});
       //get both messages FROM and TO clicked (selected) person.
-      const messagesFromClickedPerson = await Message.find({to: user, from: messagedPerson});
-      const messagesFromUser = await Message.find({to: messagedPerson, from: user});
+      //searching by ID because if the users change their name or e-mail later on, their messages won't be found under the same user model
+      const messagesFromClickedPerson = await Message.find({ 'to.0._id': userID , 'from.0._id': messagedPersonID}  );
+      const messagesFromUser = await Message.find({ 'to.0._id': messagedPersonID , 'from.0._id': userID});
       //combine the two arrays
       const allMessagesBetween = messagesFromClickedPerson.concat(messagesFromUser);
       //send messages
+      console.log(allMessagesBetween)
       res.send(allMessagesBetween);
   
     } catch (err) {
@@ -110,6 +112,27 @@ router.post("/messagesent", async (req, res) => {
       res.send("Something Went Wrong");
   }
  
+});
+
+/* A PATCH ROUTE */
+router.patch("/editprofile/:userid", async (req, res) => {
+
+  
+  const userid = req.params.userid // access URL variable
+  const user = await User.findOne({_id: userid});
+
+  console.log(req.body.name + " is the new name for this user: " + user.name)
+  try {
+    user.name= req.body.name
+    user.email= req.body.email
+   
+    const result = await user.save();
+    res.send(result)
+
+} catch (e) {
+    res.send("Something Went Wrong");
+}
+
 });
 
 

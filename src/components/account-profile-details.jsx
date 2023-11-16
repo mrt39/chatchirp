@@ -15,6 +15,7 @@ import {
 export const AccountProfileDetails = ({user}) => {
 
   const [invalidEmail, setInvalidEmail] = useState(false); 
+  const [profileUpdated, setProfileUpdated] = useState(false);
 
   const [values, setValues] = useState({
     name: user.name,
@@ -28,6 +29,7 @@ export const AccountProfileDetails = ({user}) => {
   });
   }
 
+  /* email validation function */
   useEffect(() => {
     if(values.email.includes("@")){
         setInvalidEmail(false)
@@ -41,9 +43,44 @@ export const AccountProfileDetails = ({user}) => {
   function handleSubmit (event) {
     event.preventDefault();
     console.log("submitted this shit")
+    setProfileUpdated(true)
   }
 
+
+    /* effect for submitting the profile changes */
+    useEffect(() => {
+        console.log("let's begin")
+        async function editProfile() {
+            //on submit, clean the word with the profanity cleaner package
+            //https://www.npmjs.com/package/profanity-cleaner
+            /* let input = await clean(nameInput, { keepFirstAndLastChar: true }) */
+
+            console.log("useffect activated ")
+
+            let result = await fetch(
+            'http://localhost:5000/editprofile/' + user["_id"], {
+                method: 'PATCH',
+                body: JSON.stringify({ name: values.name, email: values.email}), 
+                headers: {
+                    'Content-Type': 'application/json',
+                    "Access-Control-Allow-Origin": "*",
+                }
+            })
+            result = await result.json();
+            console.warn(result);
+            if (result) {
+                console.log("Message sent");
+
+                setProfileUpdated(false);
+            }   
+        }
+        /* only trigger when message is sent */
+        if (profileUpdated ===true){
+        editProfile();
+        } 
+    }, [profileUpdated]);
  
+
   return (
     <form
       autoComplete="off"

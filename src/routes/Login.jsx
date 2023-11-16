@@ -92,7 +92,7 @@ export default function Login() {
               required
               fullWidth
               id="email"
-              label="Email Address"
+              label="E-mail Address"
               type="email"
               name="email"
               autoComplete="email"

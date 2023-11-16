@@ -59,7 +59,7 @@ const message1 = new Message({
     "__v": 0
 },
   to:  {
-    "_id" : "654fc1cc2a87fa5b771aad5f",
+    "_id" : "655641ed5b49800627c4c104",
     "email": "chriscarter19822@gmail.com",
     "name": "Chris Carter",
     "googleId": "108002578840135619377",
@@ -79,7 +79,7 @@ const message2 = new Message({
     "__v": 0
 },
   to:   {
-    "_id" : "654fc1cc2a87fa5b771aad5f",
+    "_id" : "655641ed5b49800627c4c104",
     "email": "chriscarter19822@gmail.com",
     "name": "Chris Carter",
     "googleId": "108002578840135619377",
@@ -99,7 +99,7 @@ const message3 = new Message({
     "__v": 0
 },
   to:   {
-    "_id" : "654fc1cc2a87fa5b771aad5f",
+    "_id" : "655641ed5b49800627c4c104",
     "email": "chriscarter19822@gmail.com",
     "name": "Chris Carter",
     "googleId": "108002578840135619377",
@@ -146,12 +146,17 @@ passport.use(new GoogleStrategy({
     callbackURL: "http://localhost:5000/auth/google/callback",
     userProfileURL: "https://www.googleapis.com/oauth2/v3/userinfo",
   },
-  function(accessToken, refreshToken, profile, cb) {
+async function(accessToken, refreshToken, profile, done) {
     console.log(profile);
-    User.findOrCreate({ googleId: profile.id, name: profile.displayName, picture: profile["_json"].picture, email: profile["_json"].email  }, function (err, user) {
-      return cb(err, user);
-    });
-  }
+    const existingUser = await User.findOne({ googleId: profile.id });
+
+    if (existingUser) { 
+      done(null, existingUser);
+    } else {
+    const user = await new User({ googleId: profile.id, name: profile.displayName, picture: profile["_json"].picture, email: profile["_json"].email  }).save();
+      done(null, user);
+    }
+    }
 ));
 
 
