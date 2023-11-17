@@ -6,16 +6,17 @@ import {
   CardActions,
   CardContent,
   CardHeader,
+  CircularProgress,
   Divider,
   TextField,
   Unstable_Grid2 as Grid
 } from '@mui/material';
 
 
-export const AccountProfileDetails = ({user}) => {
+export const AccountProfileDetails = ({user, setSnackbarOpen, invalidEmail, setInvalidEmail, snackbarOpenCondition, setSnackbarOpenCondition, profileUpdated, setProfileUpdated}) => {
 
-  const [invalidEmail, setInvalidEmail] = useState(false); 
-  const [profileUpdated, setProfileUpdated] = useState(false);
+
+  const [loading, setLoading] = useState(false);
 
   const [values, setValues] = useState({
     name: user.name,
@@ -30,33 +31,55 @@ export const AccountProfileDetails = ({user}) => {
   });
   }
 
+  /* when profile is updated, update the values state so the profile display is updated! */
+  useEffect(() => {
+    setValues({
+      name: user.name,
+      email: user.email,
+      bio: user.bio,
+    })
+
+  }, [profileUpdated]); 
+
   /* email validation function */
   useEffect(() => {
     if(values.email.includes("@")){
+        //if the snackbar is already opened, close it
+        setSnackbarOpen(false)
+        //wait until snackbar closes to change the e-mail invalid state
+        setTimeout(function() {
         setInvalidEmail(false)
+        }, 200);
         }
         else{
-        setInvalidEmail(true)  
+        setSnackbarOpen(false)
+        setTimeout(function() {
+          setInvalidEmail(true)  
+        }, 200);
+        
         }
   }, [values.email]);
 
 
   function handleSubmit (event) {
     event.preventDefault();
-    console.log("submitted this shit")
+    //if mail address is invalid, don't update
+    if(invalidEmail){
+      setSnackbarOpenCondition("wrongEmail")
+      setSnackbarOpen(true)
+        return
+    }
+    setLoading(true)
     setProfileUpdated(true)
   }
 
 
     /* effect for submitting the profile changes */
     useEffect(() => {
-        console.log("let's begin")
         async function editProfile() {
             //on submit, clean the word with the profanity cleaner package
             //https://www.npmjs.com/package/profanity-cleaner
             /* let input = await clean(nameInput, { keepFirstAndLastChar: true }) */
-
-            console.log("useffect activated ")
 
             let result = await fetch(
             'http://localhost:5000/editprofile/' + user["_id"], {
@@ -67,13 +90,21 @@ export const AccountProfileDetails = ({user}) => {
                     "Access-Control-Allow-Origin": "*",
                 }
             })
-            result = await result.json();
-            console.warn(result);
-            if (result) {
+            if (result.ok) {
+                let response = await result.json();
+                console.warn(response);
                 console.log("Message sent");
-
                 setProfileUpdated(false);
-            }   
+                setSnackbarOpenCondition("success")
+                setSnackbarOpen(true)
+                setLoading(false)
+            } else{
+              console.error("There has been an error!")
+              setProfileUpdated(false);
+              setSnackbarOpenCondition("failure")
+              setSnackbarOpen(true)
+              setLoading(false)
+            }  
         }
         /* only trigger when message is sent */
         if (profileUpdated ===true){
@@ -89,9 +120,14 @@ export const AccountProfileDetails = ({user}) => {
       onSubmit={handleSubmit}
     >
       <Card>
+        {loading? 
+        <CircularProgress
+        size={57}/>
+        :
         <CardHeader
           title="Details"
         />
+        }
         <CardContent sx={{ pt: 0 }}>
           <Box sx={{ m: -1.5 }}>
             <Grid
@@ -103,6 +139,7 @@ export const AccountProfileDetails = ({user}) => {
                 md={6}
               >
                 <TextField
+                  disabled={loading}
                   fullWidth
                   label="Name"
                   name="name"
@@ -116,6 +153,7 @@ export const AccountProfileDetails = ({user}) => {
                 md={6}
               >
                 <TextField
+                  disabled={loading}
                   fullWidth
                   error={invalidEmail}
                   helperText={invalidEmail? 'Invalid E-mail address!' : ' '}   
@@ -131,15 +169,16 @@ export const AccountProfileDetails = ({user}) => {
                 md={12}
               >
                 <TextField
-                    fullWidth
-                    id="bio"
-                    label="Bio"
-                    name="bio"
-                    multiline
-                    rows={4}
-                    placeholder="Enter Your Bio"
-                    onChange={handleChange}
-                    value={values.bio}
+                  disabled={loading}
+                  fullWidth
+                  id="bio"
+                  label="Bio"
+                  name="bio"
+                  multiline
+                  rows={4}
+                  placeholder="Enter Your Bio"
+                  onChange={handleChange}
+                  value={values.bio}
                 />
               </Grid>
 
@@ -149,6 +188,7 @@ export const AccountProfileDetails = ({user}) => {
         <Divider />
         <CardActions sx={{ justifyContent: 'flex-end' }}>
           <Button 
+          disabled={loading}
           variant="contained"
           onClick={handleSubmit}>
             Save details

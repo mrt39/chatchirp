@@ -4,12 +4,20 @@ import { useState, useEffect } from 'react'
 import { Box, Container, Stack, Typography, Unstable_Grid2 as Grid } from '@mui/material';
 import { AccountProfile } from '../components/account-profile';
 import { AccountProfileDetails } from '../components/account-profile-details';
+import Snackbar from "../components/Snackbar.jsx"
 import "../styles/Profile.css"
 
 
 
 
-const Profile = ({user}) => {
+const Profile = ({user, profileUpdated, setProfileUpdated}) => {
+
+
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarOpenCondition, setSnackbarOpenCondition] = useState();
+  //check if the e-mail address user puts is invalid
+  const [invalidEmail, setInvalidEmail] = useState(false); 
+
   
  return ( <>
     <Box
@@ -47,33 +55,30 @@ const Profile = ({user}) => {
               >
                 <AccountProfileDetails 
                 user={user}
+                setSnackbarOpen={setSnackbarOpen}
+                invalidEmail={invalidEmail}
+                setInvalidEmail={setInvalidEmail}
+                setSnackbarOpenCondition={setSnackbarOpenCondition}
+                snackbarOpenCondition={snackbarOpenCondition}
+                profileUpdated={profileUpdated}
+                setProfileUpdated={setProfileUpdated}
                 />
               </Grid>
             </Grid>
           </div>
         </Stack>
       </Container>
+  
+  <Snackbar
+  snackbarOpenCondition={snackbarOpenCondition}
+  snackbarOpen={snackbarOpen}
+  setSnackbarOpen={setSnackbarOpen}
+  invalidEmail={invalidEmail}
+  />
     </Box>
-
   </>);
 }
 
-/* Page.getLayout = (page) => (
-  <DashboardLayout>
-    {page}
-  </DashboardLayout>
-); */
 
 export default Profile;
 
-/* const Profile = ({user}) => {
-
-    return (
-        <div className='leaderboardContainer'>
-                <h1>This is the {user.googleId}!</h1>
-        </div>
-      );
-    };
-    
-    
-export default Profile; */

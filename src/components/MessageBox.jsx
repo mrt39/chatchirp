@@ -100,11 +100,8 @@ const MessageBox = ({currentUser}) => {
           .then(data => {
             setMessagesBetween(data)
             console.log(data)
-/*             console.log(data[0].date)
-            console.log(dayjs(data[1].date))
-            console.log(dayjs(data[0].date).isSame(dayjs(data[5].date), "day")) */
             getUniqueDays(data)
-            setLoading(false); // Set loading to false once the data is received
+            setLoading(false); 
           })
           .catch(error => {
             console.error('Error:', error);

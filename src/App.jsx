@@ -15,6 +15,11 @@ import CircularProgress from '@mui/material/CircularProgress';
 const App = () => {
   const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [profileUpdated, setProfileUpdated] = useState(false);
+
+
+  /* when profile is updated, update the currentUser state */
+
 
 
 
@@ -45,7 +50,7 @@ const App = () => {
             console.error('Error:', error)});
     };
     getUser();
-  }, []); 
+  }, [profileUpdated]); 
 
   if (loading) {
     return (
@@ -72,7 +77,14 @@ const App = () => {
           />
           <Route
             path="/profile"
-            element={currentUser ? <Profile user={currentUser}/> : <Navigate to="/login" />}
+            element={currentUser ? 
+            <Profile 
+            user={currentUser}
+            profileUpdated={profileUpdated}
+            setProfileUpdated={setProfileUpdated}
+            /> 
+            : 
+            <Navigate to="/login" />}
           /> 
         </Routes>
       </div>
