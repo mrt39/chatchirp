@@ -9,7 +9,7 @@ const CLIENT_URL = "http://localhost:5173/";
 
 router.get("/login/success", (req, res) => {
   if (req.isAuthenticated()) {
-    //Send it  to the frontend
+    //Send it to the frontend
     res.json(req.user);
   } else {
     res.status(401).send('User not authenticated');
@@ -65,6 +65,20 @@ router.get("/messagebox", async (req, res) => {
     res.send(err);
   }
 })
+
+router.get("/profile/:userid", async (req, res) => {
+
+     const userID = req.params.userid // access URL variable
+   
+    try {
+      const user = await User.find({_id: userID});
+      console.log("changed value of the user: " + user)
+      res.send(user);
+  
+    } catch (err) {
+      res.send(err);
+    }
+  })
 
 router.get("/messagesfrom/:userid_messagingid", async (req, res) => {
 

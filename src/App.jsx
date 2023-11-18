@@ -15,14 +15,13 @@ import CircularProgress from '@mui/material/CircularProgress';
 const App = () => {
   const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  //first time loading
+  const [firstTimeLoading, setFirstTimeLoading] = useState(true);
+  //state that turns true whenever user updates their profile from the /profile route
   const [profileUpdated, setProfileUpdated] = useState(false);
 
 
-  /* when profile is updated, update the currentUser state */
-
-
-
-
+  /* get the user data when logged in */
   useEffect(() => {
     const getUser = () => {
       fetch('http://localhost:5000/login/success', {
@@ -44,13 +43,53 @@ const App = () => {
           console.log(data)
           setCurrentUser(data)
           setLoading(false); // Set loading to false once the data is received
+          setFirstTimeLoading(false);
         })
         .catch(error => {
             setLoading(false); // Set loading to false once the data is received
             console.error('Error:', error)});
     };
+    //only call when it's the first time loading
+    if(firstTimeLoading){
     getUser();
-  }, [profileUpdated]); 
+    }
+  }, []); 
+
+
+  /* change the user data from the stored user data in the session, to the actual user data in the db */
+  useEffect(() => {
+    const getUserOnUpdate = () => {
+      fetch('http://localhost:5000/profile/' + currentUser["_id"], {
+        method: 'GET',
+      })
+        .then(response => {
+          if (response.ok) {
+            return response.json(); // Parse JSON when the response is successful
+          }
+          throw new Error('Network response was not ok.');
+        })
+        .then(data => {
+          console.log(data)
+          setCurrentUser(data[0])
+/*           setValues ({
+            name: data[0].name,
+            email: data[0].email,
+            bio: data[0].bio,
+          }); */
+          setLoading(false); // Set loading to false once the data is received
+        })
+        .catch(error => {
+          setLoading(false); // Set loading to false once the data is received
+          console.error('Error:', error)});
+    };
+  /* only call after the first fetch request is complete */
+    if(firstTimeLoading===false){
+    getUserOnUpdate();
+    }
+  /* when first fetch is complete or profile is updated, update the currentUser state */
+  }, [profileUpdated, firstTimeLoading]); 
+
+
 
   if (loading) {
     return (
@@ -80,6 +119,7 @@ const App = () => {
             element={currentUser ? 
             <Profile 
             user={currentUser}
+            setCurrentUser={setCurrentUser}
             profileUpdated={profileUpdated}
             setProfileUpdated={setProfileUpdated}
             /> 

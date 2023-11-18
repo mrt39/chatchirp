@@ -10,7 +10,7 @@ import "../styles/Profile.css"
 
 
 
-const Profile = ({user, profileUpdated, setProfileUpdated}) => {
+const Profile = ({user, setCurrentUser, profileUpdated, setProfileUpdated}) => {
 
 
   const [snackbarOpen, setSnackbarOpen] = useState(false);
@@ -55,6 +55,7 @@ const Profile = ({user, profileUpdated, setProfileUpdated}) => {
               >
                 <AccountProfileDetails 
                 user={user}
+                setCurrentUser={setCurrentUser}
                 setSnackbarOpen={setSnackbarOpen}
                 invalidEmail={invalidEmail}
                 setInvalidEmail={setInvalidEmail}

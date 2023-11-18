@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import { useCallback, useState, useEffect } from 'react';
 import {
   Box,
@@ -13,10 +14,11 @@ import {
 } from '@mui/material';
 
 
-export const AccountProfileDetails = ({user, setSnackbarOpen, invalidEmail, setInvalidEmail, snackbarOpenCondition, setSnackbarOpenCondition, profileUpdated, setProfileUpdated}) => {
+export const AccountProfileDetails = ({user, setCurrentUser, setSnackbarOpen, invalidEmail, setInvalidEmail, snackbarOpenCondition, setSnackbarOpenCondition, profileUpdated, setProfileUpdated}) => {
 
 
   const [loading, setLoading] = useState(false);
+
 
   const [values, setValues] = useState({
     name: user.name,
@@ -31,15 +33,8 @@ export const AccountProfileDetails = ({user, setSnackbarOpen, invalidEmail, setI
   });
   }
 
-  /* when profile is updated, update the values state so the profile display is updated! */
-  useEffect(() => {
-    setValues({
-      name: user.name,
-      email: user.email,
-      bio: user.bio,
-    })
 
-  }, [profileUpdated]); 
+  
 
   /* email validation function */
   useEffect(() => {
@@ -80,7 +75,6 @@ export const AccountProfileDetails = ({user, setSnackbarOpen, invalidEmail, setI
             //on submit, clean the word with the profanity cleaner package
             //https://www.npmjs.com/package/profanity-cleaner
             /* let input = await clean(nameInput, { keepFirstAndLastChar: true }) */
-
             let result = await fetch(
             'http://localhost:5000/editprofile/' + user["_id"], {
                 method: 'PATCH',
@@ -91,13 +85,13 @@ export const AccountProfileDetails = ({user, setSnackbarOpen, invalidEmail, setI
                 }
             })
             if (result.ok) {
-                let response = await result.json();
-                console.warn(response);
-                console.log("Message sent");
-                setProfileUpdated(false);
-                setSnackbarOpenCondition("success")
-                setSnackbarOpen(true)
-                setLoading(false)
+              let response = await result.json();
+              console.warn(response);
+              console.log("Profile Updated!");
+              setProfileUpdated(false);
+              setSnackbarOpenCondition("success")
+              setSnackbarOpen(true)
+              setLoading(false)
             } else{
               console.error("There has been an error!")
               setProfileUpdated(false);
@@ -106,11 +100,12 @@ export const AccountProfileDetails = ({user, setSnackbarOpen, invalidEmail, setI
               setLoading(false)
             }  
         }
-        /* only trigger when message is sent */
+        /* only trigger when profile is updated*/
         if (profileUpdated ===true){
         editProfile();
         } 
     }, [profileUpdated]);
+
  
 
   return (
