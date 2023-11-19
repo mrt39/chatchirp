@@ -46,6 +46,7 @@ const Profile = ({user, setCurrentUser, profileUpdated, setProfileUpdated}) => {
               >
                 <AccountProfile 
                 user={user}
+                setProfileUpdated={setProfileUpdated}
                 />
               </Grid>
               <Grid
@@ -63,6 +64,7 @@ const Profile = ({user, setCurrentUser, profileUpdated, setProfileUpdated}) => {
                 snackbarOpenCondition={snackbarOpenCondition}
                 profileUpdated={profileUpdated}
                 setProfileUpdated={setProfileUpdated}
+
                 />
               </Grid>
             </Grid>

@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import {
     Avatar,
     Box,
@@ -8,11 +9,57 @@ import {
     Divider,
     Typography
   } from '@mui/material';
-  import { useState } from 'react';
+  import { useState, useEffect } from 'react';
+
 
   
   
-  export const AccountProfile = ({user}) => {
+  export const AccountProfile = ({user, setProfileUpdated}) => {
+
+    const [uploadedImg, setUploadedImg] = useState();
+    const [description, setDescription] = useState("")
+
+    const [imgSubmitted, setImgSubmitted] = useState(false);
+
+    function handleChange(event){
+      console.log(event.target.files);
+      setUploadedImg(event.target.files[0]);
+    }
+
+    function submitImg(){
+      setImgSubmitted(true)
+    }
+
+     /* effect for handling uploading img */
+     useEffect(() => {
+      async function postMessage() {       
+
+        const formData = new FormData()
+        formData.append("image", uploadedImg)
+        formData.append("description", description)
+
+          let result = await fetch(
+          'http://localhost:5000/uploadprofilepic/' + user["_id"], {
+              method: "post",
+              body: formData, 
+              headers: {
+                  "Access-Control-Allow-Origin": "*",
+              }
+          })
+          result = await result.json();
+          console.warn(result);
+          if (result) {
+              console.log("Image uploaded");
+              setUploadedImg();
+              setImgSubmitted(false);
+              setProfileUpdated(true)
+          }   
+      }
+      /* only trigger when message is sent */
+      if (imgSubmitted ===true){
+      postMessage();
+      } 
+  }, [imgSubmitted]);
 
 
       return (
@@ -26,7 +73,7 @@ import {
           }}
         >
           <Avatar
-            src={user.picture}
+            src={user.uploadedpic? "http://localhost:5000/images/" + user.uploadedpic : user.picture}
             sx={{
               height: 80,
               mb: 2,
@@ -48,13 +95,27 @@ import {
         </Box>
       </CardContent>
       <Divider />
-      <CardActions>
+       <CardActions>
         <Button
           fullWidth
           variant="text"
         >
-          Upload Picture
-        </Button>
+            Upload Picture
+          </Button>
+          <input 
+          type="file" 
+          value=""
+          filename={uploadedImg}
+          id="image" 
+          name="image" 
+          accept="image/*"
+          onChange={handleChange}/>
+          <input
+          onChange={e => setDescription(e.target.value)} 
+          type="text"
+        ></input>
+          <button onClick={submitImg}>SUBMIT</button>
+        
       </CardActions>
     </Card>
     )

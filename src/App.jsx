@@ -71,16 +71,13 @@ const App = () => {
         .then(data => {
           console.log(data)
           setCurrentUser(data[0])
-/*           setValues ({
-            name: data[0].name,
-            email: data[0].email,
-            bio: data[0].bio,
-          }); */
           setLoading(false); // Set loading to false once the data is received
+          setProfileUpdated(false)
         })
         .catch(error => {
           setLoading(false); // Set loading to false once the data is received
           console.error('Error:', error)});
+          setProfileUpdated(false)
     };
   /* only call after the first fetch request is complete */
     if(firstTimeLoading===false){

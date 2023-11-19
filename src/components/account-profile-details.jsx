@@ -14,7 +14,7 @@ import {
 } from '@mui/material';
 
 
-export const AccountProfileDetails = ({user, setCurrentUser, setSnackbarOpen, invalidEmail, setInvalidEmail, snackbarOpenCondition, setSnackbarOpenCondition, profileUpdated, setProfileUpdated}) => {
+export const AccountProfileDetails = ({user, setSnackbarOpen, invalidEmail, setInvalidEmail,  setSnackbarOpenCondition, profileUpdated, setProfileUpdated}) => {
 
 
   const [loading, setLoading] = useState(false);
@@ -33,6 +33,14 @@ export const AccountProfileDetails = ({user, setCurrentUser, setSnackbarOpen, in
   });
   }
 
+    /* when user data changes, change rendered textbox data as well */
+    useEffect(() => {
+      setValues({
+        name: user.name,
+        email: user.email,
+        bio: user.bio
+      })
+    }, [user]);
 
   
 

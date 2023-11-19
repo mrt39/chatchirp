@@ -166,7 +166,7 @@ const MessageBox = ({currentUser}) => {
 
                <ConversationHeader>
                  <ConversationHeader.Back  onClick={handleBackClick}/>
-                 <Avatar  src={selectedPerson.picture}  name={selectedPerson.name} />
+                 <Avatar  src={selectedPerson.uploadedpic? "http://localhost:5000/images/" + selectedPerson.uploadedpic : selectedPerson.picture}  name={selectedPerson.name} />
                  <ConversationHeader.Content userName={selectedPerson.name} info="Active 10 mins ago" />
                  <ConversationHeader.Actions>
                       <EllipsisButton orientation="vertical" />

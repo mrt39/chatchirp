@@ -17,7 +17,12 @@ const userSchema = new mongoose.Schema ({
     name: String,
     password: String,
     googleId: String,
+    /* google pic */
     picture: String,
+    /* uploaded pic */
+    uploadedpic :     {
+      sparse: true, type: String
+  },
     bio: String,
 });
 
@@ -42,13 +47,10 @@ const messageSchema = new mongoose.Schema ({
     default: Date.now
 },
   message: String,
-  image: { sparse: true, type: Buffer, contentType: String},
+  image: { sparse: true, type: String},
 });
 
 const Message = new mongoose.model("Message", messageSchema);
-
-//exporting User and Message models in order to use them in routes.js 
-module.exports = { User, Message }
 
 const message1 = new Message({
   from:   {
@@ -120,9 +122,31 @@ setTimeout(function(){
 }, 100);
  
 
-
-
 /* END OF MONGOOSE */
+
+
+/* MULTER SETUP (for storing images on db) */
+var multer = require('multer');
+ 
+/* var storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, 'uploads')
+    },
+    filename: (req, file, cb) => {
+        cb(null, file.fieldname + '-' + Date.now())
+    }
+}); */
+ 
+/* var upload = multer({ storage: storage }); */
+
+const upload = multer({ dest: 'images/' })
+
+//exporting User and Message models and upload attribute in order to use them in routes.js 
+module.exports = { User, Message, upload }
+
+/* END OF MULTER */
+
+
 
 passport.use(User.createStrategy());
 

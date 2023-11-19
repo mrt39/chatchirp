@@ -74,7 +74,7 @@ const ContactsBox = ({sidebarStyle, handleConversationClick, conversationAvatarS
                
 
                 :
-                contactsBoxPeople.map(({ _id, email, name, picture }) => (
+                contactsBoxPeople.map(({ _id, email, name, picture, uploadedpic }) => (
                     <Conversation 
                     /* if there is a selected person, change class to highlight it */
                     className={
@@ -85,7 +85,8 @@ const ContactsBox = ({sidebarStyle, handleConversationClick, conversationAvatarS
                     onClick={function()  {handleConversationClick(); handleSelectedPerson(_id)}}
                     lastActivityTime="43 min"
                     >
-                    <Avatar  src={picture}  name={name} style={conversationAvatarStyle} />
+                    <Avatar  src={uploadedpic? "http://localhost:5000/images/" + uploadedpic : picture}  
+                    name={name} style={conversationAvatarStyle} />
                     <Conversation.Content name={name} lastSenderName="Lilly" info="Yes i can do it for you" style={conversationContentStyle} />
                     </Conversation>
                     ))

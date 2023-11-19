@@ -1,7 +1,10 @@
 const router = require("express").Router();
 const passport = require("passport");
+//node file system module
+const fs = require('fs');
+const path = require('path');
 /* grab the User model that's exported in passport.js */
-const {User, Message} = require( "../passport.js")
+const {User, Message, upload} = require( "../passport.js")
 
 const CLIENT_URL = "http://localhost:5173/";
 
@@ -112,15 +115,15 @@ router.get("/messagesfrom/:userid_messagingid", async (req, res) => {
  
 router.post("/messagesent", async (req, res) => {
 
-    console.log(req.body)
-    try {
-      const newMessage = new Message({
-          from: req.body.from,
-          to: req.body.to,
-          message: req.body.message,
-      });
-      const result = newMessage.save();
-      res.send(result)
+  console.log(req.body)
+  try {
+    const newMessage = new Message({
+        from: req.body.from,
+        to: req.body.to,
+        message: req.body.message,
+    });
+    const result = newMessage.save();
+    res.send(result)
 
   } catch (e) {
       res.send("Something Went Wrong");
@@ -128,7 +131,42 @@ router.post("/messagesent", async (req, res) => {
  
 });
 
-/* A PATCH ROUTE */
+
+//tap into "upload", which we import from passport.js
+//this is a middleware function that will accept the image data from the client side form data as long as it's called image (which is exactly what we called it in the react app formData.append("image", file))
+router.post('/uploadprofilepic/:userid',  upload.single('image'),  async (req, res) => {
+
+  //once multer has successfully saved the image, we can tap into image data from req.file
+  //"req.file.filename" is the filename it's stored with in "images" folder
+  console.log(path.join(__dirname + '/../images/' + req.file.filename)) 
+
+  const imageName = req.file.filename 
+
+  const userid = req.params.userid 
+  const user = await User.findOne({_id: userid});
+  console.log(user)
+  try {
+    user.uploadedpic= imageName
+    const result = await user.save();
+    console.log("image saved! filename: " +req.file.filename)
+    res.send(result)
+
+  }catch (e) {
+    res.send("Something Went Wrong");
+  }
+
+
+});
+
+/* ROUTE FOR RENDERING THE IMAGES PROPERTY */
+router.get('/images/:imageName', (req, res) => {
+  const imageName = req.params.imageName
+  const readStream = fs.createReadStream(`images/${imageName}`)
+  readStream.pipe(res)
+})
+
+
+
 router.patch("/editprofile/:userid", async (req, res) => {
 
   

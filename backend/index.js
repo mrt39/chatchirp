@@ -28,6 +28,10 @@ app.use(
   })
 );
 
+/* serve the files in /images folder as static files */
+app.use('/images', express.static('images'))
+
+
 app.use(session({
     secret: 'secrets',
     resave: false,
