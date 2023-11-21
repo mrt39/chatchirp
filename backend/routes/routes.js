@@ -85,7 +85,6 @@ router.get("/profile/:userid", async (req, res) => {
 
 router.get("/messagesfrom/:userid_messagingid", async (req, res) => {
 
-
      const route = req.params.userid_messagingid // access URL variable
      //id's in the route will be divided by "_", so we are splitting it into two parts
      const ids = route.split('_');
@@ -103,7 +102,6 @@ router.get("/messagesfrom/:userid_messagingid", async (req, res) => {
       //combine the two arrays
       const allMessagesBetween = messagesFromClickedPerson.concat(messagesFromUser);
       //send messages
-      console.log(allMessagesBetween)
       res.send(allMessagesBetween);
   
     } catch (err) {
@@ -115,7 +113,8 @@ router.get("/messagesfrom/:userid_messagingid", async (req, res) => {
  
 router.post("/messagesent", async (req, res) => {
 
-  console.log(req.body)
+  console.log(req.body) 
+
   try {
     const newMessage = new Message({
         from: req.body.from,
@@ -130,6 +129,8 @@ router.post("/messagesent", async (req, res) => {
   }
  
 });
+
+
 
 
 //tap into "upload", which we import from passport.js
@@ -158,12 +159,45 @@ router.post('/uploadprofilepic/:userid',  upload.single('image'),  async (req, r
 
 });
 
+//image sent in message input
+router.post("/imagesent", upload.single('image'), async (req, res) => {
+
+  console.log(path.join(__dirname + '/../images/' + req.file.filename)) 
+
+  const imageName = req.file.filename 
+
+  const msgFrom = JSON.parse(req.body.from).currentUser
+  const msgTo = JSON.parse(req.body.to).selectedPerson
+
+  console.log(msgFrom)
+  console.log(msgTo)
+
+  try {
+    const newMessage = new Message({
+        from: msgFrom,
+        to: msgTo,
+        image: imageName,
+    });
+    const result = newMessage.save();
+    res.send(result)
+
+  } catch (e) {
+      res.send("Something Went Wrong");
+  }
+ 
+});
+
+
+
 /* ROUTE FOR RENDERING THE IMAGES PROPERTY */
 router.get('/images/:imageName', (req, res) => {
   const imageName = req.params.imageName
   const readStream = fs.createReadStream(`images/${imageName}`)
   readStream.pipe(res)
 })
+
+
+
 
 
 

@@ -146,6 +146,13 @@ const MessageBox = ({currentUser}) => {
        return dayjs(firstDate).isSame(dayjs(parseInt(secondDate)), "day") 
     }
 
+    function displayImage (imagelink){
+
+      return (
+        <img src={"http://localhost:5000/images/" + imagelink} alt="" />
+      )
+    }
+
     
     return <div style={{ width: "100%"
 
@@ -202,12 +209,17 @@ const MessageBox = ({currentUser}) => {
                       <Avatar /* src={joeIco} */ name={"Joe"} />          
                       <MessageGroup.Messages>
                         <Message model={{
-                      message: message.message,
+                          /* if the message is an image, display image! */
+                      message: message.image? null : message.message,
                       sentTime: "15 mins ago",
                       sender: "Joe",
                       direction: (message.from[0]["_id"]===selectedPerson["_id"]? "incoming" :"outgoing"),
                       position: "single",
-                    }} />
+                    }}>
+                        {message.image?
+                        <Message.ImageContent className="msgBoxImg1" src={"http://localhost:5000/images/" + message.image} alt="image" />
+                        :null}
+                    </Message>
                       </MessageGroup.Messages>    
                       <MessageGroup.Footer >23:50</MessageGroup.Footer>          
                   </MessageGroup>

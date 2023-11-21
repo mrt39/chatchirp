@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import styles from "@chatscope/chat-ui-kit-styles/dist/default/styles.min.css";
 import {
     MessageInput
@@ -7,14 +7,15 @@ import {
 import CircularProgress from '@mui/material/CircularProgress';
 import Box from '@mui/material/Box';
 import '../styles/MessageInputBox.css'
-
+import FileInputPopover from "./Popover.jsx"
 
 
 const MessageInputBox = ({currentUser, selectedPerson, messageSent, setMessageSent}) => {
 
     // Set initial message input value to an empty string                                                                     
     const [messageInputValue, setMessageInputValue] = useState("");
-    const [imageFile, setimageFile] = useState();
+
+
 
 
     function handleSend(){
@@ -54,27 +55,107 @@ const MessageInputBox = ({currentUser, selectedPerson, messageSent, setMessageSe
     }, [messageSent]);
   
   
-  
-  
-      function handleAttachmentClick(){
-        console.log("Add attachment button clicked")
-        console.log(currentUser)
-        console.log(selectedPerson)
-      }
-
-/* when selected person changes, clear input box */
+    /* when selected person changes, clear input box */
     useEffect(() => {
         setMessageInputValue("")
       }, [selectedPerson]); 
+      
 
+    /* ---------------IMAGE UPLOAD FUNCTIONALITY--------------- */
+    
+    //using ref to be able to select an element within a function (for displaying popover)
+    const fileInputRef = useRef(null)
+    //anchor for popover
+    const [popOveranchorEl, setPopOverAnchorEl] = useState(null);
+
+    const [imageFile, setimageFile] = useState();
+    //user selected an image from disk
+    const [imageSelected, setimageSelected] = useState(false);
+    //user pressed "send" after selecting the image
+    const [imgSubmitted, setImgSubmitted] = useState(false);
+
+      //when the attachment icon is clicked, click on the hidden input (type=file) element
+      function handleAttachmentClick(){
+        fileInputRef.current.click()
+      }
+
+    /* when user selects an image and changes the value of the input, change the state  */
+      function handleFileInputChange(event){
+        setimageSelected(true)
+        console.log(event.target.files);
+        setimageFile(event.target.files[0]);
+      }
+
+      //when an image is selected, activate the popover
+      useEffect(() => {
+        //only trigger if an image is selected
+        if (imageSelected){
+        /* select the attachment button next to the message input box and making it the anchor for the popover to be displayed over */
+        const attachmentIcon = document.querySelector('.cs-button--attachment')
+        setPopOverAnchorEl(attachmentIcon)
+        }
+    }, [imageSelected]);
+
+
+    /* function for sending the image */
+    function handleImgSendBtn(){
+        console.log("send img")
+        setImgSubmitted(true)
+    }
+
+
+    /* effect for handling sending the image */
+    useEffect(() => {
+      async function postMessage() {
+
+        const formData = new FormData()
+        formData.append("image", imageFile)
+        formData.append("from", JSON.stringify({currentUser}) )
+        formData.append("to", JSON.stringify({selectedPerson}))
+
+        console.log(formData)
+        
+          let result = await fetch(
+          'http://localhost:5000/imagesent', {
+              method: "post",
+              /* if imageFile exists, send imageFile */  
+              body: formData, 
+              headers: {
+                  "Access-Control-Allow-Origin": "*",
+              }
+          })
+          result = await result.json();
+          console.warn(result);
+          if (result) {
+              console.log("Image sent");
+              setimageFile("");
+              setImgSubmitted(false);
+          }   
+      }
+      /* only trigger when message is sent */
+      if (imgSubmitted ===true){
+      postMessage();
+      } 
+  }, [imgSubmitted]);
 
     return (
-    <MessageInput placeholder="Type message here" 
-    value={messageInputValue} 
-    onChange={val => setMessageInputValue(val)} 
-    onAttachClick={handleAttachmentClick} 
-    onSend={handleSend}
-    />
+    <div>
+        <MessageInput placeholder="Type message here" 
+        value={messageInputValue} 
+        onChange={val => setMessageInputValue(val)} 
+        onAttachClick={handleAttachmentClick} 
+        onSend={handleSend}
+        />
+          <input ref={fileInputRef} type='file' name='fileInput' accept="image/*" className='fileInputMessageBox'
+          onChange={handleFileInputChange}
+          />
+          <FileInputPopover
+          popOveranchorEl={popOveranchorEl}
+          setPopOverAnchorEl={setPopOverAnchorEl}
+          setimageSelected={setimageSelected}
+          handleImgSendBtn={handleImgSendBtn}
+          />
+    </div>
     )
                
 }

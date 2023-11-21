@@ -28,3 +28,7 @@
     display: none;
 }
 }
+
+.msgBoxImg1 img{
+    max-width: 30vw !important;
+}

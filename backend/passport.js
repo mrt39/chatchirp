@@ -15,15 +15,35 @@ mongoose.connect('mongodb://127.0.0.1:27017/chatChirpUserDB');
 const userSchema = new mongoose.Schema ({
     email: String,
     name: String,
-    password: String,
-    googleId: String,
-    /* google pic */
-    picture: String,
-    /* uploaded pic */
-    uploadedpic :     {
-      sparse: true, type: String
+    password: {
+      type: String,
+      unique: false,
+      required: false,
   },
-    bio: String,
+    googleId: {
+      type: String,
+      unique: false,
+      required: false,
+  },
+    /* google pic */
+    picture: {
+      type: String,
+      unique: false,
+      required: false,
+  },
+    /* uploaded pic */
+    uploadedpic: {
+      type: String,
+      unique: false,
+      required: false,
+
+  },
+    bio: {
+      type: String,
+      unique: false,
+      required: false,
+
+  },
 });
 
 userSchema.plugin(passportLocalMongoose);
@@ -32,8 +52,13 @@ userSchema.plugin(findOrCreate);
 const User = new mongoose.model("User", userSchema);
 
 const messageSchema = new mongoose.Schema ({
-  from: {type: [userSchema], required: true, unique: false },
-  to: {type: [userSchema], validate: {
+  from: {type: [userSchema],        
+    unique: false,
+    required: true, },
+  to: {type: [userSchema], 
+    unique: false,
+    required: true,
+    validate: {
     validator: function() {
       /* the "to" array must be bigger than two = a RECEIVER must be selected! */
       return this.to.length > 0;
@@ -46,15 +71,23 @@ const messageSchema = new mongoose.Schema ({
     type: String,
     default: Date.now
 },
-  message: String,
-  image: { sparse: true, type: String},
+  message: {
+    type: String,
+    unique: false,
+    required: false,
+},
+  image: {
+    type: String,
+    unique: false,
+    required: false,
+},
 });
 
 const Message = new mongoose.model("Message", messageSchema);
 
 const message1 = new Message({
   from:   {
-    "_id" : "655660aee610aca1ab5b5410",
+    "_id" : "655a4e326203a487c40ed833",
     "email": "jtaylor8719@gmail.com",
     "name": "Jared Taylor",
     "googleId": "102024138481994704258",
@@ -62,7 +95,7 @@ const message1 = new Message({
     "__v": 0
 },
   to:  {
-    "_id" : "6556604ce610aca1ab5b53f9",
+    "_id" : "655a4e226203a487c40ed82b",
     "email": "chriscarter19822@gmail.com",
     "name": "Chris Carter",
     "googleId": "108002578840135619377",
@@ -74,7 +107,7 @@ const message1 = new Message({
 
 const message2 = new Message({
   from:  {
-    "_id" : "655660cae610aca1ab5b5415",
+    "_id" : "655a4e5b6203a487c40ed855",
     "email": "smugme12@gmail.com",
     "name": "Smug Fe",
     "googleId": "108779567425507695915",
@@ -82,7 +115,7 @@ const message2 = new Message({
     "__v": 0
 },
   to:   {
-    "_id" : "6556604ce610aca1ab5b53f9",
+    "_id" : "655a4e226203a487c40ed82b",
     "email": "chriscarter19822@gmail.com",
     "name": "Chris Carter",
     "googleId": "108002578840135619377",
@@ -94,7 +127,7 @@ const message2 = new Message({
 
 const message3 = new Message({
   from:   {
-    "_id" : "655660a6e610aca1ab5b540b",
+    "_id" : "655a4e376203a487c40ed839",
     "email": "binutokencommunity@gmail.com",
     "name": "Binu Token",
     "googleId": "114949457437636203595",
@@ -102,7 +135,7 @@ const message3 = new Message({
     "__v": 0
 },
   to:   {
-    "_id" : "6556604ce610aca1ab5b53f9",
+    "_id" : "655a4e226203a487c40ed82b",
     "email": "chriscarter19822@gmail.com",
     "name": "Chris Carter",
     "googleId": "108002578840135619377",

@@ -17,7 +17,6 @@ import {
   export const AccountProfile = ({user, setProfileUpdated}) => {
 
     const [uploadedImg, setUploadedImg] = useState();
-    const [description, setDescription] = useState("")
 
     const [imgSubmitted, setImgSubmitted] = useState(false);
 
@@ -36,7 +35,6 @@ import {
 
         const formData = new FormData()
         formData.append("image", uploadedImg)
-        formData.append("description", description)
 
           let result = await fetch(
           'http://localhost:5000/uploadprofilepic/' + user["_id"], {
@@ -105,15 +103,11 @@ import {
           <input 
           type="file" 
           value=""
-          filename={uploadedImg}
           id="image" 
           name="image" 
           accept="image/*"
           onChange={handleChange}/>
-          <input
-          onChange={e => setDescription(e.target.value)} 
-          type="text"
-        ></input>
+
           <button onClick={submitImg}>SUBMIT</button>
         
       </CardActions>

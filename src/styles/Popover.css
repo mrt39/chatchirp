@@ -1,0 +1,16 @@
+.css-3bmhjh-MuiPaper-root-MuiPopover-paper{
+    display: flex;
+}
+
+#popoverSendIcon{
+    fill: black !important;
+}
+
+#popoverCancelIcon{
+    fill: black !important;
+}
+
+.popOverBox:hover{
+ background-color: #d5e7f5;
+ cursor: pointer;
+}
