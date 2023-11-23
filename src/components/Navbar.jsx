@@ -36,11 +36,13 @@ const Navbar = ({user}) => {
           </div>
         </li>
       </Link>
+      <Link className="" to="/findpeople">
         <li>
-          <a href="#" className="nav-link py-3 border-bottom rounded-0" title="Orders"  data-bs-placement="right">
-            <svg className="bi pe-none" width="24" height="24" role="img" aria-label="Orders"><use xlinkHref="#table"/></svg>
-          </a>
+          <div href="#" className={(currentRoute==="/findpeople"? "active" :"") + " nav-link py-3 border-bottom rounded-0"}  title="Find People!"  data-bs-placement="right">
+          <Icon.PeopleFill  className="bi pe-none" width="24" height="24" role="img" aria-label="Find People!"/>
+          </div>
         </li>
+        </Link>
         <li>
           <a href="#" className="nav-link py-3 border-bottom rounded-0" title="Products"  data-bs-placement="right">
             <svg className="bi pe-none" width="24" height="24" role="img" aria-label="Products"><use xlinkHref="#grid"/></svg>

@@ -1,0 +1,41 @@
+.searchResultDisplayContainer{
+    display: flex;
+    margin-top: 5rem;
+    justify-content: center;
+    width: 100%;
+    flex-wrap: wrap;
+}
+
+.searchPeopleContainer{
+    padding: 30px;
+}
+
+.searchResults{
+    padding: 5px;
+    font-size: 20px;
+    margin: 1px;
+    width: 250px;
+}
+
+.css-9ddj71-MuiInputBase-root-MuiOutlinedInput-root{
+    color: inherit !important;
+}
+
+.css-1n4twyu-MuiInputBase-input-MuiOutlinedInput-input{
+    margin-left: 33px !important;
+}
+
+.css-1pysi21-MuiFormLabel-root-MuiInputLabel-root{
+    color: inherit !important;
+    margin-left: 33px;
+}
+
+.css-1jy569b-MuiFormLabel-root-MuiInputLabel-root{
+    color: inherit !important;
+}
+
+.textfieldContainer{
+    display: flex;
+    position: 'relative';
+    justify-content: center;
+}

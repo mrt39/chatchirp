@@ -6,16 +6,16 @@ import MessageBox from "../components/MessageBox.jsx"
 
 
 
-const Messages = ({currentUser}) => {
+const Messages = ({currentUser, selectedPerson, setSelectedPerson}) => {
 
 
     return (
         <div className='MessagesPageContainer'>
            <MessageBox
            currentUser = {currentUser}
-           /> 
-         <h1>This is the HomePage!</h1> 
-         
+           selectedPerson={selectedPerson} 
+           setSelectedPerson={setSelectedPerson}
+           />       
         </div>
       );
     };

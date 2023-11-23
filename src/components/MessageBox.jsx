@@ -1,21 +1,14 @@
 /* eslint-disable react/prop-types */
-import { useOutletContext } from "react-router-dom";
 import { useState, useEffect, useCallback  } from 'react'
 import {
   MainContainer,
   ChatContainer,
   MessageList,
   Message,
-  Search,
-  ConversationList,
-  Sidebar,
-  Conversation,
-  MessageInput,
   MessageGroup,
   Avatar,
   ConversationHeader,
   EllipsisButton,
-  TypingIndicator,
   MessageSeparator,
 } from "@chatscope/chat-ui-kit-react";
 import ContactsBox from "./ContactsBox";
@@ -26,9 +19,9 @@ import '../styles/MessageBox.css'
 import dayjs from 'dayjs'
 
 
-const MessageBox = ({currentUser}) => {
+const MessageBox = ({currentUser, selectedPerson, setSelectedPerson}) => {
 
-    const [selectedPerson, setSelectedPerson] = useState();
+
     //messages between user and selected person
     const [messagesBetween, setMessagesBetween] = useState();
     //message days, to categorize the display of message under different days
@@ -45,7 +38,7 @@ const MessageBox = ({currentUser}) => {
     const [conversationContentStyle, setConversationContentStyle] = useState({});
     const [conversationAvatarStyle, setConversationAvatarStyle] = useState({});
 
-    const handleBackClick = () => setSidebarVisible(!sidebarVisible);
+    const handleBackClick = () => {setSidebarVisible(!sidebarVisible);  setSelectedPerson(null)}
 
     const handleConversationClick = useCallback(() => {
       if (sidebarVisible) {
@@ -53,7 +46,13 @@ const MessageBox = ({currentUser}) => {
       }
     }, [sidebarVisible, setSidebarVisible]);
 
+    /* effect for styling the sidebar and conversation bar for lower resolutions */
     useEffect(() => {
+      
+      if(selectedPerson){
+        setSidebarVisible(false)
+      }
+
       if (sidebarVisible) {
         setSidebarStyle({
           display: "flex",
@@ -76,6 +75,8 @@ const MessageBox = ({currentUser}) => {
         setConversationAvatarStyle({});
         setChatContainerStyle({});
       }
+
+
     }, [sidebarVisible, setSidebarVisible, setConversationContentStyle, setConversationAvatarStyle, setSidebarStyle, setChatContainerStyle]);
 
     /* when selected person changes, set loading state to true */

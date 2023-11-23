@@ -7,12 +7,17 @@ import ReactDOM from 'react-dom/client'
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import ErrorPage from "./routes/Error-Page.jsx";
 import Profile from "./routes/Profile.jsx";
+import FindPeople from "./routes/FindPeople.jsx";
 import Messages from './routes/Messages.jsx';
 import Login from './routes/Login.jsx';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 
 const App = () => {
+
+  //selected person on messagebox (contacts)
+  const [selectedPerson, setSelectedPerson] = useState();
+
   const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(true);
   //first time loading
@@ -105,7 +110,14 @@ const App = () => {
         <Routes>
           <Route 
           path="/" 
-          element={currentUser ? <Messages currentUser={currentUser}/> : <Navigate to="/login" /> } 
+          element={currentUser ? 
+          <Messages 
+            currentUser={currentUser}
+            selectedPerson={selectedPerson} 
+            setSelectedPerson={setSelectedPerson}
+
+            /> 
+            : <Navigate to="/login" /> } 
           />
           <Route
             path="/login"
@@ -123,6 +135,16 @@ const App = () => {
             : 
             <Navigate to="/login" />}
           /> 
+          <Route 
+          path="/findpeople" 
+          element={currentUser ? 
+          <FindPeople 
+          currentUser={currentUser}
+          selectedPerson={selectedPerson} 
+          setSelectedPerson={setSelectedPerson}
+          /> 
+          : <Navigate to="/login" /> } 
+          />
         </Routes>
       </div>
     </BrowserRouter>

@@ -69,6 +69,17 @@ router.get("/messagebox", async (req, res) => {
   }
 })
 
+router.get("/getallusers", async (req, res) => {
+
+    try {
+      const users = await User.find();
+      res.send(users);
+  
+    } catch (err) {
+      res.send(err);
+    }
+  })
+
 router.get("/profile/:userid", async (req, res) => {
 
      const userID = req.params.userid // access URL variable
