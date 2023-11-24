@@ -58,7 +58,11 @@ export default function CustomizedSnackbars({snackbarOpen, setSnackbarOpen, snac
     </Alert>
     :
     <Alert onClose={handleClose} severity="error" sx={{ width: '100%' }}>
-       {snackbarOpenCondition=="wrongEmail"?  "Invalid e-mail!": "There has been an error."} 
+       {snackbarOpenCondition=="wrongEmail"&&  "Invalid e-mail!"} 
+       {snackbarOpenCondition=="failure"&& "There has been an error."}
+       {snackbarOpenCondition=="nameTooLong"&& "Your name can not be longer than 30 characters!"}
+       {snackbarOpenCondition=="bioTooLong"&& "Your bio can not be longer than 100 characters!"}
+       {snackbarOpenCondition=="emailTooLong"&& "E-mail address can not be longer than 50 characters!"}
     </Alert>
     }
 

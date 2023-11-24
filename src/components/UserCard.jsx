@@ -38,9 +38,14 @@ export default function UserCard({person, selectedPerson, setSelectedPerson}) {
         <Avatar src={person.uploadedpic? "http://localhost:5000/images/" + person.uploadedpic : person.picture} sx={{ '--Avatar-size': '4rem' }} />
 
         <Typography level="title-lg">{person.name}</Typography>
+        <Typography 
+          color="text.secondary"
+          variant="body1"
+        >
+        {person.email}
+        </Typography>
         <Typography level="body-sm" sx={{ maxWidth: '24ch' }}>
-{/*             {person.bio? person.bio : null} */}
-        {person.bio}
+         {person.bio? person.bio : null} 
         </Typography>
         <Box
           sx={{

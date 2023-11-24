@@ -13,8 +13,8 @@ const findOrCreate = require('mongoose-findorcreate')
 mongoose.connect('mongodb://127.0.0.1:27017/chatChirpUserDB');
 
 const userSchema = new mongoose.Schema ({
-    email: String,
-    name: String,
+    email: { type: String, maxlength: 50 },
+    name: { type: String, maxlength: 30 },
     password: {
       type: String,
       unique: false,
@@ -42,7 +42,7 @@ const userSchema = new mongoose.Schema ({
       type: String,
       unique: false,
       required: false,
-
+      maxlength: 100
   },
 });
 

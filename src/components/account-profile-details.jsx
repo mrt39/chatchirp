@@ -70,7 +70,19 @@ export const AccountProfileDetails = ({user, setSnackbarOpen, invalidEmail, setI
     if(invalidEmail){
       setSnackbarOpenCondition("wrongEmail")
       setSnackbarOpen(true)
-        return
+      return
+    }else if(values.name.length>30){
+      setSnackbarOpenCondition("nameTooLong")
+      setSnackbarOpen(true)
+      return
+    }else if(values.bio.length>100){
+      setSnackbarOpenCondition("bioTooLong")
+      setSnackbarOpen(true)
+      return
+    }else if(values.email.length>50){
+      setSnackbarOpenCondition("emailTooLong")
+      setSnackbarOpen(true)
+      return
     }
     setLoading(true)
     setProfileUpdated(true)

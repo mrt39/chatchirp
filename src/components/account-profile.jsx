@@ -10,7 +10,7 @@ import {
     Typography
   } from '@mui/material';
   import { useState, useEffect } from 'react';
-
+  import "../styles/Account-Profile.css"
 
   
   
@@ -86,9 +86,16 @@ import {
           </Typography>
           <Typography
             color="text.secondary"
-            variant="body2"
+            variant="body1"
           >
             {user.email}
+          </Typography>
+          <br />
+          <Typography
+            color="text.secondary"
+            variant="body2"
+          >
+            {user.bio}
           </Typography>
         </Box>
       </CardContent>
