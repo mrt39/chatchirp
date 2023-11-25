@@ -1,0 +1,83 @@
+/* eslint-disable react/prop-types */
+import { useState, useEffect } from "react";
+import CircularProgress from '@mui/material/CircularProgress';
+import Box from '@mui/material/Box';
+import UserCard from "./UserCard";
+import '../styles/SearchPeople.css'
+
+
+export default function MeetPeople({currentUser, selectedPerson, setSelectedPerson}) {
+    const [randomizedData, setRandomizedData] = useState([]);
+/*     const [allUsers, setAllUsers] = useState(); */
+    const [loading, setLoading] = useState(true);
+
+    //function for selecting three random users from allUsers data
+    function randomizeUsers(data){
+        let randomUsers = []
+        while (randomUsers.length<3) {
+            var x = Math.floor(Math.random() * data.length);
+            let pickedUser = data[x]
+            /* make sure picked user is unique */
+            if(!randomUsers.includes(pickedUser)){
+            randomUsers.push(pickedUser)
+            }
+        }
+        console.log(randomUsers)
+        setRandomizedData(randomUsers)
+    }
+
+
+    
+    //fetch for getting data of all people
+    useEffect(() => {
+      const getMessages = () => {
+          fetch('http://localhost:5000/getallusers', {
+          method: 'GET',
+          })
+          .then(response => {
+            console.log(response)
+            if (response.ok) {
+            return response.json(); // Parse JSON when the response is successful
+            }
+            throw new Error('Network response was not ok.');
+          })
+          .then(data => {
+            randomizeUsers(data)
+            setLoading(false); // Set loading to false once the data is received
+          })
+          .catch(error => {
+            console.error('Error:', error);
+            setLoading(false); 
+          });
+      };
+      getMessages();
+      }, []); 
+
+  
+    return (
+      <div className="searchPeopleContainer">
+        <div className="searchResultDisplayContainer">
+        {loading? 
+        <Box sx={{ display: 'flex' }}>
+          <CircularProgress size="5rem" />
+        </Box>
+        :
+        randomizedData? 
+            randomizedData.map((person) => (
+            <div
+              className="searchResults"
+              key={person.id}
+            >
+              <UserCard
+              person = {person}
+              selectedPerson={selectedPerson} 
+              setSelectedPerson={setSelectedPerson}
+              />
+            </div>
+          ))
+          :null
+        }
+        </div>
+      </div>
+    );
+  }

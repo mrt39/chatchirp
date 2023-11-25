@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import {useNavigate } from "react-router-dom";
 import Avatar from '@mui/joy/Avatar';
 import Chip from '@mui/joy/Chip';
@@ -34,19 +35,25 @@ export default function UserCard({person, selectedPerson, setSelectedPerson}) {
         boxShadow: 'lg',
       }}
     >
-      <CardContent sx={{ alignItems: 'center', textAlign: 'center' }}>
+      <CardContent sx={{ alignItems: 'center', textAlign: 'center'  }}>
         <Avatar src={person.uploadedpic? "http://localhost:5000/images/" + person.uploadedpic : person.picture} sx={{ '--Avatar-size': '4rem' }} />
 
         <Typography level="title-lg">{person.name}</Typography>
+        {person.email? 
         <Typography 
           color="text.secondary"
           variant="body1"
         >
         {person.email}
         </Typography>
-        <Typography level="body-sm" sx={{ maxWidth: '24ch' }}>
-         {person.bio? person.bio : null} 
+        :null}
+
+        {person.bio?  
+        <Typography level="body-sm" sx={{ textOverflow: 'ellipsis'}}>
+        {person.bio}
         </Typography>
+        : null} 
+
         <Box
           sx={{
             display: 'flex',

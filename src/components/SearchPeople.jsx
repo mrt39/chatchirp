@@ -1,6 +1,5 @@
 /* eslint-disable react/prop-types */
 import { useState, useEffect } from "react";
-import IconButton from "@mui/material/IconButton";
 import { styled, alpha } from '@mui/material/styles';
 import SearchIcon from "@mui/icons-material/Search";
 import TextField from "@mui/material/TextField";
@@ -71,19 +70,6 @@ const SearchBar = ({setSearchQuery}) => (
     }
   };
 
-/*   const data = [
-    "Paris",
-    "London",
-    "New York",
-    "Tokyo",
-    "Berlin",
-    "Buenos Aires",
-    "Cairo",
-    "Canberra",
-    "Rio de Janeiro",
-    "Dublin"
-  ]; */
-
 export default function SearchPeople({selectedPerson, setSelectedPerson}) {
     const [searchQuery, setSearchQuery] = useState("");
     const [filteredData, setFilteredData] = useState([]);
@@ -148,7 +134,6 @@ export default function SearchPeople({selectedPerson, setSelectedPerson}) {
               selectedPerson={selectedPerson} 
               setSelectedPerson={setSelectedPerson}
               />
-              {person.name}
             </div>
           ))
           :null

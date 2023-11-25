@@ -1,5 +1,32 @@
 .css-1s4fqsp-JoyTypography-root, .css-k1iplu-JoyTypography-root, .css-ar9ysw-JoyTypography-root{
     overflow-wrap: anywhere !important;
+    height: 2rem;
+    margin: 5px !important;
 }
 
 
+.css-1r862hl-JoyTypography-root{
+    height: 45px;
+    margin-top: 2rem !important;
+    text-align: center;
+    text-decoration: none;
+    text-overflow: ellipsis;
+}
+
+
+.css-1r862hl-JoyTypography-root {
+    overflow: overlay;
+ }
+ .css-1r862hl-JoyTypography-root::-webkit-scrollbar {
+     width: 12px;
+ }
+ 
+ .css-1r862hl-JoyTypography-root::-webkit-scrollbar-track {
+     -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3); 
+     border-radius: 10px;
+ }
+ 
+ .css-1r862hl-JoyTypography-root::-webkit-scrollbar-thumb {
+     border-radius: 10px;
+     -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5); 
+ }
