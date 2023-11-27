@@ -14,6 +14,7 @@ import Typography from '@mui/joy/Typography';
 import SvgIcon from '@mui/joy/SvgIcon';
 import * as Icon from 'react-bootstrap-icons';
 import '../styles/UserCard.css'
+import MuiAvatar from "./MuiAvatar";
 
 
 
@@ -36,8 +37,11 @@ export default function UserCard({person, selectedPerson, setSelectedPerson}) {
       }}
     >
       <CardContent sx={{ alignItems: 'center', textAlign: 'center'  }}>
-        <Avatar src={person.uploadedpic? "http://localhost:5000/images/" + person.uploadedpic : person.picture} sx={{ '--Avatar-size': '4rem' }} />
-
+        {/* <Avatar src={person.uploadedpic? "http://localhost:5000/images/" + person.uploadedpic : person.picture} sx={{ '--Avatar-size': '4rem' }} /> */}
+        <div className="userCardAvatar">
+          <MuiAvatar 
+          user={person}/>
+        </div>
         <Typography level="title-lg">{person.name}</Typography>
         {person.email? 
         <Typography 

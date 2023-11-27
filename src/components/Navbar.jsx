@@ -3,6 +3,8 @@ import { Link, useLocation } from "react-router-dom";
 import { useState, useEffect } from 'react'
 import * as Icon from 'react-bootstrap-icons';
 import '../styles/Navbar.css'
+import MuiAvatar from "../components/MuiAvatar.jsx";
+
 
 const Navbar = ({user}) => {
 
@@ -56,7 +58,12 @@ const Navbar = ({user}) => {
       </ul>
       <div className="dropdown border-top">
         <a href="#" className="d-flex align-items-center justify-content-center p-3 link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-          <img src={user.uploadedpic? "http://localhost:5000/images/" + user.uploadedpic : user.picture} alt="mdo" width="30" height="30" className="rounded-circle"/>
+          {/* <img src={user.uploadedpic? "http://localhost:5000/images/" + user.uploadedpic : user.picture} alt="mdo" width="30" height="30" className="rounded-circle"/> */}
+          <div className="navbarAvatar">
+          <MuiAvatar
+              user={user}
+            />
+            </div>
         </a>
         <ul className="dropdown-menu text-small shadow">
           <li><a className="dropdown-item" href="#">New project...</a></li>

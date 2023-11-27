@@ -12,6 +12,7 @@ import {
 import CircularProgress from '@mui/material/CircularProgress';
 import Box from '@mui/material/Box';
 import '../styles/ContactsBox.css'
+import MuiAvatar from "./MuiAvatar";
 
 
 
@@ -74,20 +75,21 @@ const ContactsBox = ({sidebarStyle, handleConversationClick, conversationAvatarS
                
 
                 :
-                contactsBoxPeople.map(({ _id, email, name, picture, uploadedpic }) => (
+                contactsBoxPeople.map((person) => (
                     <Conversation 
                     /* if there is a selected person, change class to highlight it */
                     className={
                         selectedPerson?
-                            (selectedPerson["_id"]===_id? "activeContactsBox" :"")
+                            (selectedPerson["_id"]===person._id? "activeContactsBox" :"")
                         :""}
-                    key={_id} 
-                    onClick={function()  {handleConversationClick(); handleSelectedPerson(_id)}}
+                    key={person._id} 
+                    onClick={function()  {handleConversationClick(); handleSelectedPerson(person._id)}}
                     lastActivityTime="43 min"
                     >
-                    <Avatar  src={uploadedpic? "http://localhost:5000/images/" + uploadedpic : picture}  
-                    name={name} style={conversationAvatarStyle} />
-                    <Conversation.Content name={name} lastSenderName="Lilly" info="Yes i can do it for you" style={conversationContentStyle} />
+                    <MuiAvatar 
+                    as="Avatar"
+                    user={person}/>
+                    <Conversation.Content name={person.name} lastSenderName="Lilly" info="Yes i can do it for you" style={conversationContentStyle} />
                     </Conversation>
                     ))
                 }

@@ -2,6 +2,12 @@
     max-width: 100% !important;
 }
 
+
+.navbarAvatar .MuiAvatar-root{
+  height: 35px;
+  width: 35px;
+}
+
 /* BOOTSTRAP */
 
 
@@ -10,14 +16,6 @@
     vertical-align: -.125em;
     fill: currentColor;
   }
-
-
-
-
-
-
-
-
 
 
   body {

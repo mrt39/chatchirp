@@ -11,7 +11,7 @@ import {
   } from '@mui/material';
   import { useState, useEffect } from 'react';
   import "../styles/Account-Profile.css"
-
+  import MuiAvatar from "./MuiAvatar";
   
   
   export const AccountProfile = ({user, setProfileUpdated}) => {
@@ -70,14 +70,12 @@ import {
             flexDirection: 'column'
           }}
         >
-          <Avatar
-            src={user.uploadedpic? "http://localhost:5000/images/" + user.uploadedpic : user.picture}
-            sx={{
-              height: 80,
-              mb: 2,
-              width: 80
-            }}
-          />
+          <div className="profileAvatar">
+            <MuiAvatar
+              user={user}
+            />
+          </div>
+
           <Typography
             gutterBottom
             variant="h5"
