@@ -10,11 +10,10 @@ import "../styles/Profile.css"
 
 
 
-const Profile = ({user, setCurrentUser, profileUpdated, setProfileUpdated}) => {
+const Profile = ({user, setCurrentUser, profileUpdated, setProfileUpdated, snackbarOpen, setSnackbarOpen, snackbarOpenCondition, setSnackbarOpenCondition}) => {
 
 
-  const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const [snackbarOpenCondition, setSnackbarOpenCondition] = useState();
+
   //check if the e-mail address user puts is invalid
   const [invalidEmail, setInvalidEmail] = useState(false); 
 

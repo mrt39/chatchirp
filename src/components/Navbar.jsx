@@ -22,21 +22,21 @@ const Navbar = ({user}) => {
         <svg className="bi pe-none" width="40" height="32"><use xlinkHref="#bootstrap"/></svg>
       </a>
       <ul className="nav nav-pills nav-flush flex-column mb-auto text-center">
-      <Link className="" to="/">
+      <Link to="/">
         <li className="nav-item">
           <div href="#" className={(currentRoute==="/"? "active" :"") + " nav-link py-3 border-bottom rounded-0"} aria-current="page" title="Messages"  data-bs-placement="right">
           <Icon.ChatLeftDots className="bi pe-none" width="24" height="24" aria-label="Messages"/>          
           </div>
         </li>
       </Link>
-       <Link className="" to="/profile">
+       <Link to="/profile">
         <li>
           <div href="#" className={(currentRoute==="/profile"? "active" :"") + " nav-link py-3 border-bottom rounded-0"} title="Profile" data-bs-placement="right">
             <Icon.PersonCircle  className="bi pe-none" width="24" height="24" aria-label="Profile"/>
           </div>
         </li>
       </Link>
-      <Link className="" to="/findpeople">
+      <Link to="/findpeople">
         <li>
           <div href="#" className={(currentRoute==="/findpeople"? "active" :"") + " nav-link py-3 border-bottom rounded-0"}  title="Find People!"  data-bs-placement="right">
           <Icon.PeopleFill  className="bi pe-none" width="24" height="24" role="img" aria-label="Find People!"/>

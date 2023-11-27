@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import { Link } from "react-router-dom";
+import { Link as RouterLink } from "react-router-dom";
 import * as React from 'react';
 import { useState, useEffect } from 'react'
 import '../styles/Login.css'
@@ -7,59 +7,77 @@ import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
+import Snackbar from "../components/Snackbar.jsx"
+
+export default function Login({snackbarOpen, setSnackbarOpen, snackbarOpenCondition, setSnackbarOpenCondition}) {
 
 
-
-// TODO remove, this demo shouldn't need to reset the theme.
-
-const defaultTheme = createTheme();
-
-
-
-export default function Login() {
-
-    const [googleAuthClicked, setGoogleAuthClicked] = useState(false);
-
-
-
+  const [clickedLogin, setClickedLogin] = useState(false);
+  const [loginData, setLoginData] = useState({ });
 
     function handleGoogleClick () {
         window.open("http://localhost:5000/auth/google", "_self");
     }
-/* 
-    useEffect(() => {
-      
-        fetch('http://localhost:5000/auth/google')
-          .then((res) => res.json())
-          .then((jsondata) => {
-            console.log(jsondata)
-          })
-          .catch((err) => {
-            console.log(err.message);
-          }); 
 
-    }, [googleAuthClicked]) */
+  function handleChange (event) {
+    setLoginData({
+        ...loginData,
+        [event.target.name]: event.target.value
+  });
+  }
 
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
-    });
+    console.log(loginData) 
+    setClickedLogin(true)
   };
 
+      useEffect(() => {
+        async function registerUser() {
+            let result = await fetch(
+              import.meta.env.VITE_BACKEND_URL+'/login', {
+                method: "POST",
+                body: JSON.stringify({ email: loginData.email, password: loginData.password}), 
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                    "Access-Control-Allow-Origin": "http://localhost:5173",
+                },
+                credentials:"include"
+            })
+            if (result.ok) {
+              let response = await result.json();
+              console.warn(response);
+              setClickedLogin(false);
+              //redirect to the external URL
+               window.location.replace(import.meta.env.VITE_FRONTEND_URL); 
+          
+            }else{
+                if (result.status === 401) {
+                  console.error("Wrong e-mail or password!")
+                  setSnackbarOpenCondition("wrongLoginDeets")
+                  setSnackbarOpen(true)
+                }else{
+                console.error("There has been an error!")
+                console.error(result);
+              }
+              setClickedLogin(false);
+            }   
+        }
+        /* only trigger when message is sent */
+        if (clickedLogin ===true){
+        registerUser();
+        } 
+    }, [clickedLogin]);
+
   return (
-    <ThemeProvider theme={defaultTheme}>
+
       <Container component="main" maxWidth="xs">
         <CssBaseline />
         <Box
@@ -85,6 +103,7 @@ export default function Login() {
               label="E-mail Address"
               type="email"
               name="email"
+              onChange={handleChange}
               autoComplete="email"
               autoFocus
             />
@@ -96,11 +115,8 @@ export default function Login() {
               label="Password"
               type="password"
               id="password"
+              onChange={handleChange}
               autoComplete="current-password"
-            />
-            <FormControlLabel
-              control={<Checkbox value="remember" color="primary" />}
-              label="Remember me"
             />
             <Button
               type="submit"
@@ -124,15 +140,20 @@ export default function Login() {
 
             <Grid container>
               <Grid item>
-                <Link to="/signup" variant="body2">
-                  {"Don't have an account? Sign Up"}
-                </Link>
+                <RouterLink className="signUpLink" to="/signup">
+                    {"Don't have an account? Sign Up"}
+                </RouterLink>
               </Grid>
             </Grid>
           </Box>
         </Box>
-        <Copyright sx={{ mt: 8, mb: 4 }} />
+
+        <Snackbar
+          snackbarOpenCondition={snackbarOpenCondition}
+          snackbarOpen={snackbarOpen}
+          setSnackbarOpen={setSnackbarOpen}
+        />
       </Container>
-    </ThemeProvider>
+
   );
 }

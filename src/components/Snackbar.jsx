@@ -24,45 +24,28 @@ export default function CustomizedSnackbars({snackbarOpen, setSnackbarOpen, snac
     setSnackbarOpen(false);
   };
 
-/*   function snackBarType (){
-    if (snackbarOpenCondition === "wrongEmail"){
-        return (<Alert onClose={handleClose} severity="error" sx={{ width: '100%' }}>
-                    Invalid e-mail!
-                </Alert>)
-    }else if (snackbarOpenCondition === "success"){
-        return (<Alert onClose={handleClose} severity="success" sx={{ width: '100%' }}>
-                Invalid e-mail!
-                </Alert>)
-
-    }else if  (snackbarOpenCondition === "failure"){
-        return (<Alert onClose={handleClose} severity="error" sx={{ width: '100%' }}>
-                   There has been an error.
-                </Alert>)
-    }
-  } */
-
   return (
     <Stack spacing={2} sx={{ width: '100%' }}>
-      <Button variant="outlined" onClick={handleClick}>
-        Open success snackbar
-      </Button>
       <Snackbar 
       open={snackbarOpen} 
       autoHideDuration={6000} 
       onClose={handleClose}
       anchorOrigin={{ vertical: 'top', horizontal: 'center'}}
 >
-    {snackbarOpenCondition == "success"?
+    {snackbarOpenCondition=="profileChangeSuccess" || snackbarOpenCondition=="successfulRegister"?
     <Alert onClose={handleClose} severity="success" sx={{ width: '100%' }}>
-        Details saved successfully!
+      {snackbarOpenCondition=="profileChangeSuccess"&&  "Details saved successfully!"} 
+      {snackbarOpenCondition=="successfulRegister"&&  "Successfully registered."} 
     </Alert>
     :
     <Alert onClose={handleClose} severity="error" sx={{ width: '100%' }}>
-       {snackbarOpenCondition=="wrongEmail"&&  "Invalid e-mail!"} 
+       {snackbarOpenCondition=="wrongEmail"&&  "Invalid E-mail!"} 
        {snackbarOpenCondition=="failure"&& "There has been an error."}
        {snackbarOpenCondition=="nameTooLong"&& "Your name can not be longer than 30 characters!"}
        {snackbarOpenCondition=="bioTooLong"&& "Your bio can not be longer than 100 characters!"}
        {snackbarOpenCondition=="emailTooLong"&& "E-mail address can not be longer than 50 characters!"}
+       {snackbarOpenCondition=="wrongLoginDeets"&& "Wrong e-mail or password!"}
+       {snackbarOpenCondition=="alreadyRegistered"&& "A user with the given e-mail address is already registered!"}
     </Alert>
     }
 

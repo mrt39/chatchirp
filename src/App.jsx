@@ -10,6 +10,7 @@ import Profile from "./routes/Profile.jsx";
 import FindPeople from "./routes/FindPeople.jsx";
 import Messages from './routes/Messages.jsx';
 import Login from './routes/Login.jsx';
+import SignUp from './routes/SignUp.jsx';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 
@@ -24,6 +25,10 @@ const App = () => {
   const [firstTimeLoading, setFirstTimeLoading] = useState(true);
   //state that turns true whenever user updates their profile from the /profile route
   const [profileUpdated, setProfileUpdated] = useState(false);
+
+  //snackbar states
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarOpenCondition, setSnackbarOpenCondition] = useState();
 
 
   /* get the user data when logged in */
@@ -121,7 +126,23 @@ const App = () => {
           />
           <Route
             path="/login"
-            element={currentUser ? <Navigate to="/" /> : <Login />}
+            element={currentUser ? <Navigate to="/" /> : 
+            <Login 
+            snackbarOpenCondition={snackbarOpenCondition}
+            setSnackbarOpenCondition={setSnackbarOpenCondition}
+            snackbarOpen={snackbarOpen}
+            setSnackbarOpen={setSnackbarOpen}
+            />}
+          />
+          <Route
+            path="/signup"
+            element={currentUser ? <Navigate to="/" /> : 
+            <SignUp 
+            snackbarOpenCondition={snackbarOpenCondition}
+            setSnackbarOpenCondition={setSnackbarOpenCondition}
+            snackbarOpen={snackbarOpen}
+            setSnackbarOpen={setSnackbarOpen}
+            />}
           />
           <Route
             path="/profile"
@@ -131,6 +152,10 @@ const App = () => {
             setCurrentUser={setCurrentUser}
             profileUpdated={profileUpdated}
             setProfileUpdated={setProfileUpdated}
+            snackbarOpenCondition={snackbarOpenCondition}
+            setSnackbarOpenCondition={setSnackbarOpenCondition}
+            snackbarOpen={snackbarOpen}
+            setSnackbarOpen={setSnackbarOpen}
             /> 
             : 
             <Navigate to="/login" />}

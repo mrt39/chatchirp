@@ -109,7 +109,7 @@ export const AccountProfileDetails = ({user, setSnackbarOpen, invalidEmail, setI
               console.warn(response);
               console.log("Profile Updated!");
               setProfileUpdated(false);
-              setSnackbarOpenCondition("success")
+              setSnackbarOpenCondition("profileChangeSuccess")
               setSnackbarOpen(true)
               setLoading(false)
             } else{
@@ -175,6 +175,7 @@ export const AccountProfileDetails = ({user, setSnackbarOpen, invalidEmail, setI
                   label="E-mail Address"
                   name="email"
                   type="email"
+                  required
                   onChange={handleChange}
                   value={values.email}
                 />

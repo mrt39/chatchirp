@@ -13,8 +13,18 @@ const findOrCreate = require('mongoose-findorcreate')
 mongoose.connect('mongodb://127.0.0.1:27017/chatChirpUserDB');
 
 const userSchema = new mongoose.Schema ({
-    email: { type: String, maxlength: 50 },
-    name: { type: String, maxlength: 30 },
+    email: { 
+      type: String, 
+      maxlength: 50, 
+      unique: false,
+      required: true,
+    },
+    name: { 
+      type: String, 
+      maxlength: 30, 
+      unique: false,
+      required: false,
+    },
     password: {
       type: String,
       unique: false,
@@ -46,7 +56,8 @@ const userSchema = new mongoose.Schema ({
   },
 });
 
-userSchema.plugin(passportLocalMongoose);
+/* changing the usernameField as passport by default creates a field named "username" by registering a user and checks for it while logging in. we use "name" field for that */
+userSchema.plugin(passportLocalMongoose, {usernameField: "email"});
 userSchema.plugin(findOrCreate);
 
 const User = new mongoose.model("User", userSchema);
@@ -145,7 +156,6 @@ const message3 = new Message({
   message: "ayo chris is that you yo",
 });
 
-
 Message.create(message1);
 setTimeout(function(){
   Message.create(message2);
@@ -156,7 +166,6 @@ setTimeout(function(){
  
 
 /* END OF MONGOOSE */
-
 
 /* MULTER SETUP (for storing images on db) */
 var multer = require('multer');
@@ -180,9 +189,7 @@ module.exports = { User, Message, upload }
 /* END OF MULTER */
 
 
-
 passport.use(User.createStrategy());
-
 
 //passport serialization for authenticationa
 passport.serializeUser(function(user, cb) {
@@ -217,5 +224,6 @@ async function(accessToken, refreshToken, profile, done) {
     }
     }
 ));
+
 
 

@@ -1,5 +1,5 @@
 .css-1t8l2tu-MuiInputBase-input-MuiOutlinedInput-input{
-    color: auto !important;
+    color: var(--bs-emphasis-color) !important; !important;
 }
 
 .css-ijul54-MuiTypography-root{
@@ -16,7 +16,14 @@
 }
 
 .css-1d3z3hw-MuiOutlinedInput-notchedOutline{
-     border-color: var(--bs-secondary-color) !important; 
+    border-color: var(--bs-secondary-color) !important; 
+}
+
+
+.css-11lq3yg-MuiGrid-root{
+    justify-content: center;
+    align-items: center;
+    margin-top: 5px;
 }
 
 .css-md26zr-MuiInputBase-root-MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline{
@@ -29,4 +36,22 @@
 
 #googleSignInBtn{
     background-color: red;
+}
+
+.signUpLink{
+    margin: 0;
+    font-family: "Roboto","Helvetica","Arial",sans-serif;
+    font-weight: 400;
+    font-size: 0.875rem;
+    line-height: 1.43;
+    letter-spacing: 0.01071em;
+    color: #1976d2;
+    -webkit-text-decoration: underline;
+    text-decoration: underline;
+    text-decoration-color: rgba(25, 118, 210, 0.4);
+}
+
+
+.css-md26zr-MuiInputBase-root-MuiOutlinedInput-root.Mui-error .MuiOutlinedInput-notchedOutline{
+    border-color: #d32f2f !important;
 }

@@ -6,7 +6,8 @@ const path = require('path');
 /* grab the User model that's exported in passport.js */
 const {User, Message, upload} = require( "../passport.js")
 
-const CLIENT_URL = "http://localhost:5173/";
+
+const CLIENT_URL = "http://localhost:5173";
 
 
 
@@ -33,8 +34,45 @@ router.get('/auth/google/',
 router.get('/auth/google/callback', 
   passport.authenticate('google', { failureRedirect: '/' }),
   function(req, res) {
-    // Successful authentication, redirect to secrets.
+    // Successful authentication, redirect
     res.redirect('/checkifloggedout');
+});
+
+router.post("/signup", function(req, res){
+  User.register({name: req.body.name, email:req.body.email}, req.body.password, function(err){
+      if(err){
+          console.log(err);
+          res.send(JSON.stringify(err))
+      } else {
+          passport.authenticate("local")(req, res, function(){
+            console.log("Successfully signed up!")
+            res.send(JSON.stringify("Successfully signed up!")) 
+          });
+      }
+  })
+});
+
+  
+  
+
+router.post("/login", function(req, res){
+
+  const user = new User({
+      email: req.body.email,
+      password: req.body.password
+  });
+  req.login(user, function(err){
+      if (err){
+          res.send(err)
+          console.log(err);
+      } else{
+          passport.authenticate("local")(req, res, function(){
+            console.log("Successfully logged in!")
+             res.send(JSON.stringify("Successfully logged in!"))
+            /* res.redirect('/checkifloggedout');     */       
+          });
+      }
+  })
 });
 
 
@@ -206,8 +244,6 @@ router.get('/images/:imageName', (req, res) => {
   const readStream = fs.createReadStream(`images/${imageName}`)
   readStream.pipe(res)
 })
-
-
 
 
 
