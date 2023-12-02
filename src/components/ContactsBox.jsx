@@ -1,13 +1,12 @@
 /* eslint-disable react/prop-types */
-import { useState, useEffect} from 'react'
+import { useState, useEffect, useContext} from 'react'
+import { UserContext } from '../App.jsx';
 import styles from "@chatscope/chat-ui-kit-styles/dist/default/styles.min.css";
 import {
   Search,
   ConversationList,
   Sidebar,
   Conversation,
-  Loader,
-  Avatar,
 } from "@chatscope/chat-ui-kit-react";
 import CircularProgress from '@mui/material/CircularProgress';
 import Box from '@mui/material/Box';
@@ -17,8 +16,11 @@ import MuiAvatar from "./MuiAvatar";
 
 
 
-const ContactsBox = ({sidebarStyle, handleConversationClick, conversationAvatarStyle, conversationContentStyle, selectedPerson, setSelectedPerson}) => {
+const ContactsBox = ({sidebarStyle, handleConversationClick, conversationAvatarStyle, conversationContentStyle}) => {
 
+    const { selectedPerson, setSelectedPerson } = useContext(UserContext); 
+
+    
     /* Contacts Box (sidebar) Messages */
     const [contactsBoxPeople, setContactsBoxPeople] = useState();
     const [loading, setLoading] = useState(true);

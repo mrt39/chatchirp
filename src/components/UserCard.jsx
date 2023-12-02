@@ -1,5 +1,7 @@
 /* eslint-disable react/prop-types */
 import {useNavigate } from "react-router-dom";
+import { useContext } from 'react'
+import { UserContext } from '../App.jsx';
 import Avatar from '@mui/joy/Avatar';
 import Chip from '@mui/joy/Chip';
 import Box from '@mui/joy/Box';
@@ -18,7 +20,10 @@ import MuiAvatar from "./MuiAvatar";
 
 
 
-export default function UserCard({person, selectedPerson, setSelectedPerson}) {
+export default function UserCard({person}) {
+
+    // Passing the UserContext defined in app.jsx
+    const {setSelectedPerson } = useContext(UserContext); 
 
     const navigate = useNavigate(); 
 

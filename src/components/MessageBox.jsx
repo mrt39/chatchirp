@@ -1,5 +1,6 @@
 /* eslint-disable react/prop-types */
-import { useState, useEffect, useCallback  } from 'react'
+import { useState, useEffect, useCallback, useContext  } from 'react'
+import { UserContext } from '../App.jsx';
 import {
   MainContainer,
   ChatContainer,
@@ -18,7 +19,10 @@ import Box from '@mui/material/Box';
 import '../styles/MessageBox.css'
 import dayjs from 'dayjs'
 
-const MessageBox = ({currentUser, selectedPerson, setSelectedPerson}) => {
+const MessageBox = () => {
+
+    // Passing the UserContext defined in app.jsx
+    const { currentUser, selectedPerson, setSelectedPerson } = useContext(UserContext); 
 
     //messages between user and selected person
     const [messagesBetween, setMessagesBetween] = useState();
@@ -159,8 +163,6 @@ const MessageBox = ({currentUser, selectedPerson, setSelectedPerson}) => {
               handleConversationClick={handleConversationClick}
               conversationAvatarStyle={conversationAvatarStyle}
               conversationContentStyle={conversationContentStyle}
-              selectedPerson={selectedPerson}
-              setSelectedPerson={setSelectedPerson}
               />
           {/* display only if user selects a person */}
           {selectedPerson? 

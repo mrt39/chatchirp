@@ -2,7 +2,7 @@ import { Outlet } from "react-router-dom";
 import Navbar from "./components/Navbar.jsx"
 import './styles/App.css'
 import React from 'react'
-import { useEffect, useState } from "react";
+import { useEffect, useState, createContext  } from "react";
 import ReactDOM from 'react-dom/client'
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import ErrorPage from "./routes/Error-Page.jsx";
@@ -13,6 +13,15 @@ import Login from './routes/Login.jsx';
 import SignUp from './routes/SignUp.jsx';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
+
+
+export const UserContext = createContext({
+  selectedPerson: (null),
+  currentUser: (null),
+  setSelectedPerson: () => {},
+});
+
+
 
 const App = () => {
 
@@ -116,12 +125,10 @@ const App = () => {
           <Route 
           path="/" 
           element={currentUser ? 
-          <Messages 
-            currentUser={currentUser}
-            selectedPerson={selectedPerson} 
-            setSelectedPerson={setSelectedPerson}
-
-            /> 
+            <UserContext.Provider value={{ currentUser, selectedPerson, setSelectedPerson }}>
+              <Messages 
+                /> 
+            </UserContext.Provider>
             : <Navigate to="/login" /> } 
           />
           <Route
@@ -163,11 +170,11 @@ const App = () => {
           <Route 
           path="/findpeople" 
           element={currentUser ? 
-          <FindPeople 
-          currentUser={currentUser}
-          selectedPerson={selectedPerson} 
-          setSelectedPerson={setSelectedPerson}
-          /> 
+          <UserContext.Provider value={{ currentUser, selectedPerson, setSelectedPerson }}>
+            <FindPeople 
+            /> 
+          </UserContext.Provider>
+
           : <Navigate to="/login" /> } 
           />
         </Routes>

@@ -6,7 +6,7 @@ import UserCard from "./UserCard";
 import '../styles/SearchPeople.css'
 
 
-export default function MeetPeople({currentUser, selectedPerson, setSelectedPerson}) {
+export default function MeetPeople() {
     const [randomizedData, setRandomizedData] = useState([]);
 /*     const [allUsers, setAllUsers] = useState(); */
     const [loading, setLoading] = useState(true);
@@ -70,8 +70,6 @@ export default function MeetPeople({currentUser, selectedPerson, setSelectedPers
             >
               <UserCard
               person = {person}
-              selectedPerson={selectedPerson} 
-              setSelectedPerson={setSelectedPerson}
               />
             </div>
           ))

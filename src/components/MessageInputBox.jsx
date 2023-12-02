@@ -1,5 +1,6 @@
 /* eslint-disable react/prop-types */
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useContext } from 'react'
+import { UserContext } from '../App.jsx';
 import styles from "@chatscope/chat-ui-kit-styles/dist/default/styles.min.css";
 import {
     MessageInput
@@ -10,11 +11,14 @@ import '../styles/MessageInputBox.css'
 import FileInputPopover from "./Popover.jsx"
 
 
-const MessageInputBox = ({currentUser, selectedPerson, messageSent, setMessageSent}) => {
+const MessageInputBox = ({messageSent, setMessageSent}) => {
+
+
+    // Passing the UserContext defined in app.jsx
+    const { currentUser, selectedPerson,  } = useContext(UserContext); 
 
     // Set initial message input value to an empty string                                                                     
     const [messageInputValue, setMessageInputValue] = useState("");
-
 
 
 

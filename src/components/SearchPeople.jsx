@@ -70,7 +70,7 @@ const SearchBar = ({setSearchQuery}) => (
     }
   };
 
-export default function SearchPeople({selectedPerson, setSelectedPerson}) {
+export default function SearchPeople() {
     const [searchQuery, setSearchQuery] = useState("");
     const [filteredData, setFilteredData] = useState([]);
     const [allUsers, setAllUsers] = useState();
@@ -131,8 +131,6 @@ export default function SearchPeople({selectedPerson, setSelectedPerson}) {
             >
               <UserCard
               person = {person}
-              selectedPerson={selectedPerson} 
-              setSelectedPerson={setSelectedPerson}
               />
             </div>
           ))
