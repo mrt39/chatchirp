@@ -32,3 +32,15 @@
 .msgBoxImg1 img{
     max-width: 30vw !important;
 }
+
+
+/* Scrollbar settings (in order to get the default scrollbar from chat chatscope components visible) */
+.cs-message-list{
+    height: 100vh !important;
+  }
+  
+  .cs-message-input{
+    position: fixed !important;
+    right: inherit !important;
+    width: -webkit-fill-available !important;
+  }

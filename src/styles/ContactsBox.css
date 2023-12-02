@@ -23,3 +23,8 @@
 }
 }
 
+/* Scrollbar settings (in order to get the default scrollbar from chat chatscope components visible) */
+.cs-conversation-list{
+    height: 100vh;
+}
+

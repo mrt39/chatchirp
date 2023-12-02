@@ -58,7 +58,7 @@ const ContactsBox = ({sidebarStyle, handleConversationClick, conversationAvatarS
         }, []); 
 
         return (
-                <Sidebar position="left" scrollable={false} style={sidebarStyle}>
+                <Sidebar position="left"  style={sidebarStyle}>
                 <Search placeholder="Search..." />
                 <ConversationList>           
                 {/* MAP all the conversations */}

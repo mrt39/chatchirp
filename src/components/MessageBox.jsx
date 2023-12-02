@@ -18,9 +18,7 @@ import Box from '@mui/material/Box';
 import '../styles/MessageBox.css'
 import dayjs from 'dayjs'
 
-
 const MessageBox = ({currentUser, selectedPerson, setSelectedPerson}) => {
-
 
     //messages between user and selected person
     const [messagesBetween, setMessagesBetween] = useState();
@@ -76,14 +74,12 @@ const MessageBox = ({currentUser, selectedPerson, setSelectedPerson}) => {
         setChatContainerStyle({});
       }
 
-
     }, [sidebarVisible, setSidebarVisible, setConversationContentStyle, setConversationAvatarStyle, setSidebarStyle, setChatContainerStyle]);
 
     /* when selected person changes, set loading state to true */
     useEffect(() => {
       setLoading(true)
     }, [selectedPerson]); 
-
 
     /* handling the messages between user and clicked person */
     useEffect(() => {
@@ -115,7 +111,6 @@ const MessageBox = ({currentUser, selectedPerson, setSelectedPerson}) => {
         }
       }, [selectedPerson, messageSent]); 
 
-
       /* get the unique days in message history */
     function getUniqueDays(messageHistory){
       var uniqueArray = messageHistory.filter((value, index, self) =>
@@ -138,7 +133,6 @@ const MessageBox = ({currentUser, selectedPerson, setSelectedPerson}) => {
     setMessageDays(messageDays)
     
     }
-
 
     //function for dividing messages into categories, based on the DAYS they've been sent
     function displayMessagesOnCertainDay(firstDate, secondDate){
@@ -229,7 +223,6 @@ const MessageBox = ({currentUser, selectedPerson, setSelectedPerson}) => {
               </div>
             ))}
 
-
                 <MessageInputBox
                 currentUser={currentUser}
                 selectedPerson={selectedPerson} 
@@ -252,3 +245,4 @@ const MessageBox = ({currentUser, selectedPerson, setSelectedPerson}) => {
     
     
 export default MessageBox;
+
