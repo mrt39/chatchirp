@@ -71,8 +71,9 @@ export default function UserCard({person, selectedPerson, setSelectedPerson}) {
       <CardOverflow sx={{ bgcolor: 'background.level1' }}>
         <CardActions buttonFlex="1">
         <div href="#" title="Message this person!" >
-        <IconButton onClick={handleSendMessageClick} size="sm" variant="plain" color="neutral">
-                <Icon.SendFill  className="bi pe-none" width="24" height="24" aria-label="Message"/>
+        <IconButton className="userCardIconButton" onClick={handleSendMessageClick} size="sm" variant="plain" color="neutral">
+            <Icon.SendFill  className="bi pe-none" width="24" height="24" aria-label="Message"/>
+            <p>Say Hi!</p>
         </IconButton>
         </div>
         </CardActions>

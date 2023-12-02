@@ -37,3 +37,13 @@
     width: 65px;
 }
 
+
+.userCardIconButton{
+    display: flex;
+    flex-direction: column;
+}
+
+.userCardIconButton p{
+    font-size: 12px;
+    margin-bottom: 0px;
+}
