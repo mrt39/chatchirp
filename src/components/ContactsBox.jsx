@@ -88,6 +88,7 @@ const ContactsBox = ({sidebarStyle, handleConversationClick, conversationAvatarS
                     onClick={function()  {handleConversationClick(); handleSelectedPerson(person._id)}}
                     lastActivityTime="43 min"
                     >
+                    {/* using "as="Avatar" attribute because the parent component from chatscope doesn't accept a child that isn't named "Avatar" */}
                     <MuiAvatar 
                     as="Avatar"
                     user={person}/>

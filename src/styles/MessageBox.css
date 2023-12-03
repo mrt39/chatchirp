@@ -33,6 +33,23 @@
     max-width: 30vw !important;
 }
 
+.messageBoxAvatar{
+    height: 66px !important;
+}
+
+.messageBoxHeaderAvatar{
+    height: 50px !important;
+    width: 50px !important;
+}
+
+.messageBoxHeaderAvatar div{
+    height: 100% !important; 
+    width: 100% !important;
+}
+
+.cs-conversation-header__avatar{
+    margin-bottom: 8px;
+}
 
 /* Scrollbar settings (in order to get the default scrollbar from chat chatscope components visible) */
 .cs-message-list{

@@ -18,6 +18,8 @@ import CircularProgress from '@mui/material/CircularProgress';
 import Box from '@mui/material/Box';
 import '../styles/MessageBox.css'
 import dayjs from 'dayjs'
+import MuiAvatar from "./MuiAvatar";
+
 
 const MessageBox = () => {
 
@@ -99,7 +101,7 @@ const MessageBox = () => {
               throw new Error('Network response was not ok.');
           })
           .then(data => {
-            setMessagesBetween(data)
+            sortMessageData(data)
             console.log(data)
             getUniqueDays(data)
             setLoading(false); 
@@ -124,18 +126,40 @@ const MessageBox = () => {
         dayjs(parseInt(t.date)).isSame(dayjs(parseInt(value.date)), "day")
       ))
     )
+      console.log(uniqueArray)
+      //sort the dates in ascending order
+      let sortedDates = uniqueArray.sort((message1, message2) => (message1.date > message2.date) ? 1 : (message1.date < message2.date) ? -1 : 0)
+      //turning the dates in the arrays into day.js objects, with day-month-year format
+      let messageDays = sortedDates.map(a => dayjs(parseInt(a.date)).format("D MMMM YYYY"));
+      console.log(messageDays)
+      setMessageDays(messageDays)
+    }
 
-    console.log(uniqueArray)
+    //function for sorting message data response from the fetch api
+    function sortMessageData(data){
+      //if sender and receiver are the same person (users are sending message to themselves), filter duplicates to display it once
+      if(data[0]){
+       if(data[0].from[0].email===data[0].to[0].email){
+          const uniqueIds = [];
+          const unique = data.filter(element => {
+            const isDuplicate = uniqueIds.includes(element._id);
+            if (!isDuplicate) {
+              uniqueIds.push(element._id);
+              return true;
+            }
+            return false;
+          });
+          return setMessagesBetween(unique)
+        }
+      }
+      setMessagesBetween(data) 
+    }
 
-    //sort the dates in ascending order
-    let sortedDates = uniqueArray.sort((message1, message2) => (message1.date > message2.date) ? 1 : (message1.date < message2.date) ? -1 : 0)
+    //function for extracting the hour from message's time data
+    function getHour(messageDate){
 
-    //turning the dates in the arrays into day.js objects, with day-month-year format
-    let messageDays = sortedDates.map(a => dayjs(parseInt(a.date)).format("D MMMM YYYY"));
+      return dayjs(messageDate).format('HH:mm')
 
-    console.log(messageDays)
-    setMessageDays(messageDays)
-    
     }
 
     //function for dividing messages into categories, based on the DAYS they've been sent
@@ -170,7 +194,11 @@ const MessageBox = () => {
 
                <ConversationHeader>
                  <ConversationHeader.Back  onClick={handleBackClick}/>
-                 <Avatar  src={selectedPerson.uploadedpic? "http://localhost:5000/images/" + selectedPerson.uploadedpic : selectedPerson.picture}  name={selectedPerson.name} />
+                 <div as="Avatar" className='messageBoxHeaderAvatar'>
+                 <MuiAvatar
+                  as="Avatar"
+                  user={selectedPerson}/>  
+                  </div> 
                  <ConversationHeader.Content userName={selectedPerson.name} info="Active 10 mins ago" />
                  <ConversationHeader.Actions>
                       <EllipsisButton orientation="vertical" />
@@ -201,16 +229,27 @@ const MessageBox = () => {
                 displayMessagesOnCertainDay(day, message.date)&&
                   <MessageGroup 
                   key = {message["_id"]}
-                  direction={(message.from[0]["_id"]===selectedPerson["_id"]? "incoming" :"outgoing")}
+                  //if the sender and receiver is the same (user has sent it to themselves, display it as sender)
+                  direction={(message.to[0]["_id"]===message.from[0]["_id"]? "outgoing"
+                  //otherwise, sort it out as receiver and sender
+                  : 
+                  (selectedPerson["_id"]===message.from[0]["_id"]? "incoming" :"outgoing"))}
                   >          
-                      <Avatar /* src={joeIco} */ name={"Joe"} />          
+                   {/* using "as="Avatar" attribute because the parent component from chatscope doesn't accept a child that isn't named "Avatar" */}
+                    <div as="Avatar" className="messageBoxAvatar">
+                     <MuiAvatar 
+                    user={message.from[0]}/>    
+                    </div>     
                       <MessageGroup.Messages>
                         <Message model={{
                           /* if the message is an image, display image! */
                       message: message.image? null : message.message,
-                      sentTime: "15 mins ago",
-                      sender: "Joe",
-                      direction: (message.from[0]["_id"]===selectedPerson["_id"]? "incoming" :"outgoing"),
+                      sender: message.from[0],
+                      //if the sender and receiver is the same (user has sent it to themselves, display it as sender)
+                      direction: (message.to[0]["_id"]===message.from[0]["_id"]? "outgoing"
+                      //otherwise, sort it out as receiver and sender
+                      : 
+                      (selectedPerson["_id"]===message.from[0]["_id"]? "incoming" :"outgoing")),
                       position: "single",
                     }}>
                         {message.image?
@@ -218,7 +257,7 @@ const MessageBox = () => {
                         :null}
                     </Message>
                       </MessageGroup.Messages>    
-                      <MessageGroup.Footer >23:50</MessageGroup.Footer>          
+                      <MessageGroup.Footer >{getHour(message.date)}</MessageGroup.Footer>          
                   </MessageGroup>
                ))
               }
