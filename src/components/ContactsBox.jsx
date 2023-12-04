@@ -16,13 +16,11 @@ import MuiAvatar from "./MuiAvatar";
 
 
 
-const ContactsBox = ({sidebarStyle, handleConversationClick, conversationAvatarStyle, conversationContentStyle}) => {
+const ContactsBox = ({sidebarStyle, handleConversationClick, conversationAvatarStyle, conversationContentStyle, firstMsg, contactsBoxPeople, setContactsBoxPeople}) => {
 
-    const { selectedPerson, setSelectedPerson } = useContext(UserContext); 
+    const { currentUser, selectedPerson, setSelectedPerson } = useContext(UserContext); 
 
-    
-    /* Contacts Box (sidebar) Messages */
-    const [contactsBoxPeople, setContactsBoxPeople] = useState();
+
     const [loading, setLoading] = useState(true);
 
 
@@ -37,7 +35,7 @@ const ContactsBox = ({sidebarStyle, handleConversationClick, conversationAvatarS
 
     useEffect(() => {
         const getMessages = () => {
-            fetch('http://localhost:5000/messagebox', {
+            fetch('http://localhost:5000/messagebox/'+ currentUser["_id"]  , {
             method: 'GET',
             })
             .then(response => {
@@ -57,7 +55,8 @@ const ContactsBox = ({sidebarStyle, handleConversationClick, conversationAvatarS
             });
         };
         getMessages();
-        }, []); 
+        //add firstMsg as a dependency so that contactsbox refreshes everytime user sends a message to a user for the FIRST time.
+        }, [firstMsg]); 
 
         return (
                 <Sidebar position="left"  style={sidebarStyle}>

@@ -94,13 +94,33 @@ router.get("/checkifloggedout", function(req, res){
     }
 });
 
-router.get("/messagebox", async (req, res) => {
+router.get("/messagebox/:userid", async (req, res) => {
 
-/*   const sceneName = req.params.scenename // access URL variable
- */
+  const userID = req.params.userid // access URL variable
+
+  //in the messagebox, only display users whom the user has at least 1 message between (either sent or received)
   try {
-    const users = await User.find();
-    res.send(users);
+/*     const user = await User.find({_id: userID});
+    console.log( "bağlandık amk, işte user!!!:" + user); */
+    const messagesFromUser = await Message.find({ 'from.0._id': userID});
+    const messagesToUser = await Message.find({ 'to.0._id': userID});
+    //extract users from the messages
+    const sentTo = await messagesFromUser.map(message => message.to[0])
+    const receivedFrom = await messagesToUser.map(message => message.from[0])
+    //concat
+    const allContacts = sentTo.concat(receivedFrom);
+    //filter duplicates
+    const uniqueIds = [];
+    const uniqueContacts = allContacts.filter(user => {
+      const isDuplicate = uniqueIds.includes(user.email);
+      if (!isDuplicate) {
+        uniqueIds.push(user.email);
+        return true;
+      }
+      return false;
+    });
+
+    res.send(uniqueContacts)
 
   } catch (err) {
     res.send(err);

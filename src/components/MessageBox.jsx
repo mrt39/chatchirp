@@ -33,6 +33,12 @@ const MessageBox = () => {
 
     const [loading, setLoading] = useState(true);
 
+    // whether there has been any messaging between the user and selectedperson beforehand (if first message, re-render ContactsBox so new user gets displayed) 
+    const [firstMsg, setFirstMsg] = useState(false);
+
+    // Users that will be displayed on the contactsbox (populated by fetch within ContactsBox component)
+    const [contactsBoxPeople, setContactsBoxPeople] = useState();
+
     /* message sent from messageinputbox component */
     const [messageSent, setMessageSent] = useState(false)
 
@@ -87,7 +93,7 @@ const MessageBox = () => {
       setLoading(true)
     }, [selectedPerson]); 
 
-    /* handling the messages between user and clicked person */
+    /* handling fetching the messages between user and clicked person */
     useEffect(() => {
       const getMessages = () => {
           fetch('http://localhost:5000/messagesfrom/' + currentUser["_id"] + '_' +selectedPerson["_id"]  ,{
@@ -162,7 +168,7 @@ const MessageBox = () => {
 
     }
 
-    //function for dividing messages into categories, based on the DAYS they've been sent
+    //function for dividing messages based on the DAYS they've been sent
     function displayMessagesOnCertainDay(firstDate, secondDate){
       
       //returns true if the day from the firstDate and secondDate are the same
@@ -184,9 +190,12 @@ const MessageBox = () => {
               
               <ContactsBox
               sidebarStyle = {sidebarStyle}
+              firstMsg={firstMsg}
               handleConversationClick={handleConversationClick}
               conversationAvatarStyle={conversationAvatarStyle}
               conversationContentStyle={conversationContentStyle}
+              contactsBoxPeople={contactsBoxPeople} 
+              setContactsBoxPeople ={setContactsBoxPeople}
               />
           {/* display only if user selects a person */}
           {selectedPerson? 
@@ -265,10 +274,11 @@ const MessageBox = () => {
             ))}
 
                 <MessageInputBox
-                currentUser={currentUser}
-                selectedPerson={selectedPerson} 
+                contactsBoxPeople={contactsBoxPeople} 
                 messageSent={messageSent}   
-                setMessageSent={setMessageSent}            
+                setMessageSent={setMessageSent}
+                firstMsg={firstMsg}
+                setFirstMsg={setFirstMsg}            
                 />
                 </MessageList.Content>
 

@@ -11,7 +11,7 @@ import '../styles/MessageInputBox.css'
 import FileInputPopover from "./Popover.jsx"
 
 
-const MessageInputBox = ({messageSent, setMessageSent}) => {
+const MessageInputBox = ({messageSent, setMessageSent, contactsBoxPeople, firstMsg, setFirstMsg}) => {
 
 
     // Passing the UserContext defined in app.jsx
@@ -23,8 +23,13 @@ const MessageInputBox = ({messageSent, setMessageSent}) => {
 
 
     function handleSend(){
-        setMessageSent(true)
+      //if the person user is sending a message to isn't in the contacts, set firstMsg state to true.
+      if (contactsBoxPeople.includes(selectedPerson)===false){
+        setFirstMsg(!firstMsg)
       }
+
+        setMessageSent(true)
+    }
       
       /* effect for handling sending message */
       useEffect(() => {
