@@ -158,7 +158,7 @@ const MessageBox = () => {
     //function for extracting the hour from message's time data
     function getHour(messageDate){
 
-      return dayjs(messageDate).format('HH:mm')
+      return dayjs(parseInt(messageDate)).format('HH:mm')
 
     }
 
