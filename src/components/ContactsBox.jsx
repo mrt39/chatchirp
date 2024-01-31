@@ -32,9 +32,9 @@ const ContactsBox = ({sidebarStyle, handleConversationClick, conversationAvatarS
         console.log(selectedPerson)
     }
 
-
+    //useffect to populate the contacts box
     useEffect(() => {
-        const getMessages = () => {
+        const getContacts = () => {
             fetch('http://localhost:5000/messagebox/'+ currentUser["_id"]  , {
             method: 'GET',
             })
@@ -47,6 +47,7 @@ const ContactsBox = ({sidebarStyle, handleConversationClick, conversationAvatarS
             })
             .then(data => {
                 setContactsBoxPeople(data)
+                console.log(data)
                 setLoading(false); // Set loading to false once the data is received
             })
             .catch(error => {
@@ -54,7 +55,7 @@ const ContactsBox = ({sidebarStyle, handleConversationClick, conversationAvatarS
                 setLoading(false); 
             });
         };
-        getMessages();
+        getContacts();
         //add firstMsg as a dependency so that contactsbox refreshes everytime user sends a message to a user for the FIRST time.
         }, [firstMsg]); 
 
@@ -91,7 +92,7 @@ const ContactsBox = ({sidebarStyle, handleConversationClick, conversationAvatarS
                     <MuiAvatar 
                     as="Avatar"
                     user={person}/>
-                    <Conversation.Content name={person.name} lastSenderName="Lilly" info="Yes i can do it for you" style={conversationContentStyle} />
+                    <Conversation.Content name={person.name} lastSenderName="Lilly" info={person.lastMsg} style={conversationContentStyle} />
                     </Conversation>
                     ))
                 }

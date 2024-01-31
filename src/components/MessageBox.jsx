@@ -159,6 +159,7 @@ const MessageBox = () => {
         }
       }
       setMessagesBetween(data) 
+      console.log(messagesBetween)
     }
 
     //function for extracting the hour from message's time data
@@ -191,6 +192,7 @@ const MessageBox = () => {
               <ContactsBox
               sidebarStyle = {sidebarStyle}
               firstMsg={firstMsg}
+              messageSent= {messageSent}
               handleConversationClick={handleConversationClick}
               conversationAvatarStyle={conversationAvatarStyle}
               conversationContentStyle={conversationContentStyle}

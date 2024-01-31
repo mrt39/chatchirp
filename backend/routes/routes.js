@@ -100,8 +100,6 @@ router.get("/messagebox/:userid", async (req, res) => {
 
   //in the messagebox, only display users whom the user has at least 1 message between (either sent or received)
   try {
-/*     const user = await User.find({_id: userID});
-    console.log( "bağlandık amk, işte user!!!:" + user); */
     const messagesFromUser = await Message.find({ 'from.0._id': userID});
     const messagesToUser = await Message.find({ 'to.0._id': userID});
     //extract users from the messages
@@ -111,14 +109,45 @@ router.get("/messagebox/:userid", async (req, res) => {
     const allContacts = sentTo.concat(receivedFrom);
     //filter duplicates
     const uniqueIds = [];
-    const uniqueContacts = allContacts.filter(user => {
-      const isDuplicate = uniqueIds.includes(user.email);
+    const uniqueContacts = await allContacts.filter(user => {
+      const isDuplicate =  uniqueIds.includes(user.email);
       if (!isDuplicate) {
         uniqueIds.push(user.email);
         return true;
       }
       return false;
     });
+
+
+    //between the logged in user and each unique user, find the last message that's sent.
+    //we are using a for loop instead of forEach, because we are not able to use await in forEach.
+/*    for (let uniqueContact of uniqueContacts) { 
+      //searching by ID because if the users change their name or e-mail later on, their messages won't be found under the same user model
+      let messagesFromClickedPerson =  await Message.find({ 'to.0._id': userID , 'from.0._id': uniqueContact._id.toString()});
+      let messagesFromUser1 =  await Message.find({ 'to.0._id': uniqueContact._id.toString(), 'from.0._id': userID});
+      //combine the two arrays
+      let allMessagesBetween = messagesFromClickedPerson.concat(messagesFromUser1);
+      //select the last message in the array, which will be the last message that's sent and store it into "lastMsg" key value.
+      uniqueContact.lastMsg = allMessagesBetween[allMessagesBetween.length - 1]; 
+    } */
+
+    //between the logged in user and each unique user, find the last message that's sent.
+    //we are using a for loop instead of forEach, because we are not able to use await in forEach.
+    for (let index = 0; index < uniqueContacts.length; index++) { 
+      //searching by ID because if the users change their name or e-mail later on, their messages won't be found under the same user model
+      let messagesFromClickedPerson =  await Message.find({ 'to.0._id': userID , 'from.0._id': uniqueContacts[index]._id.toString()});
+      let messagesFromUser1 =  await Message.find({ 'to.0._id': uniqueContacts[index]._id.toString(), 'from.0._id': userID});
+      //combine the two arrays
+      let allMessagesBetween = messagesFromClickedPerson.concat(messagesFromUser1);
+      //select the last message in the array, which will be the last message that's sent and store it into "lastMsg" key value.
+      //uniqueContacts[index].lastMsg = "kek"; 
+      uniqueContacts[index].lastMsg = allMessagesBetween[allMessagesBetween.length - 1]; 
+
+            /* TODO: WE ARE SELECTING THE LAST MESSAGE HERE BUT IT MIGHT NOT BE THE LATEST. SORT MESSAGES BY DATE AND SEND THE LATEST MESSAGE BY DATE.  */
+    }
+
+
+    console.log(uniqueContacts)
 
     res.send(uniqueContacts)
 
