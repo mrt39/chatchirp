@@ -109,7 +109,7 @@ router.get("/messagebox/:userid", async (req, res) => {
     const allContacts = sentTo.concat(receivedFrom);
     //filter duplicates
     const uniqueIds = [];
-    const uniqueContacts = await allContacts.filter(user => {
+    const uniqueContactsObj = await allContacts.filter(user => {
       const isDuplicate =  uniqueIds.includes(user.email);
       if (!isDuplicate) {
         uniqueIds.push(user.email);
@@ -119,18 +119,12 @@ router.get("/messagebox/:userid", async (req, res) => {
     });
 
 
-    //between the logged in user and each unique user, find the last message that's sent.
-    //we are using a for loop instead of forEach, because we are not able to use await in forEach.
-/*    for (let uniqueContact of uniqueContacts) { 
-      //searching by ID because if the users change their name or e-mail later on, their messages won't be found under the same user model
-      let messagesFromClickedPerson =  await Message.find({ 'to.0._id': userID , 'from.0._id': uniqueContact._id.toString()});
-      let messagesFromUser1 =  await Message.find({ 'to.0._id': uniqueContact._id.toString(), 'from.0._id': userID});
-      //combine the two arrays
-      let allMessagesBetween = messagesFromClickedPerson.concat(messagesFromUser1);
-      //select the last message in the array, which will be the last message that's sent and store it into "lastMsg" key value.
-      uniqueContact.lastMsg = allMessagesBetween[allMessagesBetween.length - 1]; 
-    } */
+    //add the "lastMsg" property to the objects within the uniqueContactsObj array, in order to display it in the ContactsBox.
+    //however, since it's an array of multiple mongoose objects and mongoose objects doesn't accept adding new properties to them, we turn these objects into plain objects, with .toObject() method.
+    //https://stackoverflow.com/questions/7503450/how-do-you-turn-a-mongoose-document-into-a-plain-object
+    var uniqueContacts = uniqueContactsObj.map(function(model) { return model.toObject(); });
 
+    
     //between the logged in user and each unique user, find the last message that's sent.
     //we are using a for loop instead of forEach, because we are not able to use await in forEach.
     for (let index = 0; index < uniqueContacts.length; index++) { 
@@ -140,16 +134,15 @@ router.get("/messagebox/:userid", async (req, res) => {
       //combine the two arrays
       let allMessagesBetween = messagesFromClickedPerson.concat(messagesFromUser1);
       //select the last message in the array, which will be the last message that's sent and store it into "lastMsg" key value.
-      //uniqueContacts[index].lastMsg = "kek"; 
       uniqueContacts[index].lastMsg = allMessagesBetween[allMessagesBetween.length - 1]; 
 
             /* TODO: WE ARE SELECTING THE LAST MESSAGE HERE BUT IT MIGHT NOT BE THE LATEST. SORT MESSAGES BY DATE AND SEND THE LATEST MESSAGE BY DATE.  */
+            
     }
 
+    res.send(uniqueContacts);
 
-    console.log(uniqueContacts)
-
-    res.send(uniqueContacts)
+    
 
   } catch (err) {
     res.send(err);
@@ -227,8 +220,6 @@ router.post("/messagesent", async (req, res) => {
   }
  
 });
-
-
 
 
 //tap into "upload", which we import from passport.js

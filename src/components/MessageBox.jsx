@@ -192,12 +192,12 @@ const MessageBox = () => {
               <ContactsBox
               sidebarStyle = {sidebarStyle}
               firstMsg={firstMsg}
-              messageSent= {messageSent}
               handleConversationClick={handleConversationClick}
               conversationAvatarStyle={conversationAvatarStyle}
               conversationContentStyle={conversationContentStyle}
               contactsBoxPeople={contactsBoxPeople} 
               setContactsBoxPeople ={setContactsBoxPeople}
+              messageSent= {messageSent}
               />
           {/* display only if user selects a person */}
           {selectedPerson? 

@@ -16,7 +16,7 @@ import MuiAvatar from "./MuiAvatar";
 
 
 
-const ContactsBox = ({sidebarStyle, handleConversationClick, conversationAvatarStyle, conversationContentStyle, firstMsg, contactsBoxPeople, setContactsBoxPeople}) => {
+const ContactsBox = ({sidebarStyle, handleConversationClick, messageSent, conversationAvatarStyle, conversationContentStyle, firstMsg, contactsBoxPeople, setContactsBoxPeople}) => {
 
     const { currentUser, selectedPerson, setSelectedPerson } = useContext(UserContext); 
 
@@ -48,6 +48,9 @@ const ContactsBox = ({sidebarStyle, handleConversationClick, conversationAvatarS
             .then(data => {
                 setContactsBoxPeople(data)
                 console.log(data)
+                console.log(data[0].lastMsg)
+                console.log(data[1].lastMsg)
+                console.log(contactsBoxPeople)
                 setLoading(false); // Set loading to false once the data is received
             })
             .catch(error => {
@@ -57,7 +60,8 @@ const ContactsBox = ({sidebarStyle, handleConversationClick, conversationAvatarS
         };
         getContacts();
         //add firstMsg as a dependency so that contactsbox refreshes everytime user sends a message to a user for the FIRST time.
-        }, [firstMsg]); 
+        //add messageSent as a dependancy so that contactsbox refreshes everytime user sends a message (so that the "lastMsg" changes)
+        }, [firstMsg, messageSent]); 
 
         return (
                 <Sidebar position="left"  style={sidebarStyle}>
@@ -77,6 +81,7 @@ const ContactsBox = ({sidebarStyle, handleConversationClick, conversationAvatarS
                
 
                 :
+                //uniqueContacts property comes from backend; from the object we're sending as a response.
                 contactsBoxPeople.map((person) => (
                     <Conversation 
                     /* if there is a selected person, change class to highlight it */
@@ -92,7 +97,7 @@ const ContactsBox = ({sidebarStyle, handleConversationClick, conversationAvatarS
                     <MuiAvatar 
                     as="Avatar"
                     user={person}/>
-                    <Conversation.Content name={person.name} lastSenderName="Lilly" info={person.lastMsg} style={conversationContentStyle} />
+                    <Conversation.Content name={person.name} /* lastSenderName={person.lastMsg.from[0].name} */ info={person.lastMsg.message} style={conversationContentStyle} />
                     </Conversation>
                     ))
                 }
