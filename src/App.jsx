@@ -123,7 +123,8 @@ const App = () => {
       {currentUser && <Navbar user={currentUser} />} {/* Render Navbar if user is logged in */}
         <Routes>
           <Route 
-          path="/" 
+          path="/"
+          errorElement={ <ErrorPage />}
           element={currentUser ? 
             <UserContext.Provider value={{ currentUser, selectedPerson, setSelectedPerson }}>
               <Messages 

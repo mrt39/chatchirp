@@ -16,12 +16,25 @@ import MuiAvatar from "./MuiAvatar";
 
 
 
+
+const filterData = (query, contactsBoxPeople) => {
+    if (!query) {
+      return;
+    } else {
+      return contactsBoxPeople.filter((d) => d.name.toLowerCase().includes(query.toLowerCase()));
+    }
+  };
+
+
 const ContactsBox = ({sidebarStyle, handleConversationClick, messageSent, conversationAvatarStyle, conversationContentStyle, firstMsg, contactsBoxPeople, setContactsBoxPeople}) => {
 
     const { currentUser, selectedPerson, setSelectedPerson } = useContext(UserContext); 
 
 
     const [loading, setLoading] = useState(true);
+    const [searchbarValue, setsearchbarValue] = useState("");
+    const [contactsBoxPeopleDisplayed, setcontactsBoxPeopleDisplayed] = useState([]);
+
 
 
 
@@ -32,6 +45,7 @@ const ContactsBox = ({sidebarStyle, handleConversationClick, messageSent, conver
         console.log(selectedPerson)
     }
 
+      
     //useffect to populate the contacts box
     useEffect(() => {
         const getContacts = () => {
@@ -47,10 +61,7 @@ const ContactsBox = ({sidebarStyle, handleConversationClick, messageSent, conver
             })
             .then(data => {
                 setContactsBoxPeople(data)
-                console.log(data)
-                console.log(data[0].lastMsg)
-                console.log(data[1].lastMsg)
-                console.log(contactsBoxPeople)
+                setcontactsBoxPeopleDisplayed(data)
                 setLoading(false); // Set loading to false once the data is received
             })
             .catch(error => {
@@ -63,9 +74,37 @@ const ContactsBox = ({sidebarStyle, handleConversationClick, messageSent, conver
         //add messageSent as a dependancy so that contactsbox refreshes everytime user sends a message (so that the "lastMsg" changes)
         }, [firstMsg, messageSent]); 
 
+
+
+    //useeffect for search function
+    useEffect(() => {
+        function contactsBoxSearch(){
+            if(searchbarValue===""){
+                setcontactsBoxPeopleDisplayed(contactsBoxPeople)
+                console.log("searchbar empty")
+            }
+            else{
+                console.log("searchbar not empty")
+                const dataFiltered = filterData(searchbarValue, contactsBoxPeople);
+                setcontactsBoxPeopleDisplayed(dataFiltered)
+            }
+    }
+      // only trigger after the initial loading ends
+       if (loading === false){
+        contactsBoxSearch();
+        }  
+
+    }, [searchbarValue]); 
+
+
+
+
         return (
                 <Sidebar position="left"  style={sidebarStyle}>
-                <Search placeholder="Search..." />
+                <Search placeholder="Search..." 
+                        value={searchbarValue}
+                        onChange={(v) => setsearchbarValue(v)}
+                />
                 <ConversationList>           
                 {/* MAP all the conversations */}
                 {loading?
@@ -82,7 +121,7 @@ const ContactsBox = ({sidebarStyle, handleConversationClick, messageSent, conver
 
                 :
                 //uniqueContacts property comes from backend; from the object we're sending as a response.
-                contactsBoxPeople.map((person) => (
+                contactsBoxPeopleDisplayed.map((person) => (
                     <Conversation 
                     /* if there is a selected person, change class to highlight it */
                     className={
