@@ -135,15 +135,11 @@ router.get("/messagebox/:userid", async (req, res) => {
       let allMessagesBetween = messagesFromClickedPerson.concat(messagesFromUser1);
       //select the last message in the array, which will be the last message that's sent and store it into "lastMsg" key value.
       uniqueContacts[index].lastMsg = allMessagesBetween[allMessagesBetween.length - 1]; 
-
-            /* TODO: WE ARE SELECTING THE LAST MESSAGE HERE BUT IT MIGHT NOT BE THE LATEST. SORT MESSAGES BY DATE AND SEND THE LATEST MESSAGE BY DATE.  */
-            
     }
 
     res.send(uniqueContacts);
 
     
-
   } catch (err) {
     res.send(err);
   }

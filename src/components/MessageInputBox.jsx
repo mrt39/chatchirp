@@ -90,16 +90,24 @@ const MessageInputBox = ({messageSent, setMessageSent, contactsBoxPeople, firstM
 
     /* when user selects an image and changes the value of the input, change the state  */
       function handleFileInputChange(event){
+        const selectedFile = event.target.files;
+        //check the filetype to ensure it's an image.
+        if (selectedFile[0]["type"] != "image/x-png" && selectedFile[0]["type"] != "image/jpeg") {
+          console.error("Only images can be attached!")
+        }
+        else{
         setimageSelected(true)
-        console.log(event.target.files);
-        setimageFile(event.target.files[0]);
+        console.log(selectedFile);
+        console.log(selectedFile[0]["type"]);
+        setimageFile(selectedFile[0]);
+        }
       }
 
       //when an image is selected, activate the popover
       useEffect(() => {
         //only trigger if an image is selected
         if (imageSelected){
-        /* select the attachment button next to the message input box and making it the anchor for the popover to be displayed over */
+        /* select the attachment button next to the message input box and make it the anchor for the popover to be displayed over */
         const attachmentIcon = document.querySelector('.cs-button--attachment')
         setPopOverAnchorEl(attachmentIcon)
         }
