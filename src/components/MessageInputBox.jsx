@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 import { useState, useEffect, useRef, useContext } from 'react'
-import { UserContext } from '../App.jsx';
+import { useOutletContext } from "react-router-dom";
 import styles from "@chatscope/chat-ui-kit-styles/dist/default/styles.min.css";
 import {
     MessageInput
@@ -9,13 +9,15 @@ import CircularProgress from '@mui/material/CircularProgress';
 import Box from '@mui/material/Box';
 import '../styles/MessageInputBox.css'
 import FileInputPopover from "./Popover.jsx"
+import { clean } from 'profanity-cleaner';
 
 
-const MessageInputBox = ({messageSent, setMessageSent, contactsBoxPeople, firstMsg, setFirstMsg}) => {
+const MessageInputBox = ({messageSent, setMessageSent, contactsBoxPeople, firstMsg, setFirstMsg, imgSubmitted, setImgSubmitted}) => {
 
 
-    // Passing the UserContext defined in app.jsx
-    const { currentUser, selectedPerson,  } = useContext(UserContext); 
+
+  {/* "useOutletContext" is how you get props from Outlet: https://reactrouter.com/en/main/hooks/use-outlet-context */}
+  const [snackbarOpenCondition, setSnackbarOpenCondition, snackbarOpen, setSnackbarOpen, currentUser, setCurrentUser, profileUpdated, setProfileUpdated, selectedPerson, setSelectedPerson] = useOutletContext();
 
     // Set initial message input value to an empty string                                                                     
     const [messageInputValue, setMessageInputValue] = useState("");
@@ -31,19 +33,18 @@ const MessageInputBox = ({messageSent, setMessageSent, contactsBoxPeople, firstM
         setMessageSent(true)
     }
       
-      /* effect for handling sending message */
+      /* effect for handling sending TEXT message */
       useEffect(() => {
         async function postMessage() {
             
             //on submit, clean the word with the profanity cleaner package
             //https://www.npmjs.com/package/profanity-cleaner
-            /* let input = await clean(nameInput, { keepFirstAndLastChar: true }) */
-          
+            let filteredMessage = await clean(messageInputValue, { keepFirstAndLastChar: true, placeholder: '#' }) 
+  
             let result = await fetch(
             'http://localhost:5000/messagesent', {
                 method: "post",
-                /* if imageFile exists, send imageFile */  
-                body: JSON.stringify({ from: currentUser, to: selectedPerson, message: messageInputValue}), 
+                body: JSON.stringify({ from: currentUser, to: selectedPerson, message: filteredMessage}), 
                 headers: {
                     'Content-Type': 'application/json',
                     "Access-Control-Allow-Origin": "*",
@@ -80,8 +81,9 @@ const MessageInputBox = ({messageSent, setMessageSent, contactsBoxPeople, firstM
     const [imageFile, setimageFile] = useState();
     //user selected an image from disk
     const [imageSelected, setimageSelected] = useState(false);
-    //user pressed "send" after selecting the image
-    const [imgSubmitted, setImgSubmitted] = useState(false);
+
+/*     //user pressed "send" after selecting the image
+    const [imgSubmitted, setImgSubmitted] = useState(false); */
 
       //when the attachment icon is clicked, click on the hidden input (type=file) element
       function handleAttachmentClick(){
@@ -94,6 +96,7 @@ const MessageInputBox = ({messageSent, setMessageSent, contactsBoxPeople, firstM
         //check the filetype to ensure it's an image.
         if (selectedFile[0]["type"] != "image/x-png" && selectedFile[0]["type"] != "image/jpeg") {
           console.error("Only images can be attached!")
+          return
         }
         else{
         setimageSelected(true)
@@ -116,8 +119,8 @@ const MessageInputBox = ({messageSent, setMessageSent, contactsBoxPeople, firstM
 
     /* function for sending the image */
     function handleImgSendBtn(){
-        console.log("send img")
-        setImgSubmitted(true)
+        console.log("sent img");
+        setImgSubmitted(true);
     }
 
 
@@ -168,6 +171,7 @@ const MessageInputBox = ({messageSent, setMessageSent, contactsBoxPeople, firstM
           />
           <FileInputPopover
           popOveranchorEl={popOveranchorEl}
+          imgSubmitted={imgSubmitted}
           setPopOverAnchorEl={setPopOverAnchorEl}
           setimageSelected={setimageSelected}
           handleImgSendBtn={handleImgSendBtn}

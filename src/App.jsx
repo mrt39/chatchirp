@@ -1,10 +1,11 @@
 import { Outlet } from "react-router-dom";
 import Navbar from "./components/Navbar.jsx"
+/* import Footer from './components/Footer.jsx'; */
 import './styles/App.css'
 import React from 'react'
-import { useEffect, useState, createContext  } from "react";
+import { useEffect, useState, createContext, Fragment  } from "react";
 import ReactDOM from 'react-dom/client'
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, createRoutesFromElements } from "react-router-dom";
 import ErrorPage from "./routes/Error-Page.jsx";
 import Profile from "./routes/Profile.jsx";
 import FindPeople from "./routes/FindPeople.jsx";
@@ -13,6 +14,7 @@ import Login from './routes/Login.jsx';
 import SignUp from './routes/SignUp.jsx';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
+
 
 
 export const UserContext = createContext({
@@ -118,69 +120,18 @@ const App = () => {
   }
 
   return (
-    <BrowserRouter>
-      <div className='appContainer'>
-      {currentUser && <Navbar user={currentUser} />} {/* Render Navbar if user is logged in */}
-        <Routes>
-          <Route 
-          path="/"
-          errorElement={ <ErrorPage />}
-          element={currentUser ? 
-            <UserContext.Provider value={{ currentUser, selectedPerson, setSelectedPerson }}>
-              <Messages 
-                /> 
-            </UserContext.Provider>
-            : <Navigate to="/login" /> } 
-          />
-          <Route
-            path="/login"
-            element={currentUser ? <Navigate to="/" /> : 
-            <Login 
-            snackbarOpenCondition={snackbarOpenCondition}
-            setSnackbarOpenCondition={setSnackbarOpenCondition}
-            snackbarOpen={snackbarOpen}
-            setSnackbarOpen={setSnackbarOpen}
-            />}
-          />
-          <Route
-            path="/signup"
-            element={currentUser ? <Navigate to="/" /> : 
-            <SignUp 
-            snackbarOpenCondition={snackbarOpenCondition}
-            setSnackbarOpenCondition={setSnackbarOpenCondition}
-            snackbarOpen={snackbarOpen}
-            setSnackbarOpen={setSnackbarOpen}
-            />}
-          />
-          <Route
-            path="/profile"
-            element={currentUser ? 
-            <Profile 
-            user={currentUser}
-            setCurrentUser={setCurrentUser}
-            profileUpdated={profileUpdated}
-            setProfileUpdated={setProfileUpdated}
-            snackbarOpenCondition={snackbarOpenCondition}
-            setSnackbarOpenCondition={setSnackbarOpenCondition}
-            snackbarOpen={snackbarOpen}
-            setSnackbarOpen={setSnackbarOpen}
-            /> 
-            : 
-            <Navigate to="/login" />}
-          /> 
-          <Route 
-          path="/findpeople" 
-          element={currentUser ? 
-          <UserContext.Provider value={{ currentUser, selectedPerson, setSelectedPerson }}>
-            <FindPeople 
-            /> 
-          </UserContext.Provider>
 
-          : <Navigate to="/login" /> } 
-          />
-        </Routes>
-      </div>
-    </BrowserRouter>
+      <div className='appContainer'>
+      {currentUser ? <Navbar user={currentUser} />
+            : <Navigate to="/login" /> } 
+      {/* "context" is how you pass props to Outlet: https://reactrouter.com/en/main/hooks/use-outlet-context */}
+      <Outlet  context={[snackbarOpenCondition, setSnackbarOpenCondition, snackbarOpen, setSnackbarOpen, currentUser, setCurrentUser, profileUpdated, setProfileUpdated, selectedPerson, setSelectedPerson]} /> 
+{/*       <Footer
+      scene = {scene}
+      /> */}
+    </div>
+
+
   );
 };
 

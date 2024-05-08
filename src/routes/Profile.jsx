@@ -10,7 +10,10 @@ import "../styles/Profile.css"
 
 
 
-const Profile = ({user, setCurrentUser, profileUpdated, setProfileUpdated, snackbarOpen, setSnackbarOpen, snackbarOpenCondition, setSnackbarOpenCondition}) => {
+const Profile = () => {
+
+     {/* "useOutletContext" is how you get props from Outlet: https://reactrouter.com/en/main/hooks/use-outlet-context */}
+     const [snackbarOpenCondition, setSnackbarOpenCondition, snackbarOpen, setSnackbarOpen, user, setCurrentUser, profileUpdated, setProfileUpdated] = useOutletContext();
 
 
 

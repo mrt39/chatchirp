@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 import { useState, useEffect, useCallback, useContext  } from 'react'
-import { UserContext } from '../App.jsx';
+import { useOutletContext } from "react-router-dom";
 import {
   MainContainer,
   ChatContainer,
@@ -23,8 +23,8 @@ import MuiAvatar from "./MuiAvatar";
 
 const MessageBox = () => {
 
-    // Passing the UserContext defined in app.jsx
-    const { currentUser, selectedPerson, setSelectedPerson } = useContext(UserContext); 
+     {/* "useOutletContext" is how you get props from Outlet: https://reactrouter.com/en/main/hooks/use-outlet-context */}
+     const [snackbarOpenCondition, setSnackbarOpenCondition, snackbarOpen, setSnackbarOpen, currentUser, setCurrentUser, profileUpdated, setProfileUpdated, selectedPerson, setSelectedPerson] = useOutletContext();
 
     //messages between user and selected person
     const [messagesBetween, setMessagesBetween] = useState();
@@ -41,6 +41,9 @@ const MessageBox = () => {
 
     /* message sent from messageinputbox component */
     const [messageSent, setMessageSent] = useState(false)
+
+    //user pressed "send" after selecting the image
+    const [imgSubmitted, setImgSubmitted] = useState(false);
 
     const [sidebarVisible, setSidebarVisible] = useState(true);
     const [sidebarStyle, setSidebarStyle] = useState({});
@@ -121,7 +124,8 @@ const MessageBox = () => {
         if (selectedPerson){
           getMessages();
         }
-      }, [selectedPerson, messageSent]); 
+      //add messageSent and imgSubmitted so the messagebox re-renders after a message/image is sent
+      }, [selectedPerson, messageSent, imgSubmitted]); 
 
       /* get the unique days in message history */
     function getUniqueDays(messageHistory){
@@ -280,7 +284,9 @@ const MessageBox = () => {
                 messageSent={messageSent}   
                 setMessageSent={setMessageSent}
                 firstMsg={firstMsg}
-                setFirstMsg={setFirstMsg}            
+                setFirstMsg={setFirstMsg}
+                imgSubmitted={imgSubmitted}
+                setImgSubmitted={setImgSubmitted}        
                 />
                 </MessageList.Content>
 

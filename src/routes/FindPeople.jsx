@@ -1,5 +1,4 @@
 /* eslint-disable react/prop-types */
-import { useOutletContext } from "react-router-dom";
 import { useState, useEffect } from 'react'
 import SearchPeople from "../components/SearchPeople";
 import MeetPeople from "../components/MeetPeople";
