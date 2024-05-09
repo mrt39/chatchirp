@@ -16,7 +16,6 @@ const Profile = () => {
      const [snackbarOpenCondition, setSnackbarOpenCondition, snackbarOpen, setSnackbarOpen, user, setCurrentUser, profileUpdated, setProfileUpdated] = useOutletContext();
 
 
-
   //check if the e-mail address user puts is invalid
   const [invalidEmail, setInvalidEmail] = useState(false); 
 

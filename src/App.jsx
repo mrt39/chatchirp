@@ -124,8 +124,11 @@ const App = () => {
       <div className='appContainer'>
       {currentUser ? <Navbar user={currentUser} />
             : <Navigate to="/login" /> } 
-      {/* "context" is how you pass props to Outlet: https://reactrouter.com/en/main/hooks/use-outlet-context */}
-      <Outlet  context={[snackbarOpenCondition, setSnackbarOpenCondition, snackbarOpen, setSnackbarOpen, currentUser, setCurrentUser, profileUpdated, setProfileUpdated, selectedPerson, setSelectedPerson]} /> 
+      <UserContext.Provider value={{ currentUser, selectedPerson, setSelectedPerson }}>
+        {/* "context" is how you pass props to Outlet: https://reactrouter.com/en/main/hooks/use-outlet-context */}
+        <Outlet  context={[snackbarOpenCondition, setSnackbarOpenCondition, snackbarOpen, setSnackbarOpen, currentUser, setCurrentUser, profileUpdated, setProfileUpdated, selectedPerson, setSelectedPerson]} /> 
+      </UserContext.Provider>
+
 {/*       <Footer
       scene = {scene}
       /> */}

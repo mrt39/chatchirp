@@ -16,14 +16,17 @@ import SvgIcon from '@mui/joy/SvgIcon';
 import * as Icon from 'react-bootstrap-icons';
 import '../styles/UserCard.css'
 import MuiAvatar from "./MuiAvatar";
+import { useContext } from 'react';
+import { UserContext } from '../App.jsx';
 
 
 
 export default function UserCard({person}) {
 
-     {/* "useOutletContext" is how you get props from Outlet: https://reactrouter.com/en/main/hooks/use-outlet-context */}
-     const [snackbarOpenCondition, setSnackbarOpenCondition, snackbarOpen, setSnackbarOpen, currentUser, setCurrentUser, profileUpdated, setProfileUpdated, selectedPerson, setSelectedPerson] = useOutletContext();
+    // Passing the UserContext defined in app.jsx
+    const { currentUser, selectedPerson, setSelectedPerson } = useContext(UserContext); 
 
+ 
     const navigate = useNavigate(); 
 
     function handleSendMessageClick(){

@@ -1,5 +1,6 @@
 /* eslint-disable react/prop-types */
 import { useState, useEffect, useCallback, useContext  } from 'react'
+import { UserContext } from '../App.jsx';
 import { useOutletContext } from "react-router-dom";
 import {
   MainContainer,
@@ -23,8 +24,8 @@ import MuiAvatar from "./MuiAvatar";
 
 const MessageBox = () => {
 
-     {/* "useOutletContext" is how you get props from Outlet: https://reactrouter.com/en/main/hooks/use-outlet-context */}
-     const [snackbarOpenCondition, setSnackbarOpenCondition, snackbarOpen, setSnackbarOpen, currentUser, setCurrentUser, profileUpdated, setProfileUpdated, selectedPerson, setSelectedPerson] = useOutletContext();
+    // Passing the UserContext defined in app.jsx
+    const { currentUser, selectedPerson, setSelectedPerson } = useContext(UserContext); 
 
     //messages between user and selected person
     const [messagesBetween, setMessagesBetween] = useState();
