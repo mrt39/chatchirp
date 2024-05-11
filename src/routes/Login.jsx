@@ -24,6 +24,12 @@ export default function Login({snackbarOpen, setSnackbarOpen, snackbarOpenCondit
         window.open("http://localhost:5000/auth/google", "_self");
     }
 
+    function handleDemoSigninClick(){
+      console.log("wants to sign in demo")
+      setLoginData({email:"demoacc@demoacc.com" , password: "demoacc"})
+      setClickedLogin(true)
+    }
+
   function handleChange (event) {
     setLoginData({
         ...loginData,
@@ -136,6 +142,17 @@ export default function Login({snackbarOpen, setSnackbarOpen, snackbarOpenCondit
               sx={{ mt: 3, mb: 2 }}
             >
               Sign In With Google
+            </Button>
+
+            <Button
+             id="signinWithDemoAcc"
+              type="button"
+              onClick={handleDemoSigninClick}
+              fullWidth
+              variant="contained"
+              sx={{ mt: 3, mb: 2 }}
+            >
+              Sign In With Demo Account
             </Button>
 
             <Grid container>

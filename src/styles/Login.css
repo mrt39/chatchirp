@@ -38,6 +38,10 @@
     background-color: red;
 }
 
+#signinWithDemoAcc{
+    background-color: cyan;
+}
+
 .signUpLink{
     margin: 0;
     font-family: "Roboto","Helvetica","Arial",sans-serif;

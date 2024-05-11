@@ -99,21 +99,45 @@ import {
       </CardContent>
       <Divider />
        <CardActions>
-        <Button
-          fullWidth
-          variant="text"
-        >
-            Upload Picture
-          </Button>
-          <input 
+
+{/*           <input 
+          disabled = {user.email === "demoacc@demoacc.com" ? true : false}
           type="file" 
+          className="imageInput btn btn-primary"
+          value=""
+          id="image" 
+          name="image" 
+          accept="image/*"
+          onChange={handleChange}/> */}
+
+
+
+          <input 
+          disabled = {user.email === "demoacc@demoacc.com" ? true : false}
+          type="file" 
+          className="hidden"
           value=""
           id="image" 
           name="image" 
           accept="image/*"
           onChange={handleChange}/>
 
-          <button onClick={submitImg}>SUBMIT</button>
+          {/* hide the input field and choose  a label for the functionality because input brings its own embedded css, easier to modify label*/}
+          <Button 
+          variant="contained"
+          disabled = {user.email === "demoacc@demoacc.com" ? true : false}
+          >
+            <label htmlFor="image" className="imgLbl">Choose an Image</label>
+
+          </Button>
+
+          <Button 
+          disabled = {user.email === "demoacc@demoacc.com" ? true : false}
+          variant="contained"
+          onClick={submitImg}
+          >
+            Submit
+          </Button>
         
       </CardActions>
     </Card>

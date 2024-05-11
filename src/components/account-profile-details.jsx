@@ -154,7 +154,7 @@ export const AccountProfileDetails = ({user, setSnackbarOpen, invalidEmail, setI
                 md={6}
               >
                 <TextField
-                  disabled={loading}
+                  disabled={loading ||user.email === "demoacc@demoacc.com" ? true : false} 
                   fullWidth
                   label="Name"
                   name="name"
@@ -168,7 +168,7 @@ export const AccountProfileDetails = ({user, setSnackbarOpen, invalidEmail, setI
                 md={6}
               >
                 <TextField
-                  disabled={loading}
+                  disabled={loading ||user.email === "demoacc@demoacc.com" ? true : false}
                   fullWidth
                   error={invalidEmail}
                   helperText={invalidEmail? 'Invalid E-mail address!' : ' '}   
@@ -185,7 +185,7 @@ export const AccountProfileDetails = ({user, setSnackbarOpen, invalidEmail, setI
                 md={12}
               >
                 <TextField
-                  disabled={loading}
+                  disabled={loading ||user.email === "demoacc@demoacc.com" ? true : false}
                   fullWidth
                   id="bio"
                   label="Bio"
@@ -204,7 +204,7 @@ export const AccountProfileDetails = ({user, setSnackbarOpen, invalidEmail, setI
         <Divider />
         <CardActions sx={{ justifyContent: 'flex-end' }}>
           <Button 
-          disabled={loading}
+          disabled={loading ||user.email === "demoacc@demoacc.com" ? true : false}
           variant="contained"
           onClick={handleSubmit}>
             Save details

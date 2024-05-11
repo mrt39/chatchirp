@@ -2,8 +2,19 @@
     overflow-wrap: anywhere;
 }
 
+.css-1t6e9jv-MuiCardActions-root{
+    justify-content: space-between;
+}
+
 .profileAvatar .MuiAvatar-root{
     height: 80px;
     width: 80px;
 }
 
+.hidden{
+    display: none;
+}
+
+.imgLbl{
+    cursor: pointer;    
+}
