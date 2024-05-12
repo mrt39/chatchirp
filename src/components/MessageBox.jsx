@@ -215,10 +215,7 @@ const MessageBox = () => {
                   as="Avatar"
                   user={selectedPerson}/>  
                   </div> 
-                 <ConversationHeader.Content userName={selectedPerson.name} info="Active 10 mins ago" />
-                 <ConversationHeader.Actions>
-                      <EllipsisButton orientation="vertical" />
-                 </ConversationHeader.Actions>          
+                 <ConversationHeader.Content userName={selectedPerson.name}/>        
                </ConversationHeader>
 
             {loading?

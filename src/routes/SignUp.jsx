@@ -12,7 +12,7 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import Snackbar from "../components/Snackbar.jsx"
-
+import Footer from "../components/Footer.jsx";
 
 
 
@@ -127,7 +127,7 @@ export default function SignUp({snackbarOpen, setSnackbarOpen, snackbarOpenCondi
     }, [submitted]);
 
   return (
-
+  <>
       <Container component="main" maxWidth="xs">
         <CssBaseline />
         <Box
@@ -210,6 +210,7 @@ export default function SignUp({snackbarOpen, setSnackbarOpen, snackbarOpenCondi
           setSnackbarOpen={setSnackbarOpen}
         />
       </Container>
-
+      <Footer/>
+  </>
   );
 }
