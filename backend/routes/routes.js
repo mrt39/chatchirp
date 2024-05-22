@@ -35,8 +35,15 @@ router.get('/auth/google/',
 router.get('/auth/google/callback', 
   passport.authenticate('google', { failureRedirect: '/' }),
   function(req, res) {
-    // Successful authentication, redirect
-    res.redirect('/checkifloggedout');
+    if (req.isAuthenticated()){
+      res.redirect(CLIENT_URL);
+    }
+    else{
+        res.send(JSON.stringify("Google login failed!"))
+    }
+
+/*     // Successful authentication, redirect
+    res.redirect('/checkifloggedout'); */
 });
 
 router.post("/signup", function(req, res){
@@ -82,14 +89,14 @@ router.post('/logout',  (req, res) => {
 
 
 
-router.get("/checkifloggedout", function(req, res){
+/* router.get("/checkifloggedout", function(req, res){
     if (req.isAuthenticated()){
         res.redirect(CLIENT_URL);
     }
     else{
          res.send(JSON.stringify("You are NOT logged in!"))
     }
-});
+}); */
 
 router.get("/messagebox/:userid", async (req, res) => {
 
