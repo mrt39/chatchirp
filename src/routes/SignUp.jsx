@@ -1,6 +1,7 @@
 /* eslint-disable react/prop-types */
-import { Link as RouterLink, useNavigate } from "react-router-dom";
-import { useState, useEffect } from 'react'
+import { Link as RouterLink, useNavigate, Navigate, useOutletContext } from "react-router-dom";
+import { useState, useEffect, useContext } from 'react'
+import { UserContext } from '../App.jsx';
 import '../styles/Login.css'
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
@@ -16,9 +17,14 @@ import Footer from "../components/Footer.jsx";
 
 
 
-export default function SignUp({snackbarOpen, setSnackbarOpen, snackbarOpenCondition, setSnackbarOpenCondition}) {
+export default function SignUp() {
 
   const navigate = useNavigate(); 
+
+  // Passing the UserContext defined in app.jsx
+  const { currentUser, selectedPerson, setSelectedPerson } = useContext(UserContext); 
+
+  const [snackbarOpenCondition, setSnackbarOpenCondition, snackbarOpen, setSnackbarOpen] = useOutletContext();
 
 
   const [submitted, setSubmitted] = useState(false);
@@ -128,6 +134,8 @@ export default function SignUp({snackbarOpen, setSnackbarOpen, snackbarOpenCondi
 
   return (
   <>
+    {currentUser? <Navigate to="/" />
+  : ""}
       <Container component="main" maxWidth="xs">
         <CssBaseline />
         <Box

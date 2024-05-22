@@ -1,7 +1,8 @@
 /* eslint-disable react/prop-types */
 import { Link as RouterLink } from "react-router-dom";
-import * as React from 'react';
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback, useContext  } from 'react';
+import { UserContext } from '../App.jsx';
+import { useOutletContext, Navigate } from "react-router-dom";
 import '../styles/Login.css'
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
@@ -15,7 +16,13 @@ import Container from '@mui/material/Container';
 import Snackbar from "../components/Snackbar.jsx"
 import Footer from "../components/Footer.jsx";
 
-export default function Login({snackbarOpen, setSnackbarOpen, snackbarOpenCondition, setSnackbarOpenCondition}) {
+export default function Login() {
+
+
+  // Passing the UserContext defined in app.jsx
+  const { currentUser, selectedPerson, setSelectedPerson } = useContext(UserContext); 
+
+  const [snackbarOpenCondition, setSnackbarOpenCondition, snackbarOpen, setSnackbarOpen] = useOutletContext();
 
 
   const [clickedLogin, setClickedLogin] = useState(false);
@@ -26,7 +33,6 @@ export default function Login({snackbarOpen, setSnackbarOpen, snackbarOpenCondit
     }
 
     function handleDemoSigninClick(){
-      console.log("wants to sign in demo")
       setLoginData({email:"demoacc@demoacc.com" , password: "demoacc"})
       setClickedLogin(true)
     }
@@ -45,46 +51,51 @@ export default function Login({snackbarOpen, setSnackbarOpen, snackbarOpenCondit
     setClickedLogin(true)
   };
 
-      useEffect(() => {
-        async function registerUser() {
-            let result = await fetch(
-              import.meta.env.VITE_BACKEND_URL+'/login', {
-                method: "POST",
-                body: JSON.stringify({ email: loginData.email, password: loginData.password}), 
-                headers: {
-                    Accept: 'application/json',
-                    'Content-Type': 'application/json',
-                    "Access-Control-Allow-Origin": "http://localhost:5173",
-                },
-                credentials:"include"
-            })
-            if (result.ok) {
-              let response = await result.json();
-              console.warn(response);
-              setClickedLogin(false);
-              //redirect to the external URL
-               window.location.replace(import.meta.env.VITE_FRONTEND_URL); 
-          
+  useEffect(() => {
+    async function loginUser() {
+        let result = await fetch(
+          import.meta.env.VITE_BACKEND_URL+'/login', {
+            method: "POST",
+            body: JSON.stringify({ email: loginData.email, password: loginData.password}), 
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+                "Access-Control-Allow-Origin": "http://localhost:5173",
+            },
+            credentials:"include"
+        })
+        if (result.ok) {
+          let response = await result.json();
+          console.warn(response);
+          setClickedLogin(false);
+          //redirect to the external URL
+            window.location.replace(import.meta.env.VITE_FRONTEND_URL); 
+      
+        }else{
+            if (result.status === 401) {
+              console.error("Wrong e-mail or password!")
+              setSnackbarOpenCondition("wrongLoginDeets")
+              setSnackbarOpen(true)
             }else{
-                if (result.status === 401) {
-                  console.error("Wrong e-mail or password!")
-                  setSnackbarOpenCondition("wrongLoginDeets")
-                  setSnackbarOpen(true)
-                }else{
-                console.error("There has been an error!")
-                console.error(result);
-              }
-              setClickedLogin(false);
-            }   
-        }
-        /* only trigger when message is sent */
-        if (clickedLogin ===true){
-        registerUser();
-        } 
-    }, [clickedLogin]);
+            console.error("There has been an error!")
+            console.error(result);
+          }
+          setClickedLogin(false);
+        }   
+    }
+    /* only trigger when message is sent */
+    if (clickedLogin ===true){
+      loginUser();
+    } 
+}, [clickedLogin]);
+
+
+
 
   return (
 <>
+  {currentUser? <Navigate to="/" />
+  : ""}
       <Container component="main" maxWidth="xs">
         <CssBaseline />
         <Box

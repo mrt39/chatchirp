@@ -6,7 +6,9 @@ const bodyParser = require("body-parser");
 
 //hashing, cookies 
 const session = require('express-session');
-const passport = require("passport");
+const {passport} = require( "./passport.js")
+
+
 
 
 //cors
@@ -14,7 +16,6 @@ const cors = require("cors");
 
 
 //require other js files
-const passportSetup = require("./passport.js");
 const authRoute = require("./routes/routes.js");
 
 
@@ -28,6 +29,7 @@ app.use(
   })
 );
 
+
 app.use(express.json());
 app.use(bodyParser.urlencoded({extended: true}));
 
@@ -39,7 +41,12 @@ app.use(session({
     secret: 'secrets',
     resave: false,
     saveUninitialized: false,
+    cookie: {
+      secure: false, // Set to true in production if served over HTTPS
+      sameSite: 'strict' // Optional, set based on your requirements
+  }
 }));
+
 
 app.use(passport.initialize());
 app.use(passport.session());
@@ -47,9 +54,11 @@ app.use(passport.session());
 
 
 
-/* Routes */
+
+/* Mount Routes */
 
 app.use("/", authRoute);
+
 
 
 app.listen("5000", () => {

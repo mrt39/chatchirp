@@ -1,10 +1,11 @@
 const router = require("express").Router();
-const passport = require("passport");
 //node file system module
 const fs = require('fs');
 const path = require('path');
 /* grab the User model that's exported in passport.js */
-const {User, Message, upload} = require( "../passport.js")
+const {User, Message, upload, passport} = require( "../passport.js")
+/* const {passport} = require( "../index.js") */
+
 
 
 const CLIENT_URL = "http://localhost:5173";
@@ -13,7 +14,7 @@ const CLIENT_URL = "http://localhost:5173";
 
 router.get("/login/success", (req, res) => {
   if (req.isAuthenticated()) {
-    //Send it to the frontend
+    //Send user to the frontend
     res.json(req.user);
   } else {
     res.status(401).send('User not authenticated');
@@ -52,37 +53,33 @@ router.post("/signup", function(req, res){
   })
 });
 
-  
-  
 
 router.post("/login", function(req, res){
-
-  const user = new User({
-      email: req.body.email,
-      password: req.body.password
-  });
-  req.login(user, function(err){
-      if (err){
-          res.send(err)
-          console.log(err);
-      } else{
-          passport.authenticate("local")(req, res, function(){
-            console.log("Successfully logged in!")
-             res.send(JSON.stringify("Successfully logged in!"))
-            /* res.redirect('/checkifloggedout');     */       
-          });
-      }
+  passport.authenticate("local")(req, res, function(){
+    console.log("Successfully logged in!")
+    console.log(req.user)
+    res.send(JSON.stringify("Successfully logged in!"))
   })
 });
 
 
 
-router.get("/logout", function(req, res){
+router.post('/logout',  (req, res) => {
+  console.log("Logging out user:", req.user);
+  if (req.isAuthenticated()) {
     req.logout(function(err) {
-        if (err) { return next(err); }
-        res.redirect('/checkifloggedout');
-      });
+      if (err) {
+        console.error(err);
+        res.status(401).json( 'Not able to logout' );
+      }
+      console.log("Logged out successfully.");
+      res.status(200).json( "Logged out successfully." );
+    });
+} else {
+    res.status(401).json( 'Not able to logout' );
+}
 });
+
 
 
 router.get("/checkifloggedout", function(req, res){
@@ -90,7 +87,7 @@ router.get("/checkifloggedout", function(req, res){
         res.redirect(CLIENT_URL);
     }
     else{
-        res.send("You are NOT logged in!");
+         res.send(JSON.stringify("You are NOT logged in!"))
     }
 });
 
@@ -146,7 +143,7 @@ router.get("/messagebox/:userid", async (req, res) => {
 })
 
 router.get("/getallusers", async (req, res) => {
-
+  
     try {
       const users = await User.find();
       res.send(users);
@@ -177,6 +174,7 @@ router.get("/messagesfrom/:userid_messagingid", async (req, res) => {
      const ids = route.split('_');
      const userID= ids[0]
      const messagedPersonID= ids[1]
+     console.log("Current user using this app: " + req.user)
      console.log("User: " + userID + " . Messaged person: " + messagedPersonID )
    
     try {

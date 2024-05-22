@@ -18,9 +18,11 @@ const router = createBrowserRouter([
       { index: true, element: <Messages/> }, 
       { path: "profile", element: <Profile />},
       { path: "findpeople", element: <FindPeople />},
+      { path: "login", element: <Login />},
+      { path: "signup", element: <SignUp />},
     ], 
   },
-  {
+/*   {
     path: "/login",
     errorElement: <ErrorPage />,
     element: <Login />,
@@ -29,7 +31,7 @@ const router = createBrowserRouter([
     path: "/signup",
     errorElement: <ErrorPage />,
     element: <SignUp />,
-  },
+  }, */
 
 
 ]);
