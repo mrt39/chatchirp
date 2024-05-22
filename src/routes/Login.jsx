@@ -62,7 +62,7 @@ export default function Login() {
                 'Content-Type': 'application/json',
                 "Access-Control-Allow-Origin": "http://localhost:5173",
             },
-            credentials:"include"
+            credentials:"include" //required for sending the cookie data
         })
         if (result.ok) {
           let response = await result.json();

@@ -122,7 +122,10 @@ const App = () => {
   return (
 
       <div className='appContainer'>
-      {currentUser ? <Navbar user={currentUser} />
+      {currentUser ? <Navbar 
+      user={currentUser} 
+      setCurrentUser={setCurrentUser}
+      />
             : <Navigate to="/login" /> } 
       <UserContext.Provider value={{ currentUser, selectedPerson, setSelectedPerson }}>
         {/* "context" is how you pass props to Outlet: https://reactrouter.com/en/main/hooks/use-outlet-context */}

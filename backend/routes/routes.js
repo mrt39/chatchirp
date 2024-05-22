@@ -206,15 +206,19 @@ router.get("/messagesfrom/:userid_messagingid", async (req, res) => {
 router.post("/messagesent", async (req, res) => {
 
   console.log(req.body) 
-
   try {
-    const newMessage = new Message({
-        from: req.body.from,
-        to: req.body.to,
-        message: req.body.message,
-    });
-    const result = newMessage.save();
-    res.send(result)
+    //sending message available only if authenticated
+    if (req.isAuthenticated){
+      const newMessage = new Message({
+          from: req.body.from,
+          to: req.body.to,
+          message: req.body.message,
+      });
+      const result = newMessage.save();
+      res.send(result)
+    } else{
+      res.send("Not authenticated!");
+    }
 
   } catch (e) {
       res.send("Something Went Wrong");
@@ -252,6 +256,7 @@ router.post('/uploadprofilepic/:userid',  upload.single('image'),  async (req, r
 //image sent in message input
 router.post("/imagesent", upload.single('image'), async (req, res) => {
 
+
   console.log(path.join(__dirname + '/../images/' + req.file.filename)) 
 
   const imageName = req.file.filename 
@@ -263,13 +268,17 @@ router.post("/imagesent", upload.single('image'), async (req, res) => {
   console.log(msgTo)
 
   try {
-    const newMessage = new Message({
-        from: msgFrom,
-        to: msgTo,
-        image: imageName,
-    });
-    const result = newMessage.save();
-    res.send(result)
+    if (req.isAuthenticated){
+      const newMessage = new Message({
+          from: msgFrom,
+          to: msgTo,
+          image: imageName,
+      });
+      const result = newMessage.save();
+      res.send(result)
+    } else{
+      res.send("Not authenticated!");
+    }
 
   } catch (e) {
       res.send("Something Went Wrong");

@@ -49,7 +49,8 @@ const MessageInputBox = ({messageSent, setMessageSent, contactsBoxPeople, firstM
                 headers: {
                     'Content-Type': 'application/json',
                     "Access-Control-Allow-Origin": "*",
-                }
+                },
+                credentials:"include" //required for sending the cookie data
             })
             result = await result.json();
             console.warn(result);
@@ -143,7 +144,8 @@ const MessageInputBox = ({messageSent, setMessageSent, contactsBoxPeople, firstM
               body: formData, 
               headers: {
                   "Access-Control-Allow-Origin": "*",
-              }
+              },
+              credentials:"include" //required for sending the cookie data
           })
           result = await result.json();
           console.warn(result);
