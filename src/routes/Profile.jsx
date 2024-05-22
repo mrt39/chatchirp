@@ -1,6 +1,7 @@
 /* eslint-disable react/prop-types */
 import { useOutletContext} from "react-router-dom";
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useContext } from 'react'
+import { UserContext } from '../App.jsx';
 import { Box, Container, Stack, Typography, Unstable_Grid2 as Grid } from '@mui/material';
 import { AccountProfile } from '../components/account-profile';
 import { AccountProfileDetails } from '../components/account-profile-details';
@@ -12,8 +13,14 @@ import "../styles/Profile.css"
 
 const Profile = () => {
 
-     {/* "useOutletContext" is how you get props from Outlet: https://reactrouter.com/en/main/hooks/use-outlet-context */}
-     const [snackbarOpenCondition, setSnackbarOpenCondition, snackbarOpen, setSnackbarOpen, user, setCurrentUser, profileUpdated, setProfileUpdated] = useOutletContext();
+       // "useOutletContext" is used to how you get props from Outlet: https://reactrouter.com/en/main/hooks/use-outlet-context 
+     const [snackbarOpenCondition, setSnackbarOpenCondition, snackbarOpen, setSnackbarOpen, setCurrentUser, profileUpdated, setProfileUpdated] = useOutletContext();
+      // Passing the UserContext defined in app.jsx
+      const { currentUser, selectedPerson, setSelectedPerson } = useContext(UserContext); 
+
+
+
+
 
 
   //check if the e-mail address user puts is invalid
@@ -46,7 +53,7 @@ const Profile = () => {
                 lg={4}
               >
                 <AccountProfile 
-                user={user}
+                user={currentUser}
                 setProfileUpdated={setProfileUpdated}
                 />
               </Grid>
@@ -56,7 +63,7 @@ const Profile = () => {
                 lg={8}
               >
                 <AccountProfileDetails 
-                user={user}
+                user={currentUser}
                 setCurrentUser={setCurrentUser}
                 setSnackbarOpen={setSnackbarOpen}
                 invalidEmail={invalidEmail}
