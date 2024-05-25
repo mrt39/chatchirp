@@ -1,20 +1,23 @@
 import { Outlet } from "react-router-dom";
 import Navbar from "./components/Navbar.jsx"
+import ThemeButton from "./components/ThemeButton.jsx"
 /* import Footer from './components/Footer.jsx'; */
 import './styles/App.css'
 import React from 'react'
 import { useEffect, useState, createContext, Fragment  } from "react";
 import ReactDOM from 'react-dom/client'
 import { BrowserRouter, Routes, Route, Navigate, createRoutesFromElements } from "react-router-dom";
-import ErrorPage from "./routes/Error-Page.jsx";
-import Profile from "./routes/Profile.jsx";
-import FindPeople from "./routes/FindPeople.jsx";
-import Messages from './routes/Messages.jsx';
-import Login from './routes/Login.jsx';
-import SignUp from './routes/SignUp.jsx';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 
+//bootstrap styles
+import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap-icons/font/bootstrap-icons.css'; 
+import 'bootstrap/dist/js/bootstrap.bundle.min.js';
+
+
+/* context created for theme (dark/light) */
+export const ThemeContext = createContext();
 
 
 export const UserContext = createContext({
@@ -26,6 +29,11 @@ export const UserContext = createContext({
 
 
 const App = () => {
+
+
+  //theme (dark/light)
+  const [theme, setTheme] = useState('light');
+
 
   //selected person on messagebox (contacts)
   const [selectedPerson, setSelectedPerson] = useState();
@@ -122,6 +130,10 @@ const App = () => {
   return (
 
       <div className='appContainer'>
+      <ThemeButton
+        theme={theme}
+        setTheme={setTheme}
+      />
       {currentUser ? <Navbar 
       user={currentUser} 
       setCurrentUser={setCurrentUser}

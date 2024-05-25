@@ -1,6 +1,6 @@
 .activeContactsBox{
     color: #2b6a9b !important;
-    background-color: #d5e7f5;
+    background-color: #d5e7f5 !important;
 }
 
 .activeContactsBox:hover{
@@ -16,6 +16,21 @@
     max-width: 320px !important;
 }
 
+.cs-conversation{
+    background-color: inherit;
+    color: inherit;
+   /* background-color: #2B3035 */
+}
+
+.cs-conversation:hover{
+    color: #2b6a9b ;
+}
+
+.scrollbar-container{
+     background-color: inherit; 
+     color: inherit;
+}
+
 @media (max-width: 768px) {
 
 .cs-main-container--responsive .cs-search{
@@ -26,5 +41,6 @@
 /* Scrollbar settings (in order to get the default scrollbar from chat chatscope components visible) */
 .cs-conversation-list{
     height: 100vh;
+    color: inherit;
 }
 

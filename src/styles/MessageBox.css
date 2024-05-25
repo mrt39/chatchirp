@@ -7,6 +7,33 @@
     position: static !important;
 }
 
+/* using inherit for adapting to theme */
+.cs-main-container{
+    background-color: inherit !important; 
+    color: inherit !important;
+}
+
+.cs-chat-container{
+    background-color: inherit !important; 
+    color: inherit !important;
+}
+
+.cs-message-list{
+    background-color: inherit !important; 
+}
+
+.cs-message-separator{
+    background-color: inherit !important; 
+}
+
+.cs-conversation-header{
+    background-color: #2B3035 !important; 
+}
+.cs-conversation-header__user-name{
+    background-color: #2B3035 !important; 
+}
+
+.
 
 .css-6h3a61-MuiPaper-root{
     width: 20%;

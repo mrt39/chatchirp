@@ -1,0 +1,10 @@
+.btn-bd-primary{
+    background-color: #712cf9 !important;
+    color: white !important;
+}
+
+.btn-bd-primary:hover{
+    background-color: #6528e0 !important;
+}
+
+

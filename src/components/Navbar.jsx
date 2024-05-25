@@ -23,7 +23,7 @@ const Navbar = ({user, setCurrentUser}) => {
   function handleSignOut(){
       fetch('http://localhost:5000/logout',{
       method: 'POST',
-      credentials: 'include' // sends cookies to server
+      credentials: 'include' // sends cookies to server, so it can log out/unauthenticate user!
       })
       .then(async result => {
         if (result.ok) {
