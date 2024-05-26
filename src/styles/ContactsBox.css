@@ -12,8 +12,10 @@
     color: inherit;
 }
 
+
 .cs-main-container>.cs-sidebar.cs-sidebar--left{
     max-width: 320px !important;
+    border-right: solid 1px #6ea9d7;
 }
 
 .cs-conversation{

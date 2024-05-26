@@ -11,6 +11,7 @@
 .cs-main-container{
     background-color: inherit !important; 
     color: inherit !important;
+    border: none !important;
 }
 
 .cs-chat-container{
@@ -20,6 +21,7 @@
 
 .cs-message-list{
     background-color: inherit !important; 
+    color: inherit !important;
 }
 
 .cs-message-separator{
@@ -28,12 +30,16 @@
 
 .cs-conversation-header{
     background-color: #2B3035 !important; 
+    /* border-bottom: solid 0.1px #6ea9d7 !important; */
+    border-bottom: none !important;
 }
 .cs-conversation-header__user-name{
     background-color: #2B3035 !important; 
 }
 
-.
+.cs-message-group__footer{
+    color: inherit !important;
+}
 
 .css-6h3a61-MuiPaper-root{
     width: 20%;
