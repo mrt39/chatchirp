@@ -29,12 +29,17 @@
 }
 
 .cs-conversation-header{
-    background-color: #2B3035 !important; 
+    /* background-color: #2B3035 !important;  */
+    background-color: rgba(var(--bs-tertiary-bg-rgb)) !important;
     /* border-bottom: solid 0.1px #6ea9d7 !important; */
     border-bottom: none !important;
+    /* color: #6ea9d7 !important; */
+    color: rgba(var(--bs-secondary-text-emphasis)) !important;
 }
 .cs-conversation-header__user-name{
-    background-color: #2B3035 !important; 
+    background-color: inherit !important; 
+    /* color: inherit !important; */
+    color: rgba(var(--bs-secondary-text-emphasis)) !important;
 }
 
 .cs-message-group__footer{
@@ -69,6 +74,16 @@
 .messageBoxAvatar{
     height: 66px !important;
 }
+
+
+/* background color change for messageboxheader when light mode is toggled on. toggle is on themebutton.jsx */
+
+/* Style for .cs-conversation-header__user-name in light theme */
+.light-theme-conversation-header {
+    background-color: #c6e3fa !important;
+    color: darkslategray !important;
+}
+
 
 .messageBoxHeaderAvatar{
     height: 50px !important;

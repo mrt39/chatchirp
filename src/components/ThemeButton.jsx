@@ -23,14 +23,27 @@ const ThemeButton = ({setTheme, theme}) => {
     document.documentElement.setAttribute('data-bs-theme', theme);
   }, [theme]);
 
+    //making changes on dom based on the theme
+    useEffect(() => {
+      //changes the background color of body to aliceblue with light color toggle. css in app.css
+      document.body.className = theme === 'light' ? 'light-theme' : "";
+      //changes the background color of messagebox header with light color toggle. css in messagebox.css
+/*       const element = document.querySelector('.cs-conversation-header');
+      if (element) {
+        if (theme === 'light') {
+          element.classList.add('light-theme-conversation-header');
+        } else {
+          element.classList.remove('light-theme-conversation-header');
+        }
+      } */
+    }, [theme]);
+
   //changing the active theme icon everytime the theme changes
     useEffect(() => {
       if(theme==="light"){
         setActiveThemeIcon("bi-sun-fill")
       } else if(theme==="dark"){
         setActiveThemeIcon("bi-moon-stars-fill")
-      } else if(theme==="auto"){
-        setActiveThemeIcon("bi-circle-half")
       }
       
     }, [theme]);
@@ -74,18 +87,6 @@ const ThemeButton = ({setTheme, theme}) => {
           </button>
         </li>
         <li>
-          <button 
-          type="button" 
-          name="autoBtn"
-          value="auto"
-          onClick={handleThemeChange}
-          className={`dropdown-item d-flex align-items-center ${theme === 'auto' ? 'active' : ''}`} 
-          data-bs-theme-value="auto" 
-          aria-pressed="false">
-            <i className="me-2 opacity-50 theme-icon bi bi-circle-half"></i>
-            Auto
-            <svg className="bi ms-auto d-none" width="1em" height="1em"><i className="bi bi-check2 d-none"></i></svg>
-          </button>
         </li>
       </ul>
     </div>

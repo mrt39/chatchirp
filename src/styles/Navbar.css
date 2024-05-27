@@ -8,9 +8,23 @@
   width: 35px;
 }
 
-/* BOOTSTRAP */
+
+/* Override the Bootstrap tertiary background color variable for the background and color change of the navbar and messagebox header area. For both dark and light themes.*/
+[data-bs-theme="dark"] {
+  --bs-tertiary-bg-rgb: 72, 103, 148 !important;  /* Custom RGB values for dark theme */
+  --bs-secondary-text-emphasis: 176,224,230 !important;
+}
 
 
+[data-bs-theme="light"] {
+  --bs-tertiary-bg-rgb: 198,227,250 !important;  /* Custom RGB values for light theme */
+  --bs-secondary-text-emphasis: 30,144,255 !important;
+}
+
+
+
+
+/* BOOTSTRAP CODE */
 
   .bi {
     vertical-align: -.125em;

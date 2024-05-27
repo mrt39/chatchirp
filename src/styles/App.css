@@ -1,7 +1,24 @@
 #root {
   width: 100%;
   text-align: center;
+
+
 }
+
+
+ /* background color change when light mode is toggled on. toggle is on themebutton.jsx */
+:root {
+  --bs-body-bg: aliceblue !important; 
+}
+
+body.light-theme {
+  background-color: var(--bs-body-bg) !important;
+  color: var(--bs-body-color) !important;
+}
+
+
+
+
 
 body {
   color: inherit !important;
@@ -58,4 +75,7 @@ body {
   opacity: 1 !important;
 }
 
+.dropdown-menu{
+  background-color: inherit !important;
+}
 
