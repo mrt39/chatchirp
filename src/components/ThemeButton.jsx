@@ -8,7 +8,6 @@ import MuiAvatar from "../components/MuiAvatar.jsx";
 
 const ThemeButton = ({setTheme, theme}) => {
 
-  
   const [activeThemeIcon, setActiveThemeIcon] = useState("");
 
 
@@ -16,6 +15,8 @@ const ThemeButton = ({setTheme, theme}) => {
     console.log (event.target.name)
     console.log (event.target.value)
     setTheme(event.target.value)
+    //save the theme to localstorage so that the user selection persists. use light theme as default.
+    localStorage.setItem('theme', event.target.value);
   }
 
   //changing the theme by altering the data-bs-theme attribute in index.html
@@ -27,15 +28,6 @@ const ThemeButton = ({setTheme, theme}) => {
     useEffect(() => {
       //changes the background color of body to aliceblue with light color toggle. css in app.css
       document.body.className = theme === 'light' ? 'light-theme' : "";
-      //changes the background color of messagebox header with light color toggle. css in messagebox.css
-/*       const element = document.querySelector('.cs-conversation-header');
-      if (element) {
-        if (theme === 'light') {
-          element.classList.add('light-theme-conversation-header');
-        } else {
-          element.classList.remove('light-theme-conversation-header');
-        }
-      } */
     }, [theme]);
 
   //changing the active theme icon everytime the theme changes

@@ -68,14 +68,24 @@ body {
 
 .bd-mode-toggle .dropdown-menu .active .bi {
   display: block !important;
+
 }
 
 #activeIcon1{
   margin-right: 0 !important;
-  opacity: 1 !important;
+
 }
 
 .dropdown-menu{
-  background-color: inherit !important;
+   background-color: inherit !important;
 }
 
+.dropdown-item{
+  color: inherit !important;
+  font-weight: 400 !important;
+}
+
+/* change the bottom-0 class that was added by bootstrap, to move the button to top */
+.bottom-0 {
+  top: 10px !important
+}

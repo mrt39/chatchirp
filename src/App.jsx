@@ -32,7 +32,10 @@ const App = () => {
 
 
   //theme (dark/light)
-  const [theme, setTheme] = useState('light');
+  //save the theme to localstorage so that the user selection persists. use light theme as default.
+  const savedTheme = localStorage.getItem('theme') || 'light';
+
+  const [theme, setTheme] = useState(savedTheme);
 
 
   //selected person on messagebox (contacts)
