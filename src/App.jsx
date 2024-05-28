@@ -32,7 +32,7 @@ const App = () => {
 
 
   //theme (dark/light)
-  //save the theme to localstorage so that the user selection persists. use light theme as default.
+  //load the theme from localstorage so that the user selection persists. use light theme as default.
   const savedTheme = localStorage.getItem('theme') || 'light';
 
   const [theme, setTheme] = useState(savedTheme);

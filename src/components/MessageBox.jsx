@@ -292,7 +292,7 @@ const MessageBox = () => {
             }
 
              </ChatContainer>
-        : <p className="noPersonSelectedContainer">SELECT A PERSON TO TALK YO!</p> 
+        : <p className="noPersonSelectedContainer">ChatChirp</p> 
         
         }                         
            </MainContainer>

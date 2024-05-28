@@ -3,6 +3,11 @@
     width: 100%;
 }
 
+.noPersonSelectedContainer{
+    width: 100%;
+    font-size: 30px;
+}
+
 .css-1d6a3hl-MuiPaper-root-MuiAppBar-root { 
     position: static !important;
 }
@@ -12,6 +17,7 @@
     background-color: inherit !important; 
     color: inherit !important;
     border: none !important;
+    align-items: center;
 }
 
 .cs-chat-container{
