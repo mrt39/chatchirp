@@ -91,8 +91,6 @@ const Navbar = ({user, setCurrentUser}) => {
             </div>
         </a>
         <ul className="dropdown-menu text-small shadow">
-          <li><a className="dropdown-item" href="#">New project...</a></li>
-          <li><a className="dropdown-item" href="#">Settings</a></li>
           <li><a className="dropdown-item" href="/profile">Profile</a></li>
           <li></li>
           <li><a className="dropdown-item" href="#" onClick={handleSignOut}>Sign out</a></li>
