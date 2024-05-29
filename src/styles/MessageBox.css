@@ -35,12 +35,11 @@
 }
 
 .cs-conversation-header{
-    /* background-color: #2B3035 !important;  */
     background-color: rgba(var(--bs-tertiary-bg-rgb)) !important;
-    /* border-bottom: solid 0.1px #6ea9d7 !important; */
     border-bottom: none !important;
-    /* color: #6ea9d7 !important; */
     color: rgba(var(--bs-secondary-text-emphasis)) !important;
+    font-family: inherit !important;
+    font-size: 16,5px !important;
 }
 .cs-conversation-header__user-name{
     background-color: inherit !important; 
