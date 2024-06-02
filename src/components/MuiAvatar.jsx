@@ -2,6 +2,7 @@
 import Avatar from '@mui/material/Avatar';
 import '../styles/MuiAvatar.css'
 
+/* give hash color to a word */
 function stringToColor(string) {
   let hash = 0;
   let i;
@@ -36,15 +37,19 @@ function stringAvatar(name) {
   };
 }
 
-export default function MuiAvatar({user}) {
+export default function MuiAvatar({user, profilePageAvatar}) {
   return (
     /* if the user has an uploadedpic or picture(from google), use it. otherwise, create an avatar from the initials and color algorithm above. */
        user.uploadedpic || user.picture? 
        <Avatar src={user.uploadedpic? "http://localhost:5000/images/" + user.uploadedpic : user.picture} 
        //referrerPolicy is required to GET the images from google database without an error.
-       imgProps={{ referrerPolicy: "no-referrer" }} />
+       imgProps={{ referrerPolicy: "no-referrer" }} 
+       sx={profilePageAvatar? { width: 150, height: 150 } :{ width: 50, height: 50 }}
+       />
         :
-        <Avatar {...stringAvatar(user.name)}  />
+        <Avatar {...stringAvatar(user.name)}  
+          sx={profilePageAvatar? { width: 150, height: 150 } :{ width: 50, height: 50 }}
+        />
         
   );
 }

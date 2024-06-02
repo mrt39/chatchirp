@@ -6,6 +6,7 @@ import TextField from "@mui/material/TextField";
 import CircularProgress from '@mui/material/CircularProgress';
 import Box from '@mui/material/Box';
 import UserCard from "./UserCard";
+import UserCard2 from "./UserCard2";
 import '../styles/SearchPeople.css'
 
 
@@ -129,7 +130,10 @@ export default function SearchPeople() {
               className="searchResults"
               key={person.id}
             >
-              <UserCard
+{/*               <UserCard
+              person = {person}
+              /> */}
+              <UserCard2
               person = {person}
               />
             </div>
