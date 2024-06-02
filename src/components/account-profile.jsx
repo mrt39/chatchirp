@@ -10,7 +10,7 @@ import {
     Typography
   } from '@mui/material';
   import { useState, useEffect } from 'react';
-  import "../styles/Account-Profile.css"
+  import "../styles/Account-Profile2.css"
   import MuiAvatar from "./MuiAvatar";
   
   
@@ -61,43 +61,22 @@ import {
 
 
       return (
-    <Card>
-      <CardContent>
-        <Box
-          sx={{
-            alignItems: 'center',
-            display: 'flex',
-            flexDirection: 'column'
-          }}
-        >
-          <div className="profileAvatar">
-            <MuiAvatar
-              user={user}
-            />
-          </div>
-
-          <Typography
-            gutterBottom
-            variant="h5"
-          >
-            {user.name}
-          </Typography>
-          <Typography
-            color="text.secondary"
-            variant="body1"
-          >
-            {user.email}
-          </Typography>
-          <br />
-          <Typography
-            color="text.secondary"
-            variant="body2"
-          >
-            {user.bio}
-          </Typography>
-        </Box>
-      </CardContent>
-      <Divider />
+        <Card>
+              <div className="card">
+                <div className="card-body">
+                  <div className="d-flex flex-column align-items-center text-center">
+                    <MuiAvatar
+                    user={user}
+                    profilePageAvatar="yes"
+                    />                  
+                    <div className="mt-3">
+                      <h4>{user.name}</h4>
+                      <p className="text-secondary mb-1">{user.email}</p>
+                      <p className="text-muted font-size-sm">{user.bio}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
        <CardActions>
 
 {/*           <input 
@@ -140,6 +119,6 @@ import {
           </Button>
         
       </CardActions>
-    </Card>
+      </Card>
     )
 };

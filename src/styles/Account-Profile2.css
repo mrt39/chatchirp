@@ -1,3 +1,24 @@
+.css-h93ljk-MuiTypography-root, .css-r40f8v-MuiTypography-root, .css-1pnmrwp-MuiTypography-root{
+    overflow-wrap: anywhere;
+}
+
+.css-1t6e9jv-MuiCardActions-root{
+    justify-content: space-between;
+}
+
+.profileAvatar .MuiAvatar-root{
+    height: 80px;
+    width: 80px;
+}
+
+.hidden{
+    display: none;
+}
+
+.imgLbl{
+    cursor: pointer;    
+}
+
 .card {
     position: relative;
     display: flex;

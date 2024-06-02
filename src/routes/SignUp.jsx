@@ -156,6 +156,7 @@ export default function SignUp() {
           <TextField 
               margin="normal"
               fullWidth
+              className="loginSignupTextField"
               id="name"
               label="Name"
               type="name"
@@ -170,6 +171,7 @@ export default function SignUp() {
             <TextField 
               margin="normal"
               fullWidth
+              className="loginSignupTextField"
               id="email"
               label="E-mail Address"
               type="email"
@@ -184,6 +186,7 @@ export default function SignUp() {
               margin="normal"
               required
               fullWidth
+              className="loginSignupTextField"
               name="password"
               label="Password"
               type="password"

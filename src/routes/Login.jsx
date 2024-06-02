@@ -117,6 +117,7 @@ export default function Login() {
               margin="normal"
               required
               fullWidth
+              className="loginSignupTextField"
               id="email"
               label="E-mail Address"
               type="email"
@@ -129,6 +130,7 @@ export default function Login() {
               margin="normal"
               required
               fullWidth
+              className="loginSignupTextField"
               name="password"
               label="Password"
               type="password"

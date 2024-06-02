@@ -25,9 +25,6 @@ function stringToColor(string) {
 
 function stringAvatar(name) {
   return {
-    sx: {
-      bgcolor: stringToColor(name),
-    },
     children: 
     /* if there are multiple words in name */
     name.includes(" ")?
@@ -47,8 +44,9 @@ export default function MuiAvatar({user, profilePageAvatar}) {
        sx={profilePageAvatar? { width: 150, height: 150 } :{ width: 50, height: 50 }}
        />
         :
-        <Avatar {...stringAvatar(user.name)}  
-          sx={profilePageAvatar? { width: 150, height: 150 } :{ width: 50, height: 50 }}
+        <Avatar 
+        {...stringAvatar(user.name)}  
+        sx={profilePageAvatar? { bgcolor: stringToColor(user.name), width: 150, height: 150 } :{ bgcolor: stringToColor(user.name), width: 50, height: 50 }}
         />
         
   );

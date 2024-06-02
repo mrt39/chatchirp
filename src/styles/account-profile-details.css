@@ -1,0 +1,15 @@
+.profileDetails{
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+
+.profileDetailsTextField .css-1t8l2tu-MuiInputBase-input-MuiOutlinedInput-input{
+    color: #2B2B2B !important;
+}
+
+.css-sghohy-MuiButtonBase-root-MuiButton-root{
+    background-color: rgba(var(--bs-tertiary-bg-rgb)) !important;
+    color: var(--bs-body-color) !important; 
+    font-family: inherit !important;
+}

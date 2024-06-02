@@ -4,7 +4,6 @@ import { useState, useEffect, useContext } from 'react'
 import { UserContext } from '../App.jsx';
 import { Box, Container, Stack, Typography, Unstable_Grid2 as Grid } from '@mui/material';
 import { AccountProfile } from '../components/account-profile';
-import { AccountProfile2 } from '../components/account-profile2';
 import { AccountProfileDetails } from '../components/account-profile-details';
 import Snackbar from "../components/Snackbar.jsx"
 import "../styles/Profile.css"
@@ -57,7 +56,7 @@ const Profile = () => {
                 user={currentUser}
                 setProfileUpdated={setProfileUpdated}
                 /> */}
-                <AccountProfile2 
+                <AccountProfile
                 user={currentUser}
                 setProfileUpdated={setProfileUpdated}
                 />

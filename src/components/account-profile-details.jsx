@@ -12,6 +12,8 @@ import {
   TextField,
   Unstable_Grid2 as Grid
 } from '@mui/material';
+import "../styles/account-profile-details.css"
+
 
 
 export const AccountProfileDetails = ({user, setSnackbarOpen, invalidEmail, setInvalidEmail,  setSnackbarOpenCondition, profileUpdated, setProfileUpdated}) => {
@@ -134,7 +136,8 @@ export const AccountProfileDetails = ({user, setSnackbarOpen, invalidEmail, setI
       noValidate
       onSubmit={handleSubmit}
     >
-      <Card>
+      <Card
+      className='profileDetails'>
         {loading? 
         <CircularProgress
         size={57}/>
@@ -158,6 +161,7 @@ export const AccountProfileDetails = ({user, setSnackbarOpen, invalidEmail, setI
                   fullWidth
                   label="Name"
                   name="name"
+
                   onChange={handleChange}
                   required
                   value={values.name}
@@ -174,6 +178,7 @@ export const AccountProfileDetails = ({user, setSnackbarOpen, invalidEmail, setI
                   helperText={invalidEmail? 'Invalid E-mail address!' : ' '}   
                   label="E-mail Address"
                   name="email"
+                  className='profileDetailsTextField'
                   type="email"
                   required
                   onChange={handleChange}
@@ -190,6 +195,7 @@ export const AccountProfileDetails = ({user, setSnackbarOpen, invalidEmail, setI
                   id="bio"
                   label="Bio"
                   name="bio"
+                  className='profileDetailsTextField'
                   multiline
                   rows={4}
                   placeholder="Enter Your Bio"
