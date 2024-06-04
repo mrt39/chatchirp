@@ -15,8 +15,8 @@ import Typography from '@mui/joy/Typography';
 import SvgIcon from '@mui/joy/SvgIcon';
 import * as Icon from 'react-bootstrap-icons';
 import '../styles/UserCard.css'
-import MuiAvatar from "./MuiAvatar";
-import { useContext } from 'react';
+import MuiAvatar from "./MuiAvatar.jsx";
+import { useContext, useEffect, useState } from 'react';
 import { UserContext } from '../App.jsx';
 
 
@@ -24,7 +24,7 @@ import { UserContext } from '../App.jsx';
 export default function UserCard({person}) {
 
     // Passing the UserContext defined in app.jsx
-    const { currentUser, selectedPerson, setSelectedPerson } = useContext(UserContext); 
+    const { currentUser, selectedPerson, setSelectedPerson, theme } = useContext(UserContext); 
 
  
     const navigate = useNavigate(); 
@@ -35,56 +35,43 @@ export default function UserCard({person}) {
         navigate("/"); 
     }
 
+    useEffect(() => {
+
+      console.log(theme)
+    }, [theme]);
+
+
+
   return (
-    <Card
-      sx={{
-        width: 320,
-        maxWidth: '100%',
-        boxShadow: 'lg',
-      }}
-    >
-      <CardContent sx={{ alignItems: 'center', textAlign: 'center'  }}>
-        {/* <Avatar src={person.uploadedpic? "http://localhost:5000/images/" + person.uploadedpic : person.picture} sx={{ '--Avatar-size': '4rem' }} /> */}
-        <div className="userCardAvatar">
+    <div className="cardContainer">
+        <div className={theme === 'dark' ? 'dark-card-user-image' : 'card-user-image'}>
+        <div className="userCardAvatar img-fluid">
           <MuiAvatar 
           user={person}/>
         </div>
-        <Typography level="title-lg">{person.name}</Typography>
-        {person.email? 
-        <Typography 
-          color="text.secondary"
-          variant="body1"
-        >
-        {person.email}
-        </Typography>
-        :null}
-
-        {person.bio?  
-        <Typography level="body-sm" sx={{ textOverflow: 'ellipsis'}}>
-        {person.bio}
-        </Typography>
-        : null} 
-
-        <Box
-          sx={{
-            display: 'flex',
-            gap: 2,
-            mt: 2,
-            '& > button': { borderRadius: '2rem' },
-          }}
-        >
-        </Box>
-      </CardContent>
-      <CardOverflow sx={{ bgcolor: 'background.level1' }}>
-        <CardActions buttonFlex="1">
-        <div href="#" title="Message this person!" >
-        <IconButton className="userCardIconButton" onClick={handleSendMessageClick} size="sm" variant="plain" color="neutral">
-            <Icon.SendFill  className="bi pe-none" width="24" height="24" aria-label="Message"/>
-            <p>Say Hi!</p>
-        </IconButton>
         </div>
-        </CardActions>
-      </CardOverflow>
-    </Card>
+ 
+        <div className="cardContent">
+            <h4 className="cardName">{person.name}</h4>
+            <p className="cardEmail">{person.email}</p>
+ 
+ 
+ 
+            <p className="cardBio">
+            {person.bio}
+            </p>
+            <CardActions buttonFlex="1">
+            <div href="#" title="Message this person!" >
+            <IconButton className="userCardIconButton" onClick={handleSendMessageClick} size="sm" variant="plain" color="neutral">
+                <Icon.SendFill  className="bi pe-none" width="24" height="24" aria-label="Message"/>
+            </IconButton>
+            </div>
+            </CardActions>
+ 
+{/*             <a className="effect effect-4" href="#">
+                Message Me! 
+            </a> */}
+        </div>
+    </div>
   );
 }
