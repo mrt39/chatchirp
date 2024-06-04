@@ -10,7 +10,7 @@ import {
     Typography
   } from '@mui/material';
   import { useState, useEffect } from 'react';
-  import "../styles/Account-Profile2.css"
+  import "../styles/Account-Profile.css"
   import MuiAvatar from "./MuiAvatar";
   
   
