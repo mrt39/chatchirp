@@ -134,13 +134,12 @@ const ContactsBox = ({sidebarStyle, handleConversationClick, messageSent, conver
                         :""}
                     key={person._id} 
                     onClick={function()  {handleConversationClick(); handleSelectedPerson(person._id)}}
-                    lastActivityTime="43 min"
                     >
                     {/* using "as="Avatar" attribute because the parent component from chatscope doesn't accept a child that isn't named "Avatar" */}
                     <MuiAvatar 
                     as="Avatar"
                     user={person}/>
-                    <Conversation.Content name={person.name} /* lastSenderName={person.lastMsg.from[0].name} */ info={person.lastMsg.message} style={conversationContentStyle} />
+                    <Conversation.Content name={person.name} info={person.lastMsg.message} style={conversationContentStyle} />
                     </Conversation>
                     ))
                 }

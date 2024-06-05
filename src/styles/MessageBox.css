@@ -80,6 +80,9 @@
     height: 66px !important;
 }
 
+.cs-message--incoming{
+    margin-top: 5px !important;
+}
 
 /* background color change for messageboxheader when light mode is toggled on. toggle is on themebutton.jsx */
 
