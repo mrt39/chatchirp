@@ -46,6 +46,8 @@ export default function CustomizedSnackbars({snackbarOpen, setSnackbarOpen, snac
        {snackbarOpenCondition=="emailTooLong"&& "E-mail address can not be longer than 50 characters!"}
        {snackbarOpenCondition=="wrongLoginDeets"&& "Wrong e-mail or password!"}
        {snackbarOpenCondition=="alreadyRegistered"&& "A user with the given e-mail address is already registered!"}
+       {snackbarOpenCondition=="notAnImage"&& "Only image files can be attached"}
+       {snackbarOpenCondition=="sizeTooBig"&& "Image size is too big!"}
     </Alert>
     }
 

@@ -17,7 +17,7 @@ const Navbar = ({user, setCurrentUser}) => {
   }, [location]); // Only re-run the effect if count changes
 
 
-  const navigate = useNavigate(); // Get the navigate function
+  const navigate = useNavigate(); 
 
   
   function handleSignOut(){
@@ -86,7 +86,6 @@ const Navbar = ({user, setCurrentUser}) => {
         </ul>
       </div>
     </div>
-{/*     <ColorModeButton/> */}
     </>
       );
     };

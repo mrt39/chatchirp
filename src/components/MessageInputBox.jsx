@@ -11,6 +11,7 @@ import Box from '@mui/material/Box';
 import '../styles/MessageInputBox.css'
 import FileInputPopover from "./Popover.jsx"
 import { clean } from 'profanity-cleaner';
+import Snackbar from "./Snackbar.jsx"
 
 
 const MessageInputBox = ({messageSent, setMessageSent, contactsBoxPeople, firstMsg, setFirstMsg, imgSubmitted, setImgSubmitted}) => {
@@ -19,6 +20,9 @@ const MessageInputBox = ({messageSent, setMessageSent, contactsBoxPeople, firstM
 
     // Passing the UserContext defined in app.jsx
     const { currentUser, selectedPerson, setSelectedPerson } = useContext(UserContext); 
+
+    const [snackbarOpenCondition, setSnackbarOpenCondition, snackbarOpen, setSnackbarOpen] = useOutletContext();
+
 
     // Set initial message input value to an empty string                                                                     
     const [messageInputValue, setMessageInputValue] = useState("");
@@ -95,12 +99,19 @@ const MessageInputBox = ({messageSent, setMessageSent, contactsBoxPeople, firstM
     /* when user selects an image and changes the value of the input, change the state  */
       function handleFileInputChange(event){
         const selectedFile = event.target.files;
-        //check the filetype to ensure it's an image.
+        //check the filetype to ensure it's an image. throw error if it isn't
         if (selectedFile[0]["type"] != "image/x-png" && selectedFile[0]["type"] != "image/jpeg") {
-          console.error("Only images can be attached!")
+          console.error("Only image files can be attached!")
+          setSnackbarOpenCondition("notAnImage")
+          setSnackbarOpen(true)
           return
-        }
-        else{
+          //if image size is > 1mb, throw error
+        }else if(selectedFile[0]["size"] > 1048576){
+          console.error("Image size is too big!")
+          setSnackbarOpenCondition("sizeTooBig")
+          setSnackbarOpen(true)
+          return
+        }else{
         setimageSelected(true)
         console.log(selectedFile);
         console.log(selectedFile[0]["type"]);
@@ -179,6 +190,11 @@ const MessageInputBox = ({messageSent, setMessageSent, contactsBoxPeople, firstM
           setimageSelected={setimageSelected}
           handleImgSendBtn={handleImgSendBtn}
           />
+          <Snackbar
+          snackbarOpenCondition={snackbarOpenCondition}
+          snackbarOpen={snackbarOpen}
+          setSnackbarOpen={setSnackbarOpen}
+        />
     </div>
     )
                

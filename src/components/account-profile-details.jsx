@@ -13,6 +13,8 @@ import {
   Unstable_Grid2 as Grid
 } from '@mui/material';
 import "../styles/account-profile-details.css"
+import { clean } from 'profanity-cleaner';
+
 
 
 
@@ -96,23 +98,27 @@ export const AccountProfileDetails = ({user, setSnackbarOpen, invalidEmail, setI
         async function editProfile() {
             //on submit, clean the word with the profanity cleaner package
             //https://www.npmjs.com/package/profanity-cleaner
-            /* let input = await clean(nameInput, { keepFirstAndLastChar: true }) */
-            let result = await fetch(
-            'http://localhost:5000/editprofile/' + user["_id"], {
+            const filteredName = await clean(values.name, { keepFirstAndLastChar: true, placeholder: '#' })
+            const filteredEmail =await clean(values.email, { keepFirstAndLastChar: true, placeholder: '#' })
+            const filteredBio =await clean(values.bio, { keepFirstAndLastChar: true, placeholder: '#' })
+
+
+            fetch('http://localhost:5000/editprofile/' + user["_id"], {
                 method: 'PATCH',
-                body: JSON.stringify({ name: values.name, email: values.email, bio: values.bio}), 
+                body: JSON.stringify({ name: filteredName, email: filteredEmail, bio: filteredBio}), 
                 headers: {
                     'Content-Type': 'application/json',
                     "Access-Control-Allow-Origin": "*",
                 }
             })
+            .then(async result => {
             if (result.ok) {
               let response = await result.json();
               console.warn(response);
               console.log("Profile Updated!");
-              setProfileUpdated(false);
-              setSnackbarOpenCondition("profileChangeSuccess")
-              setSnackbarOpen(true)
+              await setProfileUpdated(false);
+              await setSnackbarOpenCondition("profileChangeSuccess")
+              await setSnackbarOpen(true)
               setLoading(false)
             } else{
               console.error("There has been an error!")
@@ -121,12 +127,16 @@ export const AccountProfileDetails = ({user, setSnackbarOpen, invalidEmail, setI
               setSnackbarOpen(true)
               setLoading(false)
             }  
-        }
+            }).catch(error => {
+              console.error('Error:', error);
+            });
+          }
+
         /* only trigger when profile is updated*/
         if (profileUpdated ===true){
         editProfile();
         } 
-    }, [profileUpdated]);
+}, [profileUpdated]);
 
  
 
