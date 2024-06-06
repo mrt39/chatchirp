@@ -292,7 +292,11 @@ const MessageBox = () => {
             }
 
              </ChatContainer>
-        : <p className="noPersonSelectedContainer">ChatChirp</p> 
+        : <div className="noPersonSelectedContainer">
+           <img src="../src/assets/logo.png" alt="logo" />
+          <p>ChatChirp</p> 
+        </div>
+        
         
         }                         
            </MainContainer>

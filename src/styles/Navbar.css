@@ -2,6 +2,16 @@
     max-width: 100% !important;
 }
 
+.navbarLogo{
+  margin-top: 1em;
+  margin-bottom: 1em;
+}
+
+.navbarLogo img{
+  height: 60px;
+  width: 60px;
+  user-select: none;
+}
 
 .navbarAvatar .MuiAvatar-root{
   height: 35px;

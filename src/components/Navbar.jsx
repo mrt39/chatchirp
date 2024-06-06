@@ -45,9 +45,9 @@ const Navbar = ({user, setCurrentUser}) => {
     return (
       <>
       <div className="d-flex flex-column flex-shrink-0 bg-body-tertiary" style={{width: "4.5rem"}}>
-      <a href="/" className="d-block p-3 link-body-emphasis text-decoration-none" title="Icon-only" data-bs-placement="right">
-        <svg className="bi pe-none" width="40" height="32"><use xlinkHref="#bootstrap"/></svg>
-      </a>
+        <div className="navbarLogo">
+          <img src="../src/assets/logo.png" alt="logo" />
+        </div>
       <ul className="nav nav-pills nav-flush flex-column mb-auto text-center">
       <Link to="/">
         <li className="nav-item">
@@ -70,20 +70,9 @@ const Navbar = ({user, setCurrentUser}) => {
           </div>
         </li>
         </Link>
-        <li>
-          <a href="#" className="nav-link py-3 border-bottom rounded-0" title="Products"  data-bs-placement="right">
-            <svg className="bi pe-none" width="24" height="24" role="img" aria-label="Products"><use xlinkHref="#grid"/></svg>
-          </a>
-        </li>
-        <li>
-          <a href="#" className="nav-link py-3 border-bottom rounded-0" title="Customers"  data-bs-placement="right">
-            <svg className="bi pe-none" width="24" height="24" role="img" aria-label="Customers"><use xlinkHref="#people-circle"/></svg>
-          </a>
-        </li>
       </ul>
       <div className="dropdown border-top">
         <a href="#" className="d-flex align-items-center justify-content-center p-3 link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-          {/* <img src={user.uploadedpic? "http://localhost:5000/images/" + user.uploadedpic : user.picture} alt="mdo" width="30" height="30" className="rounded-circle"/> */}
           <div className="navbarAvatar">
           <MuiAvatar
               user={user}
