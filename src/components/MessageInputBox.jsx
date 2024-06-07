@@ -100,7 +100,7 @@ const MessageInputBox = ({messageSent, setMessageSent, contactsBoxPeople, firstM
       function handleFileInputChange(event){
         const selectedFile = event.target.files;
         //check the filetype to ensure it's an image. throw error if it isn't
-        if (selectedFile[0]["type"] != "image/x-png" && selectedFile[0]["type"] != "image/jpeg") {
+        if (selectedFile[0]["type"] != "image/x-png" && selectedFile[0]["type"] != "image/png" && selectedFile[0]["type"] != "image/jpeg") {
           console.error("Only image files can be attached!")
           setSnackbarOpenCondition("notAnImage")
           setSnackbarOpen(true)
@@ -113,8 +113,6 @@ const MessageInputBox = ({messageSent, setMessageSent, contactsBoxPeople, firstM
           return
         }else{
         setimageSelected(true)
-        console.log(selectedFile);
-        console.log(selectedFile[0]["type"]);
         setimageFile(selectedFile[0]);
         }
       }

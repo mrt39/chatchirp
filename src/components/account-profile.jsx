@@ -1,28 +1,44 @@
 /* eslint-disable react/prop-types */
 import {
-    Avatar,
-    Box,
     Button,
     Card,
     CardActions,
-    CardContent,
-    Divider,
-    Typography
   } from '@mui/material';
   import { useState, useEffect } from 'react';
+  import { useOutletContext } from "react-router-dom";
   import "../styles/Account-Profile.css"
   import MuiAvatar from "./MuiAvatar";
+  import Snackbar from "./Snackbar.jsx"
+
   
   
   export const AccountProfile = ({user, setProfileUpdated}) => {
+
+    const [snackbarOpenCondition, setSnackbarOpenCondition, snackbarOpen, setSnackbarOpen] = useOutletContext();
+
 
     const [uploadedImg, setUploadedImg] = useState();
 
     const [imgSubmitted, setImgSubmitted] = useState(false);
 
+
     function handleChange(event){
-      console.log(event.target.files);
+      const uploadedImg = event.target.files[0]
+      //check the filetype to ensure it's an image. throw error if it isn't
+      if (uploadedImg["type"] != "image/x-png" && uploadedImg["type"] != "image/png" && uploadedImg["type"] != "image/jpeg") {
+        console.error("Only image files can be attached!")
+        setSnackbarOpenCondition("notAnImage")
+        setSnackbarOpen(true)
+        return
+        //if image size is > 1mb, throw error
+      }else if(uploadedImg["size"] > 1048576){
+        console.error("Image size is too big!")
+        setSnackbarOpenCondition("sizeTooBig")
+        setSnackbarOpen(true)
+        return
+      }else{
       setUploadedImg(event.target.files[0]);
+      }
     }
 
     function submitImg(){
