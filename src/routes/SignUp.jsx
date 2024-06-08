@@ -97,8 +97,9 @@ export default function SignUp() {
         async function registerUser() {
             //on submit, clean the word with the profanity cleaner package
             //https://www.npmjs.com/package/profanity-cleaner
-            const filteredName = await clean(signUpData.name, { keepFirstAndLastChar: true }) 
-            fetch('http://localhost:5000/signup', {
+            const filteredName = await clean(signUpData.name, { keepFirstAndLastChar: true }); 
+
+            fetch(import.meta.env.VITE_BACKEND_URL+'/signup', {
                 method: "post",
                 /* if imageFile exists, send imageFile */  
                 body: JSON.stringify({ name: filteredName, email: signUpData.email, password: signUpData.password}), 

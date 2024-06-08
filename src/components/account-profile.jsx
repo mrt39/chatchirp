@@ -52,7 +52,7 @@ import {
         const formData = new FormData()
         formData.append("image", uploadedImg)
 
-          fetch('http://localhost:5000/uploadprofilepic/' + user["_id"], {
+          fetch(import.meta.env.VITE_BACKEND_URL+'/uploadprofilepic/' + user["_id"], {
               method: "post",
               body: formData, 
               headers: {

@@ -21,7 +21,7 @@ const Navbar = ({user, setCurrentUser}) => {
 
   
   function handleSignOut(){
-      fetch('http://localhost:5000/logout',{
+      fetch(import.meta.env.VITE_BACKEND_URL+'/logout',{
       method: 'POST',
       credentials: 'include' // sends cookies to server, so it can log out/unauthenticate user!
       })

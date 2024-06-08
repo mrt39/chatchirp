@@ -53,7 +53,7 @@ const ContactsBox = ({sidebarStyle, handleConversationClick, messageSent, conver
     //useffect to populate the contacts box
     useEffect(() => {
         const getContacts = () => {
-            fetch('http://localhost:5000/messagebox/'+ currentUser["_id"]  , {
+            fetch(import.meta.env.VITE_BACKEND_URL+'/messagebox/'+ currentUser["_id"]  , {
             method: 'GET',
             })
             .then(response => {

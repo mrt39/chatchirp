@@ -100,7 +100,7 @@ const MessageBox = () => {
     /* handling fetching the messages between user and clicked person */
     useEffect(() => {
       const getMessages = () => {
-          fetch('http://localhost:5000/messagesfrom/' + currentUser["_id"] + '_' +selectedPerson["_id"]  ,{
+          fetch(import.meta.env.VITE_BACKEND_URL+'/messagesfrom/' + currentUser["_id"] + '_' +selectedPerson["_id"]  ,{
           method: 'GET',
           })
           .then(response => {
@@ -184,7 +184,7 @@ const MessageBox = () => {
     function displayImage (imagelink){
 
       return (
-        <img src={"http://localhost:5000/images/" + imagelink} alt="" />
+        <img src={import.meta.env.VITE_BACKEND_URL+"/images/" + imagelink} alt="" />
       )
     }
 
@@ -266,7 +266,7 @@ const MessageBox = () => {
                       position: "single",
                     }}>
                         {message.image?
-                        <Message.ImageContent className="msgBoxImg1" src={"http://localhost:5000/images/" + message.image} alt="image" />
+                        <Message.ImageContent className="msgBoxImg1" src={import.meta.env.VITE_BACKEND_URL+"/images/" + message.image} alt="image" />
                         :null}
                     </Message>
                       </MessageGroup.Messages>    

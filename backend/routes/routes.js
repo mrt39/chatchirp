@@ -8,7 +8,7 @@ const {User, Message, upload, passport} = require( "../passport.js")
 
 
 
-const CLIENT_URL = "http://localhost:5173";
+const CLIENT_URL = process.env.CLIENT_URL;
 
 
 
@@ -24,7 +24,7 @@ router.get("/login/success", (req, res) => {
 
 router.get("/", (req, res) => {
  
-    res.send("App is Working");
+    res.send(JSON.stringify("App is Working"));
 
 });
 
@@ -64,7 +64,6 @@ router.post("/signup", function(req, res){
 router.post("/login", function(req, res){
   passport.authenticate("local")(req, res, function(){
     console.log("Successfully logged in!")
-    console.log(req.user)
     res.send(JSON.stringify("Successfully logged in!"))
   })
 });
@@ -88,15 +87,6 @@ router.post('/logout',  (req, res) => {
 });
 
 
-
-/* router.get("/checkifloggedout", function(req, res){
-    if (req.isAuthenticated()){
-        res.redirect(CLIENT_URL);
-    }
-    else{
-         res.send(JSON.stringify("You are NOT logged in!"))
-    }
-}); */
 
 router.get("/messagebox/:userid", async (req, res) => {
 
@@ -151,8 +141,6 @@ router.get("/messagebox/:userid", async (req, res) => {
       //select the last message in the array, which will be the last message that's sent and store it into "lastMsg" key value.
       uniqueContacts[index].lastMsg = allMessagesBetween[allMessagesBetween.length - 1]; 
     }
-
-
 
 
     res.send(uniqueContacts);
@@ -231,11 +219,11 @@ router.post("/messagesent", async (req, res) => {
       const result = newMessage.save();
       res.send(result)
     } else{
-      res.send("Not authenticated!");
+      res.send(JSON.stringify("Not authenticated!"));
     }
 
-  } catch (e) {
-      res.send("Something Went Wrong");
+  } catch (err) {
+      res.send(err);
   }
  
 });
@@ -260,8 +248,8 @@ router.post('/uploadprofilepic/:userid',  upload.single('image'),  async (req, r
     console.log("image saved! filename: " +req.file.filename)
     res.send(result)
 
-  }catch (e) {
-    res.send("Something Went Wrong");
+  }catch (err) {
+    res.send(err);
   }
 
 
@@ -291,11 +279,11 @@ router.post("/imagesent", upload.single('image'), async (req, res) => {
       const result = newMessage.save();
       res.send(result)
     } else{
-      res.send("Not authenticated!");
+      res.send(JSON.stringify("Not authenticated!"));
     }
 
-  } catch (e) {
-      res.send("Something Went Wrong");
+  } catch (err) {
+      res.send(err);
   }
  
 });
@@ -327,8 +315,8 @@ router.patch("/editprofile/:userid", async (req, res) => {
     const result = await user.save();
     res.send(result)
 
-} catch (e) {
-    res.send("Something Went Wrong");
+} catch (err) {
+    res.send(err);
 }
 
 });

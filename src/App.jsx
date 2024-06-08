@@ -56,7 +56,7 @@ const App = () => {
   /* get the user data when logged in */
   useEffect(() => {
     const getUser = () => {
-      fetch('http://localhost:5000/login/success', {
+      fetch(import.meta.env.VITE_BACKEND_URL+'/login/success', {
         method: 'GET',
         credentials: 'include',
         headers: {
@@ -91,7 +91,7 @@ const App = () => {
   /* change the user data from the stored user data in the session, to the actual user data in the db */
   useEffect(() => {
     const getUserOnUpdate = () => {
-      fetch('http://localhost:5000/profile/' + currentUser["_id"], {
+      fetch(import.meta.env.VITE_BACKEND_URL+'/profile/' + currentUser["_id"], {
         method: 'GET',
       })
         .then(response => {

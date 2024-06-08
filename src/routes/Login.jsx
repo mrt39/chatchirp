@@ -29,7 +29,7 @@ export default function Login() {
   const [loginData, setLoginData] = useState({ });
 
     function handleGoogleClick () {
-        window.open("http://localhost:5000/auth/google", "_self");
+        window.open(import.meta.env.VITE_BACKEND_URL+"/auth/google", "_self");
     }
 
     function handleDemoSigninClick(){
@@ -60,7 +60,7 @@ export default function Login() {
             headers: {
                 Accept: 'application/json',
                 'Content-Type': 'application/json',
-                "Access-Control-Allow-Origin": "http://localhost:5173",
+                "Access-Control-Allow-Origin": import.meta.env.VITE_BACKEND_URL,
             },
             credentials:"include" //required for sending the cookie data
         })

@@ -10,7 +10,6 @@ const {passport} = require( "./passport.js")
 
 
 
-
 //cors
 const cors = require("cors");
 
@@ -38,7 +37,7 @@ app.use('/images', express.static('images'))
 
 
 app.use(session({
-    secret: 'secrets',
+    secret: process.env.SECRET,
     resave: false,
     saveUninitialized: false,
     cookie: {

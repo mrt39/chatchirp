@@ -38,7 +38,7 @@ export default function MuiAvatar({user, profilePageAvatar}) {
   return (
     /* if the user has an uploadedpic or picture(from google), use it. otherwise, create an avatar from the initials and color algorithm above. */
        user.uploadedpic || user.picture? 
-       <Avatar src={user.uploadedpic? "http://localhost:5000/images/" + user.uploadedpic : user.picture} 
+       <Avatar src={user.uploadedpic? import.meta.env.VITE_BACKEND_URL+"/images/" + user.uploadedpic : user.picture} 
        //referrerPolicy is required to GET the images from google database without an error.
        imgProps={{ referrerPolicy: "no-referrer" }} 
        sx={profilePageAvatar? { width: 150, height: 150 } :{ width: 50, height: 50 }}

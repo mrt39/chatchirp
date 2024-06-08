@@ -46,8 +46,7 @@ const MessageInputBox = ({messageSent, setMessageSent, contactsBoxPeople, firstM
           //https://www.npmjs.com/package/profanity-cleaner
           let filteredMessage = await clean(messageInputValue, { keepFirstAndLastChar: true, placeholder: '#' }) 
 
-          await fetch(
-          'http://localhost:5000/messagesent', {
+          await fetch(import.meta.env.VITE_BACKEND_URL+'/messagesent', {
               method: "post",
               body: JSON.stringify({ from: currentUser, to: selectedPerson, message: filteredMessage}), 
               headers: {
@@ -154,7 +153,7 @@ const MessageInputBox = ({messageSent, setMessageSent, contactsBoxPeople, firstM
         console.log(formData)
         
         await fetch(
-          'http://localhost:5000/imagesent', {
+          import.meta.env.VITE_BACKEND_URL+'/imagesent', {
               method: "post",
               /* if imageFile exists, send imageFile */  
               body: formData, 

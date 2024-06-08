@@ -79,10 +79,11 @@ export const AccountProfileDetails = ({user, setSnackbarOpen, invalidEmail, setI
       setSnackbarOpenCondition("nameTooLong")
       setSnackbarOpen(true)
       return
-    }else if(values.bio.length>100){
-      setSnackbarOpenCondition("bioTooLong")
-      setSnackbarOpen(true)
-      return
+    }else if (values.bio)
+        if(values.bio.length>100){
+          setSnackbarOpenCondition("bioTooLong")
+          setSnackbarOpen(true)
+          return
     }else if(values.email.length>50){
       setSnackbarOpenCondition("emailTooLong")
       setSnackbarOpen(true)
@@ -98,11 +99,15 @@ export const AccountProfileDetails = ({user, setSnackbarOpen, invalidEmail, setI
         async function editProfile() {
             //on submit, clean the word with the profanity cleaner package
             //https://www.npmjs.com/package/profanity-cleaner
-            const filteredName = await clean(values.name, { keepFirstAndLastChar: true, placeholder: '#' })
-            const filteredEmail =await clean(values.email, { keepFirstAndLastChar: true, placeholder: '#' })
-            const filteredBio =await clean(values.bio, { keepFirstAndLastChar: true, placeholder: '#' })
+            let filteredName = await clean(values.name, { keepFirstAndLastChar: true, placeholder: '#' })
+            let filteredEmail = await clean(values.email, { keepFirstAndLastChar: true, placeholder: '#' })
+            let filteredBio = ""
+            if(values.bio){
+              filteredBio=await clean(values.bio, { keepFirstAndLastChar: true, placeholder: '#' })
+            }
+            
 
-            fetch('http://localhost:5000/editprofile/' + user["_id"], {
+            fetch(import.meta.env.VITE_BACKEND_URL+'/editprofile/' + user["_id"], {
                 method: 'PATCH',
                 body: JSON.stringify({ name: filteredName, email: filteredEmail, bio: filteredBio}), 
                 headers: {

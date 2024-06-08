@@ -31,7 +31,7 @@ export default function MeetPeople() {
     //fetch for getting data of all people
     useEffect(() => {
       const getMessages = () => {
-          fetch('http://localhost:5000/getallusers', {
+          fetch(import.meta.env.VITE_BACKEND_URL+'/getallusers', {
           method: 'GET',
           })
           .then(response => {

@@ -13,6 +13,13 @@ const findOrCreate = require('mongoose-findorcreate')
 
 mongoose.connect('mongodb://127.0.0.1:27017/chatChirpUserDB');
 
+//dotenv for environment variables
+require('dotenv').config();
+
+const SERVER_URL = process.env.SERVER_URL;
+
+
+
 const userSchema = new mongoose.Schema ({
     email: { 
       type: String, 
@@ -196,7 +203,7 @@ passport.use(User.createStrategy());
 passport.use(new GoogleStrategy({
   clientID: process.env.CLIENT_ID,
   clientSecret: process.env.CLIENT_SECRET,
-  callbackURL: "http://localhost:5000/auth/google/callback",
+  callbackURL: SERVER_URL+"/auth/google/callback",
   userProfileURL: "https://www.googleapis.com/oauth2/v3/userinfo",
 },
 async function(accessToken, refreshToken, profile, done) {
