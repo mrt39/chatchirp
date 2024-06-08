@@ -127,7 +127,7 @@ export default function SearchPeople() {
           filteredData.map((person) => (
             <div
               className="searchResults"
-              key={person.id}
+              key={person._id}
             >
 {/*               <UserCard
               person = {person}

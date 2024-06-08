@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import { useState, useEffect } from "react";
+import { useState, useEffect, Fragment } from "react";
 import CircularProgress from '@mui/material/CircularProgress';
 import Box from '@mui/material/Box';
 import UserCard from "./UserCard";
@@ -66,7 +66,7 @@ export default function MeetPeople() {
             randomizedData.map((person) => (
             <div
               className="searchResults"
-              key={person.id}
+              key={person._id}
             >
               <UserCard
               person = {person}

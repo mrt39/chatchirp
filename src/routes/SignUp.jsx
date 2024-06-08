@@ -106,7 +106,8 @@ export default function SignUp() {
                 headers: {
                     'Content-Type': 'application/json',
                     "Access-Control-Allow-Origin": "*",
-                }
+                },
+                credentials:"include" //required for sending the cookie data
             })
             if (result.ok) {
               let response = await result.json();
@@ -117,7 +118,9 @@ export default function SignUp() {
                 setSnackbarOpen(true)
               }else{
                 console.log("Successfully registered user!")
-                navigate("/"); 
+                navigate("/findpeople"); 
+                //reload the page, so it re-fetches the logged in user data
+                window.location.reload();
                 setSnackbarOpenCondition("successfulRegister")
                 setSnackbarOpen(true)
               }
