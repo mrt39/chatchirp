@@ -121,16 +121,27 @@ router.get("/messagebox/:userid", async (req, res) => {
       }
       return false;
     });
-
-
     //add the "lastMsg" property to the objects within the uniqueContactsObj array, in order to display it in the ContactsBox.
     //however, since it's an array of multiple mongoose objects and mongoose objects doesn't accept adding new properties to them, we turn these objects into plain objects, with .toObject() method.
     //https://stackoverflow.com/questions/7503450/how-do-you-turn-a-mongoose-document-into-a-plain-object
     var uniqueContacts = uniqueContactsObj.map(function(model) { return model.toObject(); });
 
+    //replace/populate the user info of the uniqueContacts from the user database, in case the users have changed their name or profile picture
+    await uniqueContacts.map(user => {
+      User.find({_id: user._id})
+        .then( result => {
+          const updatedUser = result[0];
+          user.name= updatedUser.name;
+          user.email= updatedUser.email;
+          user.uploadedpic=updatedUser.uploadedpic;
+        }
+        )
+        return user
+    });
+
     
     //between the logged in user and each unique user, find the last message that's sent.
-    //we are using a for loop instead of forEach, because we are not able to use await in forEach.
+    //we are using a for loop instead of forEach, because we are not able to use aysnc (await) in forEach.
     for (let index = 0; index < uniqueContacts.length; index++) { 
       //searching by ID because if the users change their name or e-mail later on, their messages won't be found under the same user model
       let messagesFromClickedPerson =  await Message.find({ 'to.0._id': userID , 'from.0._id': uniqueContacts[index]._id.toString()});
@@ -140,6 +151,9 @@ router.get("/messagebox/:userid", async (req, res) => {
       //select the last message in the array, which will be the last message that's sent and store it into "lastMsg" key value.
       uniqueContacts[index].lastMsg = allMessagesBetween[allMessagesBetween.length - 1]; 
     }
+
+
+
 
     res.send(uniqueContacts);
 
