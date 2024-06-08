@@ -42,27 +42,34 @@ const MessageInputBox = ({messageSent, setMessageSent, contactsBoxPeople, firstM
       useEffect(() => {
         async function postMessage() {
             
-            //on submit, clean the word with the profanity cleaner package
-            //https://www.npmjs.com/package/profanity-cleaner
-            let filteredMessage = await clean(messageInputValue, { keepFirstAndLastChar: true, placeholder: '#' }) 
-  
-            let result = await fetch(
-            'http://localhost:5000/messagesent', {
-                method: "post",
-                body: JSON.stringify({ from: currentUser, to: selectedPerson, message: filteredMessage}), 
-                headers: {
-                    'Content-Type': 'application/json',
-                    "Access-Control-Allow-Origin": "*",
-                },
-                credentials:"include" //required for sending the cookie data
-            })
-            result = await result.json();
-            console.warn(result);
-            if (result) {
-                console.log("Message sent");
-                setMessageInputValue("");
-                setMessageSent(false);
-            }   
+          //on submit, clean the word with the profanity cleaner package
+          //https://www.npmjs.com/package/profanity-cleaner
+          let filteredMessage = await clean(messageInputValue, { keepFirstAndLastChar: true, placeholder: '#' }) 
+
+          await fetch(
+          'http://localhost:5000/messagesent', {
+              method: "post",
+              body: JSON.stringify({ from: currentUser, to: selectedPerson, message: filteredMessage}), 
+              headers: {
+                  'Content-Type': 'application/json',
+                  "Access-Control-Allow-Origin": "*",
+              },
+              credentials:"include" //required for sending the cookie data
+          })
+          .then(async result => {
+            if (result.ok){
+              let response = await result.json();
+              console.warn(response);
+              console.log("Message sent");
+              setMessageInputValue("");
+              setMessageSent(false);
+            } else{
+              throw new Error(result)
+            }
+          })
+          .catch(error => {
+            console.error('Error:', error);
+          }); 
         }
         /* only trigger when message is sent */
         if (messageSent ===true){
@@ -137,7 +144,7 @@ const MessageInputBox = ({messageSent, setMessageSent, contactsBoxPeople, firstM
 
     /* effect for handling sending the image */
     useEffect(() => {
-      async function postMessage() {
+      async function sendImage() {
 
         const formData = new FormData()
         formData.append("image", imageFile)
@@ -146,7 +153,7 @@ const MessageInputBox = ({messageSent, setMessageSent, contactsBoxPeople, firstM
 
         console.log(formData)
         
-          let result = await fetch(
+        await fetch(
           'http://localhost:5000/imagesent', {
               method: "post",
               /* if imageFile exists, send imageFile */  
@@ -156,17 +163,24 @@ const MessageInputBox = ({messageSent, setMessageSent, contactsBoxPeople, firstM
               },
               credentials:"include" //required for sending the cookie data
           })
-          result = await result.json();
-          console.warn(result);
-          if (result) {
+          .then(async result => {
+            if(result.ok){
+              let response = await result.json()
               console.log("Image sent");
+              console.warn(response)
               setimageFile("");
               setImgSubmitted(false);
-          }   
+            } else{
+              throw new Error(result);
+            }
+          })
+          .catch(error => {
+            console.error('Error:', error);
+          });
       }
       /* only trigger when message is sent */
       if (imgSubmitted ===true){
-      postMessage();
+        sendImage();
       } 
   }, [imgSubmitted]);
 

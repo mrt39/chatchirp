@@ -53,8 +53,8 @@ export default function Login() {
 
   useEffect(() => {
     async function loginUser() {
-        let result = await fetch(
-          import.meta.env.VITE_BACKEND_URL+'/login', {
+
+        fetch(import.meta.env.VITE_BACKEND_URL+'/login', {
             method: "POST",
             body: JSON.stringify({ email: loginData.email, password: loginData.password}), 
             headers: {
@@ -64,24 +64,28 @@ export default function Login() {
             },
             credentials:"include" //required for sending the cookie data
         })
-        if (result.ok) {
-          let response = await result.json();
-          console.warn(response);
-          setClickedLogin(false);
-          //redirect to the external URL
-            window.location.replace(import.meta.env.VITE_FRONTEND_URL); 
-      
-        }else{
-            if (result.status === 401) {
-              console.error("Wrong e-mail or password!")
-              setSnackbarOpenCondition("wrongLoginDeets")
-              setSnackbarOpen(true)
-            }else{
-            console.error("There has been an error!")
-            console.error(result);
-          }
-          setClickedLogin(false);
-        }   
+        .then(async result => {
+          if (result.ok) {
+            let response = await result.json();
+            console.warn(response);
+            setClickedLogin(false);
+            //redirect to the external URL
+              window.location.replace(import.meta.env.VITE_FRONTEND_URL); 
+          }else{
+              if (result.status === 401) {
+                console.error("Wrong e-mail or password!")
+                setSnackbarOpenCondition("wrongLoginDeets")
+                setSnackbarOpen(true)
+              }else{
+                throw new Error(result);
+            }
+            setClickedLogin(false);
+          }  
+        })
+        .catch(error =>{
+          console.error("Error:" + error)
+        })
+ 
     }
     /* only trigger when message is sent */
     if (clickedLogin ===true){

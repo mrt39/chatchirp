@@ -129,9 +129,6 @@ export default function SearchPeople() {
               className="searchResults"
               key={person._id}
             >
-{/*               <UserCard
-              person = {person}
-              /> */}
               <UserCard
               person = {person}
               />

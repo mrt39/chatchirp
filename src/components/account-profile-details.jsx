@@ -102,7 +102,6 @@ export const AccountProfileDetails = ({user, setSnackbarOpen, invalidEmail, setI
             const filteredEmail =await clean(values.email, { keepFirstAndLastChar: true, placeholder: '#' })
             const filteredBio =await clean(values.bio, { keepFirstAndLastChar: true, placeholder: '#' })
 
-
             fetch('http://localhost:5000/editprofile/' + user["_id"], {
                 method: 'PATCH',
                 body: JSON.stringify({ name: filteredName, email: filteredEmail, bio: filteredBio}), 
@@ -127,7 +126,8 @@ export const AccountProfileDetails = ({user, setSnackbarOpen, invalidEmail, setI
               setSnackbarOpen(true)
               setLoading(false)
             }  
-            }).catch(error => {
+            })
+            .catch(error => {
               console.error('Error:', error);
             });
           }

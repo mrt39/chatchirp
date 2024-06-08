@@ -14,7 +14,7 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import Snackbar from "../components/Snackbar.jsx"
 import Footer from "../components/Footer.jsx";
-
+import { clean } from 'profanity-cleaner';
 
 
 export default function SignUp() {
@@ -97,38 +97,43 @@ export default function SignUp() {
         async function registerUser() {
             //on submit, clean the word with the profanity cleaner package
             //https://www.npmjs.com/package/profanity-cleaner
-            /* let input = await clean(nameInput, { keepFirstAndLastChar: true }) */
-            let result = await fetch(
-            'http://localhost:5000/signup', {
+            const filteredName = await clean(signUpData.name, { keepFirstAndLastChar: true }) 
+            fetch('http://localhost:5000/signup', {
                 method: "post",
                 /* if imageFile exists, send imageFile */  
-                body: JSON.stringify({ name: signUpData.name, email: signUpData.email, password: signUpData.password}), 
+                body: JSON.stringify({ name: filteredName, email: signUpData.email, password: signUpData.password}), 
                 headers: {
                     'Content-Type': 'application/json',
                     "Access-Control-Allow-Origin": "*",
                 },
                 credentials:"include" //required for sending the cookie data
             })
-            if (result.ok) {
-              let response = await result.json();
-              console.warn(response);
-              setSubmitted(false);
-              if(response.name==="UserExistsError"){
-                setSnackbarOpenCondition("alreadyRegistered")
-                setSnackbarOpen(true)
+            .then(async result => {
+              if (result.ok) {
+                let response = await result.json();
+                console.warn(response);
+                setSubmitted(false);
+                if(response.name==="UserExistsError"){
+                  setSnackbarOpenCondition("alreadyRegistered")
+                  setSnackbarOpen(true)
+                }else{
+                  console.log("Successfully registered user!")
+                  navigate("/findpeople"); 
+                  //reload the page, so it re-fetches the logged in user data
+                  window.location.reload();
+                  setSnackbarOpenCondition("successfulRegister")
+                  setSnackbarOpen(true)
+                }
               }else{
-                console.log("Successfully registered user!")
-                navigate("/findpeople"); 
-                //reload the page, so it re-fetches the logged in user data
-                window.location.reload();
-                setSnackbarOpenCondition("successfulRegister")
-                setSnackbarOpen(true)
-              }
-            }else{
-              console.error("There has been an error!")
-              console.error(result); 
-              setSubmitted(false);
-            }   
+                console.error("There has been an error!")
+                console.error(result); 
+                setSubmitted(false);
+              }  
+            })
+            .catch (error =>{
+              console.warn("Error: " + error)
+            }) 
+
         }
         if (submitted ===true){
         registerUser();

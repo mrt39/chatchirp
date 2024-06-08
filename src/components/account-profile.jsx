@@ -47,31 +47,38 @@ import {
 
      /* effect for handling uploading img */
      useEffect(() => {
-      async function postMessage() {       
+      async function changeProfileImage() {       
 
         const formData = new FormData()
         formData.append("image", uploadedImg)
 
-          let result = await fetch(
-          'http://localhost:5000/uploadprofilepic/' + user["_id"], {
+          fetch('http://localhost:5000/uploadprofilepic/' + user["_id"], {
               method: "post",
               body: formData, 
               headers: {
                   "Access-Control-Allow-Origin": "*",
               }
           })
-          result = await result.json();
-          console.warn(result);
-          if (result) {
-              console.log("Image uploaded");
-              setUploadedImg();
-              setImgSubmitted(false);
-              setProfileUpdated(true)
-          }   
+          .then(async result =>{
+           if (result.ok){
+            let response = await result.json();
+            console.warn(response)
+            console.log("Image uploaded");
+            setUploadedImg();
+            setImgSubmitted(false);
+            setProfileUpdated(true)
+           } else{
+            throw new Error(result);
+           }
+          })
+          .catch(error => {
+            console.error('Error:', error);
+          });
+
       }
       /* only trigger when message is sent */
       if (imgSubmitted ===true){
-      postMessage();
+        changeProfileImage();
       } 
   }, [imgSubmitted]);
 
@@ -80,7 +87,7 @@ import {
         <Card>
               <div className="card">
                 <div className="card-body">
-                  <div className="d-flex flex-column align-items-center text-center">
+                  <div className="d-flex flex-column align-items-center text-center profileAvatar">
                     <MuiAvatar
                     user={user}
                     profilePageAvatar="yes"
@@ -94,18 +101,6 @@ import {
                 </div>
               </div>
        <CardActions>
-
-{/*           <input 
-          disabled = {user.email === "demoacc@demoacc.com" ? true : false}
-          type="file" 
-          className="imageInput btn btn-primary"
-          value=""
-          id="image" 
-          name="image" 
-          accept="image/*"
-          onChange={handleChange}/> */}
-
-
 
           <input 
           disabled = {user.email === "demoacc@demoacc.com" ? true : false}

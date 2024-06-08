@@ -56,10 +56,6 @@ export default function UserCard({person}) {
             </IconButton>
             </div>
             </CardActions>
- 
-{/*             <a className="effect effect-4" href="#">
-                Message Me! 
-            </a> */}
         </div>
     </div>
   );
