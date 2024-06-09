@@ -1,7 +1,7 @@
+/* eslint-disable react/prop-types */
 import { useState } from 'react';
 import Popover from '@mui/material/Popover';
 import Typography from '@mui/material/Typography';
-import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import SendIcon from '@mui/icons-material/Send';
 import CloseIcon from '@mui/icons-material/Close';
@@ -19,19 +19,19 @@ export default function FileInputPopover({popOveranchorEl, setPopOverAnchorEl, s
     setPopOverAnchorEl(null);
   };
 
-    //open popover when an anchor is selected 
-    useEffect(() => {
-        if (popOveranchorEl){
-            setOpen(true)
-        }
-    }, [popOveranchorEl]);
+  //open popover when an anchor is selected 
+  useEffect(() => {
+      if (popOveranchorEl){
+          setOpen(true)
+      }
+  }, [popOveranchorEl]);
 
-    //close popover when image is sent 
-        useEffect(() => {
-          if (imgSubmitted){
-            handleClose()
-          }
-    }, [imgSubmitted]);
+  //close popover when image is sent 
+      useEffect(() => {
+        if (imgSubmitted){
+          handleClose()
+        }
+  }, [imgSubmitted]);
 
 
 

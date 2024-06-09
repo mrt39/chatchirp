@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import { useCallback, useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Box,
   Button,
@@ -17,13 +17,9 @@ import { clean } from 'profanity-cleaner';
 
 
 
-
 export const AccountProfileDetails = ({user, setSnackbarOpen, invalidEmail, setInvalidEmail,  setSnackbarOpenCondition, profileUpdated, setProfileUpdated}) => {
 
-
   const [loading, setLoading] = useState(false);
-
-
   const [values, setValues] = useState({
     name: user.name,
     email: user.email,
@@ -31,40 +27,39 @@ export const AccountProfileDetails = ({user, setSnackbarOpen, invalidEmail, setI
   });
 
   function handleChange (event) {
-      setValues({
-        ...values,
-        [event.target.name]: event.target.value
+    setValues({
+      ...values,
+      [event.target.name]: event.target.value
   });
   }
 
-    /* when user data changes, change rendered textbox data as well */
-    useEffect(() => {
-      setValues({
-        name: user.name,
-        email: user.email,
-        bio: user.bio
-      })
-    }, [user]);
+  //when user data changes, change rendered textbox data as well
+  useEffect(() => {
+    setValues({
+      name: user.name,
+      email: user.email,
+      bio: user.bio
+    })
+  }, [user]);
 
   
-
-  /* email validation function */
+  //email validation
   useEffect(() => {
     if(values.email.includes("@")){
-        //if the snackbar is already opened, close it
-        setSnackbarOpen(false)
-        //wait until snackbar closes to change the e-mail invalid state
-        setTimeout(function() {
-        setInvalidEmail(false)
-        }, 200);
-        }
-        else{
-        setSnackbarOpen(false)
-        setTimeout(function() {
-          setInvalidEmail(true)  
-        }, 200);
-        
-        }
+      //if the snackbar is already opened, close it
+      setSnackbarOpen(false)
+      //wait until snackbar closes to change the e-mail invalid state
+      setTimeout(function() {
+      setInvalidEmail(false)
+      }, 200);
+      }
+      else{
+      setSnackbarOpen(false)
+      setTimeout(function() {
+        setInvalidEmail(true)  
+      }, 200);
+      
+      }
   }, [values.email]);
 
 
@@ -94,53 +89,53 @@ export const AccountProfileDetails = ({user, setSnackbarOpen, invalidEmail, setI
   }
 
 
-    /* effect for submitting the profile changes */
+    //effect for submitting the profile changes
     useEffect(() => {
-        async function editProfile() {
-            //on submit, clean the word with the profanity cleaner package
-            //https://www.npmjs.com/package/profanity-cleaner
-            let filteredName = await clean(values.name, { keepFirstAndLastChar: true, placeholder: '#' })
-            let filteredEmail = await clean(values.email, { keepFirstAndLastChar: true, placeholder: '#' })
-            let filteredBio = ""
-            if(values.bio){
-              filteredBio=await clean(values.bio, { keepFirstAndLastChar: true, placeholder: '#' })
+      async function editProfile() {
+        //on submit, clean the word with the profanity cleaner package
+        //https://www.npmjs.com/package/profanity-cleaner
+        let filteredName = await clean(values.name, { keepFirstAndLastChar: true, placeholder: '#' })
+        let filteredEmail = await clean(values.email, { keepFirstAndLastChar: true, placeholder: '#' })
+        let filteredBio = ""
+        if(values.bio){
+          filteredBio=await clean(values.bio, { keepFirstAndLastChar: true, placeholder: '#' })
+        }
+        
+
+        fetch(import.meta.env.VITE_BACKEND_URL+'/editprofile/' + user["_id"], {
+            method: 'PATCH',
+            body: JSON.stringify({ name: filteredName, email: filteredEmail, bio: filteredBio}), 
+            headers: {
+                'Content-Type': 'application/json',
+                "Access-Control-Allow-Origin": "*",
             }
-            
+        })
+        .then(async result => {
+        if (result.ok) {
+          let response = await result.json();
+          console.warn(response);
+          console.log("Profile Updated!");
+          await setProfileUpdated(false);
+          await setSnackbarOpenCondition("profileChangeSuccess")
+          await setSnackbarOpen(true)
+          setLoading(false)
+        } else{
+          console.error("There has been an error!")
+          setProfileUpdated(false);
+          setSnackbarOpenCondition("failure")
+          setSnackbarOpen(true)
+          setLoading(false)
+        }  
+        })
+        .catch(error => {
+          console.error('Error:', error);
+        });
+      }
 
-            fetch(import.meta.env.VITE_BACKEND_URL+'/editprofile/' + user["_id"], {
-                method: 'PATCH',
-                body: JSON.stringify({ name: filteredName, email: filteredEmail, bio: filteredBio}), 
-                headers: {
-                    'Content-Type': 'application/json',
-                    "Access-Control-Allow-Origin": "*",
-                }
-            })
-            .then(async result => {
-            if (result.ok) {
-              let response = await result.json();
-              console.warn(response);
-              console.log("Profile Updated!");
-              await setProfileUpdated(false);
-              await setSnackbarOpenCondition("profileChangeSuccess")
-              await setSnackbarOpen(true)
-              setLoading(false)
-            } else{
-              console.error("There has been an error!")
-              setProfileUpdated(false);
-              setSnackbarOpenCondition("failure")
-              setSnackbarOpen(true)
-              setLoading(false)
-            }  
-            })
-            .catch(error => {
-              console.error('Error:', error);
-            });
-          }
-
-        /* only trigger when profile is updated*/
-        if (profileUpdated ===true){
-        editProfile();
-        } 
+      //only trigger when profile is updated
+      if (profileUpdated ===true){
+      editProfile();
+      } 
 }, [profileUpdated]);
 
  

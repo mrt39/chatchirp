@@ -12,18 +12,17 @@ const Navbar = ({user, setCurrentUser}) => {
 
   var location = useLocation();
 
+  const navigate = useNavigate(); 
+
   useEffect(() => {
     setcurrentRoute(location.pathname)
   }, [location]); // Only re-run the effect if count changes
 
 
-  const navigate = useNavigate(); 
-
-  
   function handleSignOut(){
       fetch(import.meta.env.VITE_BACKEND_URL+'/logout',{
       method: 'POST',
-      credentials: 'include' // sends cookies to server, so it can log out/unauthenticate user!
+      credentials: 'include' //sends cookies to server, so it can log out/unauthenticate user!
       })
       .then(async result => {
         if (result.ok) {
@@ -42,8 +41,8 @@ const Navbar = ({user, setCurrentUser}) => {
   }
 
 
-    return (
-      <>
+  return (
+    <>
       <div className="d-flex flex-column flex-shrink-0 bg-body-tertiary" style={{width: "4.5rem"}}>
         <div className="navbarLogo">
           <img src="../src/assets/logo.png" alt="logo" />
@@ -56,7 +55,7 @@ const Navbar = ({user, setCurrentUser}) => {
           </div>
         </li>
       </Link>
-       <Link to="/profile">
+        <Link to="/profile">
         <li>
           <div href="#" className={(currentRoute==="/profile"? "active" :"") + " nav-link py-3 border-bottom rounded-0"} title="Profile" data-bs-placement="right">
             <Icon.PersonCircle  className="bi pe-none" width="24" height="24" aria-label="Profile"/>
@@ -86,9 +85,9 @@ const Navbar = ({user, setCurrentUser}) => {
         </ul>
       </div>
     </div>
-    </>
-      );
-    };
+  </>
+  );
+  };
     
     
 export default Navbar;

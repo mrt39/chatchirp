@@ -37,7 +37,6 @@ export default function SignUp() {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    console.log(signUpData)
 
     if(emptyPasswordField||invalidEmailField||emptyEmailField||emptyNameField){
       return
@@ -93,144 +92,143 @@ export default function SignUp() {
   }
 
 
-    useEffect(() => {
-        async function registerUser() {
-            //on submit, clean the word with the profanity cleaner package
-            //https://www.npmjs.com/package/profanity-cleaner
-            const filteredName = await clean(signUpData.name, { keepFirstAndLastChar: true }); 
+  useEffect(() => {
+      async function registerUser() {
+          //on submit, clean the word with the profanity cleaner package
+          //https://www.npmjs.com/package/profanity-cleaner
+          const filteredName = await clean(signUpData.name, { keepFirstAndLastChar: true }); 
 
-            fetch(import.meta.env.VITE_BACKEND_URL+'/signup', {
-                method: "post",
-                /* if imageFile exists, send imageFile */  
-                body: JSON.stringify({ name: filteredName, email: signUpData.email, password: signUpData.password}), 
-                headers: {
-                    'Content-Type': 'application/json',
-                    "Access-Control-Allow-Origin": "*",
-                },
-                credentials:"include" //required for sending the cookie data
-            })
-            .then(async result => {
-              if (result.ok) {
-                let response = await result.json();
-                console.warn(response);
-                setSubmitted(false);
-                if(response.name==="UserExistsError"){
-                  setSnackbarOpenCondition("alreadyRegistered")
-                  setSnackbarOpen(true)
-                }else{
-                  console.log("Successfully registered user!")
-                  navigate("/findpeople"); 
-                  //reload the page, so it re-fetches the logged in user data
-                  window.location.reload();
-                  setSnackbarOpenCondition("successfulRegister")
-                  setSnackbarOpen(true)
-                }
+          fetch(import.meta.env.VITE_BACKEND_URL+'/signup', {
+              method: "post",
+              body: JSON.stringify({ name: filteredName, email: signUpData.email, password: signUpData.password}), 
+              headers: {
+                  'Content-Type': 'application/json',
+                  "Access-Control-Allow-Origin": "*",
+              },
+              credentials:"include" //required for sending the cookie data
+          })
+          .then(async result => {
+            if (result.ok) {
+              let response = await result.json();
+              console.warn(response);
+              setSubmitted(false);
+              if(response.name==="UserExistsError"){
+                setSnackbarOpenCondition("alreadyRegistered")
+                setSnackbarOpen(true)
               }else{
-                console.error("There has been an error!")
-                console.error(result); 
-                setSubmitted(false);
-              }  
-            })
-            .catch (error =>{
-              console.warn("Error: " + error)
-            }) 
+                console.log("Successfully registered user!")
+                navigate("/findpeople"); 
+                //reload the page, so it re-fetches the logged in user data
+                window.location.reload();
+                setSnackbarOpenCondition("successfulRegister")
+                setSnackbarOpen(true)
+              }
+            }else{
+              console.error("There has been an error!")
+              console.error(result); 
+              setSubmitted(false);
+            }  
+          })
+          .catch (error =>{
+            console.warn("Error: " + error)
+          }) 
 
-        }
-        if (submitted ===true){
-        registerUser();
-        } 
-    }, [submitted]);
+      }
+      if (submitted ===true){
+      registerUser();
+      } 
+  }, [submitted]);
 
   return (
   <>
     {currentUser? <Navigate to="/" />
   : ""}
-      <Container component="main" maxWidth="xs">
-        <CssBaseline />
-        <Box
-          sx={{
-            marginTop: 8,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-          }}
-        >
-          <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-            <LockOutlinedIcon id="lockIcon1" />
-          </Avatar>
-          <Typography component="h1" variant="h5">
-            Sign Up
-          </Typography>
-          <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+    <Container component="main" maxWidth="xs">
+      <CssBaseline />
+      <Box
+        sx={{
+          marginTop: 8,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+        }}
+      >
+        <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
+          <LockOutlinedIcon id="lockIcon1" />
+        </Avatar>
+        <Typography component="h1" variant="h5">
+          Sign Up
+        </Typography>
+        <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+        <TextField 
+            margin="normal"
+            fullWidth
+            className="loginSignupTextField"
+            id="name"
+            label="Name"
+            type="name"
+            name="name"
+            autoComplete="name"
+            autoFocus
+            required
+            onChange={handleChange}
+            error={emptyNameField}
+            helperText={emptyNameField? "Name field can not be empty." :null}
+          />
           <TextField 
-              margin="normal"
-              fullWidth
-              className="loginSignupTextField"
-              id="name"
-              label="Name"
-              type="name"
-              name="name"
-              autoComplete="name"
-              autoFocus
-              required
-              onChange={handleChange}
-              error={emptyNameField}
-              helperText={emptyNameField? "Name field can not be empty." :null}
-            />
-            <TextField 
-              margin="normal"
-              fullWidth
-              className="loginSignupTextField"
-              id="email"
-              label="E-mail Address"
-              type="email"
-              name="email"
-              required
-              autoComplete="email"
-              onChange={handleChange}
-              error={emptyEmailField || invalidEmailField}
-              helperText={setEmailFieldHelperText()}
-            />
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              className="loginSignupTextField"
-              name="password"
-              label="Password"
-              type="password"
-              id="password"
-              autoComplete="current-password"
-              onChange={handleChange}
-              error={emptyPasswordField}
-              helperText={emptyPasswordField? "Password field can not be empty." :null}
-            />
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              sx={{ mt: 3, mb: 2 }}
-            >
-              Sign Up
-            </Button>
-            
-            <Grid container>
-              <Grid item>
-                <RouterLink className="signUpLink" to="/login">
-                    {"Already have an account? Sign in"}
-                </RouterLink>
-              </Grid>
+            margin="normal"
+            fullWidth
+            className="loginSignupTextField"
+            id="email"
+            label="E-mail Address"
+            type="email"
+            name="email"
+            required
+            autoComplete="email"
+            onChange={handleChange}
+            error={emptyEmailField || invalidEmailField}
+            helperText={setEmailFieldHelperText()}
+          />
+          <TextField
+            margin="normal"
+            required
+            fullWidth
+            className="loginSignupTextField"
+            name="password"
+            label="Password"
+            type="password"
+            id="password"
+            autoComplete="current-password"
+            onChange={handleChange}
+            error={emptyPasswordField}
+            helperText={emptyPasswordField? "Password field can not be empty." :null}
+          />
+          <Button
+            type="submit"
+            fullWidth
+            variant="contained"
+            sx={{ mt: 3, mb: 2 }}
+          >
+            Sign Up
+          </Button>
+          
+          <Grid container>
+            <Grid item>
+              <RouterLink className="signUpLink" to="/login">
+                  {"Already have an account? Sign in"}
+              </RouterLink>
             </Grid>
-          </Box>
+          </Grid>
         </Box>
+      </Box>
 
-        <Snackbar
-          snackbarOpenCondition={snackbarOpenCondition}
-          snackbarOpen={snackbarOpen}
-          setSnackbarOpen={setSnackbarOpen}
-        />
-      </Container>
-      <Footer/>
+      <Snackbar
+        snackbarOpenCondition={snackbarOpenCondition}
+        snackbarOpen={snackbarOpen}
+        setSnackbarOpen={setSnackbarOpen}
+      />
+    </Container>
+    <Footer/>
   </>
   );
 }

@@ -24,7 +24,6 @@ app.use(
     origin: true,
     methods: "GET,POST,PUT,DELETE,PATCH,OPTIONS",
     credentials: true,
-    /* allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'device-remember-token', 'Access-Control-Allow-Origin', 'Origin', 'Accept', ' Access-Control-Allow-Headers' , 'Access-Control-Allow-Methods', 'Access-Control-Allow-Credentials'] */
   })
 );
 
@@ -32,7 +31,7 @@ app.use(
 app.use(express.json());
 app.use(bodyParser.urlencoded({extended: true}));
 
-/* serve the files in /images folder as static files */
+//serve the files in /images folder as static files
 app.use('/images', express.static('images'))
 
 

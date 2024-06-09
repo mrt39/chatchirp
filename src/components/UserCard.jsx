@@ -12,51 +12,43 @@ import { UserContext } from '../App.jsx';
 
 export default function UserCard({person}) {
 
-    // Passing the UserContext defined in app.jsx
-    const { currentUser, selectedPerson, setSelectedPerson, theme } = useContext(UserContext); 
+  // Pass the UserContext defined in app.jsx
+  const { currentUser, selectedPerson, setSelectedPerson, theme } = useContext(UserContext); 
 
- 
-    const navigate = useNavigate(); 
+  const navigate = useNavigate(); 
 
-    function handleSendMessageClick(){
-
-        setSelectedPerson(person)
-        navigate("/"); 
-    }
-
-    useEffect(() => {
-
-      console.log(theme)
-    }, [theme]);
-
+  function handleSendMessageClick(){
+    setSelectedPerson(person)
+    navigate("/"); 
+  }
 
 
   return (
     <div className="cardContainer">
-        <div className={theme === 'dark' ? 'dark-card-user-image' : 'card-user-image'}>
+      <div className={theme === 'dark' ? 'dark-card-user-image' : 'card-user-image'}>
         <div className="userCardAvatar img-fluid">
           <MuiAvatar 
           user={person}/>
         </div>
+      </div>
+
+      <div className="cardContent">
+        <h4 className="cardName">{person.name}</h4>
+        <p className="cardEmail">{person.email}</p>
+
+
+
+        <p className="cardBio">
+        {person.bio}
+        </p>
+        <CardActions buttonFlex="1">
+        <div href="#" title="Message this person!" >
+        <IconButton className="userCardIconButton" onClick={handleSendMessageClick} size="sm" variant="plain" color="neutral">
+            <Icon.SendFill  className="bi pe-none" width="24" height="24" aria-label="Message"/>
+        </IconButton>
         </div>
- 
-        <div className="cardContent">
-            <h4 className="cardName">{person.name}</h4>
-            <p className="cardEmail">{person.email}</p>
- 
- 
- 
-            <p className="cardBio">
-            {person.bio}
-            </p>
-            <CardActions buttonFlex="1">
-            <div href="#" title="Message this person!" >
-            <IconButton className="userCardIconButton" onClick={handleSendMessageClick} size="sm" variant="plain" color="neutral">
-                <Icon.SendFill  className="bi pe-none" width="24" height="24" aria-label="Message"/>
-            </IconButton>
-            </div>
-            </CardActions>
-        </div>
+        </CardActions>
+      </div>
     </div>
   );
 }

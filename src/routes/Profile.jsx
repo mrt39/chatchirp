@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 import { useOutletContext} from "react-router-dom";
-import { useState, useEffect, useContext } from 'react'
+import { useState, useContext } from 'react'
 import { UserContext } from '../App.jsx';
 import { Box, Container, Stack, Typography, Unstable_Grid2 as Grid } from '@mui/material';
 import { AccountProfile } from '../components/account-profile';
@@ -13,21 +13,16 @@ import "../styles/Profile.css"
 
 const Profile = () => {
 
-       // "useOutletContext" is used to how you get props from Outlet: https://reactrouter.com/en/main/hooks/use-outlet-context 
-     const [snackbarOpenCondition, setSnackbarOpenCondition, snackbarOpen, setSnackbarOpen, setCurrentUser, profileUpdated, setProfileUpdated] = useOutletContext();
-      // Passing the UserContext defined in app.jsx
-      const { currentUser, selectedPerson, setSelectedPerson } = useContext(UserContext); 
-
-
-
-
-
+  const [snackbarOpenCondition, setSnackbarOpenCondition, snackbarOpen, setSnackbarOpen, setCurrentUser, profileUpdated, setProfileUpdated] = useOutletContext();
+  // Pass the UserContext defined in app.jsx
+  const { currentUser, selectedPerson, setSelectedPerson } = useContext(UserContext); 
 
   //check if the e-mail address user puts is invalid
   const [invalidEmail, setInvalidEmail] = useState(false); 
 
   
- return ( <>
+ return ( 
+  <>
     <Box
       component="main"
       sx={{
@@ -52,14 +47,10 @@ const Profile = () => {
                 md={6}
                 lg={4}
               >
-{/*                 <AccountProfile 
-                user={currentUser}
-                setProfileUpdated={setProfileUpdated}
-                /> */}
-                <AccountProfile
-                user={currentUser}
-                setProfileUpdated={setProfileUpdated}
-                />
+              <AccountProfile
+              user={currentUser}
+              setProfileUpdated={setProfileUpdated}
+              />
               </Grid>
               <Grid
                 xs={12}
@@ -76,22 +67,21 @@ const Profile = () => {
                 snackbarOpenCondition={snackbarOpenCondition}
                 profileUpdated={profileUpdated}
                 setProfileUpdated={setProfileUpdated}
-
                 />
               </Grid>
             </Grid>
           </div>
         </Stack>
       </Container>
-  
-  <Snackbar
-  snackbarOpenCondition={snackbarOpenCondition}
-  snackbarOpen={snackbarOpen}
-  setSnackbarOpen={setSnackbarOpen}
-  invalidEmail={invalidEmail}
-  />
+      <Snackbar
+      snackbarOpenCondition={snackbarOpenCondition}
+      snackbarOpen={snackbarOpen}
+      setSnackbarOpen={setSnackbarOpen}
+      invalidEmail={invalidEmail}
+      />
     </Box>
-  </>);
+  </>
+);
 }
 
 

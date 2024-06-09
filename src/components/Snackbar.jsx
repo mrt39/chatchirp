@@ -1,7 +1,6 @@
+/* eslint-disable react/prop-types */
 import * as React from 'react';
-import { useState, useEffect } from 'react';
 import Stack from '@mui/material/Stack';
-import Button from '@mui/material/Button';
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
 
@@ -10,7 +9,6 @@ const Alert = React.forwardRef(function Alert(props, ref) {
 });
 
 export default function CustomizedSnackbars({snackbarOpen, setSnackbarOpen, snackbarOpenCondition}) {
-
 
   const handleClick = () => {
     setSnackbarOpen(true);

@@ -9,7 +9,6 @@ import UserCard from "./UserCard";
 import '../styles/SearchPeople.css'
 
 
-
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
   borderRadius: theme.shape.borderRadius,
@@ -39,104 +38,101 @@ const SearchIconWrapper = styled('div')(({ theme }) => ({
 
 
 const SearchBar = ({setSearchQuery}) => (
-    <div className="textfieldContainer">
-            <Search>
-              <SearchIconWrapper>
-                  <SearchIcon />
-              </SearchIconWrapper>
-              <TextField
-                id="search-bar"
-                className="text"
-                onInput={(e) => {
-                  setSearchQuery(e.target.value);
-                }}
-                label="Enter a Name..."
-                variant="outlined"
-                placeholder="Search..."
-                size="small"
-              />
-          </Search>
+  <div className="textfieldContainer">
+    <Search>
+      <SearchIconWrapper>
+          <SearchIcon />
+      </SearchIconWrapper>
+      <TextField
+        id="search-bar"
+        className="text"
+        onInput={(e) => {
+          setSearchQuery(e.target.value);
+        }}
+        label="Enter a Name..."
+        variant="outlined"
+        placeholder="Search..."
+        size="small"
+      />
+    </Search>
+  </div>
 
-    </div>
 
+);
 
-  );
-
-  const filterData = (query, allUsers) => {
-    if (!query) {
-      return;
-    } else {
-      return allUsers.filter((d) => d.name.toLowerCase().includes(query.toLowerCase()));
-    }
-  };
+const filterData = (query, allUsers) => {
+  if (!query) {
+    return;
+  } else {
+    return allUsers.filter((d) => d.name.toLowerCase().includes(query.toLowerCase()));
+  }
+};
 
 export default function SearchPeople() {
-    const [searchQuery, setSearchQuery] = useState("");
-    const [filteredData, setFilteredData] = useState([]);
-    const [allUsers, setAllUsers] = useState();
-    const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filteredData, setFilteredData] = useState([]);
+  const [allUsers, setAllUsers] = useState();
+  const [loading, setLoading] = useState(true);
 
 
-    useEffect(() => {
-        if(searchQuery===""){
-            setFilteredData(null)
-        }
-        const dataFiltered = filterData(searchQuery, allUsers);
-        setFilteredData(dataFiltered)
-   
-      }, [searchQuery]); 
-
-    
-    //fetch for getting data of all people
-    useEffect(() => {
-      const getMessages = () => {
-          fetch(import.meta.env.VITE_BACKEND_URL+'/getallusers', {
-          method: 'GET',
-          })
-          .then(response => {
-              console.log(response)
-              if (response.ok) {
-              return response.json(); // Parse JSON when the response is successful
-              }
-              throw new Error('Network response was not ok.');
-          })
-          .then(data => {
-              setAllUsers(data)
-              setLoading(false); // Set loading to false once the data is received
-              console.log(data)
-          })
-          .catch(error => {
-              console.error('Error:', error);
-              setLoading(false); 
-          });
-      };
-      getMessages();
-      }, []); 
+  useEffect(() => {
+      if(searchQuery===""){
+          setFilteredData(null)
+      }
+      const dataFiltered = filterData(searchQuery, allUsers);
+      setFilteredData(dataFiltered)
+  
+    }, [searchQuery]); 
 
   
-    return (
-      <div className="searchPeopleContainer">
-        <SearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
-        <div className="searchResultDisplayContainer">
-        {loading? 
-        <Box sx={{ display: 'flex' }}>
-          <CircularProgress size="5rem" />
-        </Box>
-        :
-        filteredData? 
-          filteredData.map((person) => (
-            <div
-              className="searchResults"
-              key={person._id}
-            >
-              <UserCard
-              person = {person}
-              />
-            </div>
-          ))
-          :null
-        }
-        </div>
+  //fetch for getting data of all people
+  useEffect(() => {
+    const getMessages = () => {
+      fetch(import.meta.env.VITE_BACKEND_URL+'/getallusers', {
+      method: 'GET',
+      })
+      .then(response => {
+          if (response.ok) {
+          return response.json(); // Parse JSON when the response is successful
+          }
+          throw new Error('Network response was not ok.');
+      })
+      .then(data => {
+          setAllUsers(data)
+          setLoading(false); // Set loading to false once the data is received
+      })
+      .catch(error => {
+          console.error('Error:', error);
+          setLoading(false); 
+      });
+    };
+    getMessages();
+    }, []); 
+
+
+  return (
+    <div className="searchPeopleContainer">
+      <SearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+      <div className="searchResultDisplayContainer">
+      {loading? 
+      <Box sx={{ display: 'flex' }}>
+        <CircularProgress size="5rem" />
+      </Box>
+      :
+      filteredData? 
+        filteredData.map((person) => (
+          <div
+            className="searchResults"
+            key={person._id}
+          >
+            <UserCard
+            person = {person}
+            />
+          </div>
+        ))
+        :null
+      }
       </div>
-    );
-  }
+    </div>
+  );
+}

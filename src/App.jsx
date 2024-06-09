@@ -72,7 +72,6 @@ const App = () => {
           throw new Error('Network response was not ok.');
         })
         .then(data => {
-          console.log(data)
           setCurrentUser(data)
           setLoading(false); // Set loading to false once the data is received
           setFirstTimeLoading(false);
@@ -101,7 +100,6 @@ const App = () => {
           throw new Error('Network response was not ok.');
         })
         .then(data => {
-          console.log(data)
           setCurrentUser(data[0])
           setLoading(false); // Set loading to false once the data is received
           setProfileUpdated(false)

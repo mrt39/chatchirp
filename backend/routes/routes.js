@@ -2,9 +2,9 @@ const router = require("express").Router();
 //node file system module
 const fs = require('fs');
 const path = require('path');
-/* grab the User model that's exported in passport.js */
+//grab the User model that's exported in passport.js
 const {User, Message, upload, passport} = require( "../passport.js")
-/* const {passport} = require( "../index.js") */
+
 
 
 
@@ -42,21 +42,19 @@ router.get('/auth/google/callback',
         res.send(JSON.stringify("Google login failed!"))
     }
 
-/*     // Successful authentication, redirect
-    res.redirect('/checkifloggedout'); */
 });
 
 router.post("/signup", function(req, res){
   User.register({name: req.body.name, email:req.body.email}, req.body.password, function(err){
-      if(err){
-          console.log(err);
-          res.send(JSON.stringify(err))
-      } else {
-          passport.authenticate("local")(req, res, function(){
-            console.log("Successfully signed up!")
-            res.send(JSON.stringify("Successfully signed up!")) 
-          });
-      }
+    if(err){
+        console.log(err);
+        res.send(JSON.stringify(err))
+    } else {
+        passport.authenticate("local")(req, res, function(){
+          console.log("Successfully signed up!")
+          res.send(JSON.stringify("Successfully signed up!")) 
+        });
+    }
   })
 });
 
@@ -91,7 +89,6 @@ router.post('/logout',  (req, res) => {
 router.get("/messagebox/:userid", async (req, res) => {
 
   const userID = req.params.userid // access URL variable
-
   //in the messagebox, only display users whom the user has at least 1 message between (either sent or received)
   try {
     const messagesFromUser = await Message.find({ 'from.0._id': userID});
@@ -112,7 +109,7 @@ router.get("/messagebox/:userid", async (req, res) => {
       return false;
     });
     //add the "lastMsg" property to the objects within the uniqueContactsObj array, in order to display it in the ContactsBox.
-    //however, since it's an array of multiple mongoose objects and mongoose objects doesn't accept adding new properties to them, we turn these objects into plain objects, with .toObject() method.
+    //however, since it's an array of multiple mongoose objects and mongoose objects doesn't accept adding new properties to them, turn these objects into plain objects, with .toObject() method.
     //https://stackoverflow.com/questions/7503450/how-do-you-turn-a-mongoose-document-into-a-plain-object
     var uniqueContacts = uniqueContactsObj.map(function(model) { return model.toObject(); });
 
@@ -126,14 +123,14 @@ router.get("/messagebox/:userid", async (req, res) => {
           user.uploadedpic=updatedUser.uploadedpic;
         }
         )
-        return user
+      return user
     });
 
     
     //between the logged in user and each unique user, find the last message that's sent.
-    //we are using a for loop instead of forEach, because we are not able to use aysnc (await) in forEach.
+    //use a for loop instead of forEach, because not able to use aysnc (await) in forEach.
     for (let index = 0; index < uniqueContacts.length; index++) { 
-      //searching by ID because if the users change their name or e-mail later on, their messages won't be found under the same user model
+      //search by ID because if the users change their name or e-mail later on, their messages won't be found under the same user model
       let messagesFromClickedPerson =  await Message.find({ 'to.0._id': userID , 'from.0._id': uniqueContacts[index]._id.toString()});
       let messagesFromUser1 =  await Message.find({ 'to.0._id': uniqueContacts[index]._id.toString(), 'from.0._id': userID});
       //combine the two arrays
@@ -142,74 +139,67 @@ router.get("/messagebox/:userid", async (req, res) => {
       uniqueContacts[index].lastMsg = allMessagesBetween[allMessagesBetween.length - 1]; 
     }
 
-
     res.send(uniqueContacts);
 
-    
+
   } catch (err) {
     res.send(err);
   }
 })
 
 router.get("/getallusers", async (req, res) => {
-  
-    try {
-      const users = await User.find();
-      res.send(users);
-  
-    } catch (err) {
-      res.send(err);
-    }
-  })
+  try {
+    const users = await User.find();
+    res.send(users);
+
+  } catch (err) {
+    res.send(err);
+  }
+})
 
 router.get("/profile/:userid", async (req, res) => {
 
-     const userID = req.params.userid // access URL variable
-   
-    try {
-      const user = await User.find({_id: userID});
-      console.log("changed value of the user: " + user)
-      res.send(user);
-  
-    } catch (err) {
-      res.send(err);
-    }
+  const userID = req.params.userid // access URL variable
+
+  try {
+    const user = await User.find({_id: userID});
+    console.log("changed value of the user: " + user)
+    res.send(user);
+
+  } catch (err) {
+    res.send(err);
+  }
   })
 
 router.get("/messagesfrom/:userid_messagingid", async (req, res) => {
 
-     const route = req.params.userid_messagingid // access URL variable
-     //id's in the route will be divided by "_", so we are splitting it into two parts
-     const ids = route.split('_');
-     const userID= ids[0]
-     const messagedPersonID= ids[1]
-     console.log("Current user using this app: " + req.user)
-     console.log("User: " + userID + " . Messaged person: " + messagedPersonID )
-   
-    try {
-      const user = await User.find({_id: userID});
-      const messagedPerson = await User.find({_id: messagedPersonID});
-      //get both messages FROM and TO clicked (selected) person.
-      //searching by ID because if the users change their name or e-mail later on, their messages won't be found under the same user model
-      const messagesFromClickedPerson = await Message.find({ 'to.0._id': userID , 'from.0._id': messagedPersonID}  );
-      const messagesFromUser = await Message.find({ 'to.0._id': messagedPersonID , 'from.0._id': userID});
-      //combine the two arrays
-      const allMessagesBetween = messagesFromClickedPerson.concat(messagesFromUser);
-      //send messages
-      res.send(allMessagesBetween);
+  const route = req.params.userid_messagingid // access URL variable
+  //id's in the route will be divided by "_", so we are splitting it into two parts
+  const ids = route.split('_');
+  const userID= ids[0]
+  const messagedPersonID= ids[1]
   
-    } catch (err) {
-      res.send(err);
-    }
-  })
+  try {
+    //get both messages FROM and TO clicked (selected) person.
+    //search by ID because if the users change their name or e-mail later on, their messages won't be found under the same user model
+    const messagesFromClickedPerson = await Message.find({ 'to.0._id': userID , 'from.0._id': messagedPersonID}  );
+    const messagesFromUser = await Message.find({ 'to.0._id': messagedPersonID , 'from.0._id': userID});
+    //combine the two arrays
+    const allMessagesBetween = messagesFromClickedPerson.concat(messagesFromUser);
+    //send messages
+    res.send(allMessagesBetween);
+
+  } catch (err) {
+    res.send(err);
+  }
+})
 
 
  
 router.post("/messagesent", async (req, res) => {
 
-  console.log(req.body) 
   try {
-    //sending message available only if authenticated
+    //send message available only if authenticated
     if (req.isAuthenticated){
       const newMessage = new Message({
           from: req.body.from,
@@ -241,7 +231,6 @@ router.post('/uploadprofilepic/:userid',  upload.single('image'),  async (req, r
 
   const userid = req.params.userid 
   const user = await User.findOne({_id: userid});
-  console.log(user)
   try {
     user.uploadedpic= imageName
     const result = await user.save();
@@ -251,7 +240,6 @@ router.post('/uploadprofilepic/:userid',  upload.single('image'),  async (req, r
   }catch (err) {
     res.send(err);
   }
-
 
 });
 
@@ -266,8 +254,6 @@ router.post("/imagesent", upload.single('image'), async (req, res) => {
   const msgFrom = JSON.parse(req.body.from).currentUser
   const msgTo = JSON.parse(req.body.to).selectedPerson
 
-  console.log(msgFrom)
-  console.log(msgTo)
 
   try {
     if (req.isAuthenticated){
@@ -289,7 +275,6 @@ router.post("/imagesent", upload.single('image'), async (req, res) => {
 });
 
 
-
 /* ROUTE FOR RENDERING THE IMAGES PROPERTY */
 router.get('/images/:imageName', (req, res) => {
   const imageName = req.params.imageName
@@ -298,10 +283,7 @@ router.get('/images/:imageName', (req, res) => {
 })
 
 
-
-
 router.patch("/editprofile/:userid", async (req, res) => {
-
   
   const userid = req.params.userid // access URL variable
   const user = await User.findOne({_id: userid});
