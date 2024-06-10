@@ -53,7 +53,6 @@ const MessageInputBox = ({messageSent, setMessageSent, contactsBoxPeople, firstM
       .then(async result => {
         if (result.ok){
           let response = await result.json();
-          console.warn(response);
           console.log("Message sent");
           setMessageInputValue("");
           setMessageSent(false);

@@ -31,7 +31,6 @@ export default function MeetPeople() {
             }
       }
       setRandomizedUsers(randomUsers)
-      console.log(randomizedUsers)
       }
   }
 
