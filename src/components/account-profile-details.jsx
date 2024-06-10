@@ -32,17 +32,7 @@ export const AccountProfileDetails = ({user, setSnackbarOpen, invalidEmail, setI
       [event.target.name]: event.target.value
   });
   }
-
-  //when user data changes, change rendered textbox data as well
-  useEffect(() => {
-    setValues({
-      name: user.name,
-      email: user.email,
-      bio: user.bio
-    })
-  }, [user]);
-
-  
+ 
   //email validation
   useEffect(() => {
     if(values.email.includes("@")){
@@ -118,7 +108,7 @@ export const AccountProfileDetails = ({user, setSnackbarOpen, invalidEmail, setI
           await setProfileUpdated(false);
           await setSnackbarOpenCondition("profileChangeSuccess")
           await setSnackbarOpen(true)
-          setLoading(false)
+          await setLoading(false)
         } else{
           console.error("There has been an error!")
           setProfileUpdated(false);

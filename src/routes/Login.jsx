@@ -33,7 +33,7 @@ export default function Login() {
   }
 
   function handleDemoSigninClick(){
-    setLoginData({email:"demoacc@demoacc.com" , password: "demoacc"})
+    setLoginData({email:"demoacc@demoacc.com" , password: import.meta.env.VITE_DEMOACC_PW})
     setClickedLogin(true)
   }
 
@@ -59,7 +59,7 @@ export default function Login() {
           headers: {
               Accept: 'application/json',
               'Content-Type': 'application/json',
-              "Access-Control-Allow-Origin": import.meta.env.VITE_BACKEND_URL,
+              "Access-Control-Allow-Origin": "*",
           },
           credentials:"include" //required for sending the cookie data
       })

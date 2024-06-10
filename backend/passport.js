@@ -11,10 +11,16 @@ const passportLocalMongoose = require("passport-local-mongoose")
 //mongoose findorcreate
 const findOrCreate = require('mongoose-findorcreate')
 
-mongoose.connect('mongodb://127.0.0.1:27017/chatChirpUserDB');
-
 //dotenv for environment variables
 require('dotenv').config();
+
+// Define the database URL to connect to.
+const dev_db_url = "mongodb://127.0.0.1:27017/chatChirpUserDB"
+const mongoDB = process.env.MONGODB_URI || dev_db_url;
+
+mongoose.connect(mongoDB);
+
+
 
 const SERVER_URL = process.env.SERVER_URL;
 

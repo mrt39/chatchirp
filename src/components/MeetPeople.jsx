@@ -7,21 +7,32 @@ import '../styles/SearchPeople.css'
 
 
 export default function MeetPeople() {
-  const [randomizedData, setRandomizedData] = useState([]);
+  const [randomizedUsers, setRandomizedUsers] = useState([]);
   const [loading, setLoading] = useState(true);
 
   //function for selecting three random users from allUsers data
   function randomizeUsers(data){
-      let randomUsers = []
-      while (randomUsers.length<3) {
-          var x = Math.floor(Math.random() * data.length);
-          let pickedUser = data[x]
-          //make sure picked user is unique
-          if(!randomUsers.includes(pickedUser)){
-          randomUsers.push(pickedUser)
-          }
+
+      //if data is empty, return
+      if (!data){
+        return
+      } //if there are less than 3 users registered in total, return
+      else if(data.length < 3){
+        return
       }
-      setRandomizedData(randomUsers)
+      else{
+        let randomUsers = []
+        while (randomUsers.length<3) {
+            var x = Math.floor(Math.random() * data.length);
+            let pickedUser = data[x]
+            //make sure picked user is unique
+            if(!randomUsers.includes(pickedUser)){
+            randomUsers.push(pickedUser)
+            }
+      }
+      setRandomizedUsers(randomUsers)
+      console.log(randomizedUsers)
+      }
   }
 
 
@@ -59,8 +70,8 @@ export default function MeetPeople() {
         <CircularProgress size="5rem" />
       </Box>
       :
-      randomizedData? 
-          randomizedData.map((person) => (
+      randomizedUsers.length>2? 
+        randomizedUsers.map((person) => (
           <div
             className="searchResults"
             key={person._id}
@@ -70,7 +81,8 @@ export default function MeetPeople() {
             />
           </div>
         ))
-        :null
+        :<p>Not enough users registered!</p>
+
       }
       </div>
     </div>
