@@ -21,7 +21,7 @@ router.get("/login/success", (req, res) => {
 
 router.get("/", (req, res) => {
  
-    res.send(JSON.stringify("App is Working"));
+    res.send("App is Working");
 
 });
 
