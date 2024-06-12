@@ -115,8 +115,10 @@ const Message = mongoose.models.messages ||mongoose.model("messages", messageSch
 
 /* MULTER SETUP (for storing images on db) */
 var multer = require('multer');
- 
-const upload = multer({ dest: 'images/' })
+
+/* using /tmp here as the folder for saving images. This is for deployment, as vercel doesn't allow uploading files to server 
+except when the folder is /tmp, which is the temporary storage: https://github.com/orgs/vercel/discussions/314#discussioncomment-2691930 */
+const upload = multer({ dest: '/tmp' })
 
 /* END OF MULTER */
 
