@@ -7,9 +7,7 @@ const {User, Message, upload, passport} = require( "../passport.js")
 
 
 
-
 const CLIENT_URL = process.env.CLIENT_URL;
-
 
 
 router.get("/login/success", (req, res) => {
@@ -20,7 +18,6 @@ router.get("/login/success", (req, res) => {
     res.status(401).send('User not authenticated');
   }
 });
-
 
 router.get("/", (req, res) => {
  
@@ -58,14 +55,12 @@ router.post("/signup", function(req, res){
   })
 });
 
-
 router.post("/login", function(req, res){
   passport.authenticate("local")(req, res, function(){
     console.log("Successfully logged in!")
     res.send(JSON.stringify("Successfully logged in!"))
   })
 });
-
 
 
 router.post('/logout',  (req, res) => {
@@ -83,7 +78,6 @@ router.post('/logout',  (req, res) => {
     res.status(401).json( 'Not able to logout' );
 }
 });
-
 
 
 router.get("/messagebox/:userid", async (req, res) => {
@@ -141,7 +135,6 @@ router.get("/messagebox/:userid", async (req, res) => {
 
     res.send(uniqueContacts);
 
-
   } catch (err) {
     res.send(err);
   }
@@ -194,7 +187,6 @@ router.get("/messagesfrom/:userid_messagingid", async (req, res) => {
   }
 })
 
-
  
 router.post("/messagesent", async (req, res) => {
 
@@ -217,7 +209,6 @@ router.post("/messagesent", async (req, res) => {
   }
  
 });
-
 
 //tap into "upload", which we import from passport.js
 //this is a middleware function that will accept the image data from the client side form data as long as it's called image (which is exactly what we called it in the react app formData.append("image", file))
@@ -246,14 +237,12 @@ router.post('/uploadprofilepic/:userid',  upload.single('image'),  async (req, r
 //image sent in message input
 router.post("/imagesent", upload.single('image'), async (req, res) => {
 
-
   console.log(path.join(__dirname + '/../images/' + req.file.filename)) 
 
   const imageName = req.file.filename 
 
   const msgFrom = JSON.parse(req.body.from).currentUser
   const msgTo = JSON.parse(req.body.to).selectedPerson
-
 
   try {
     if (req.isAuthenticated){
@@ -274,14 +263,12 @@ router.post("/imagesent", upload.single('image'), async (req, res) => {
  
 });
 
-
-/* ROUTE FOR RENDERING THE IMAGES PROPERTY */
+/* ROUTE FOR RENDERING THE IMAGES */
 router.get('/images/:imageName', (req, res) => {
   const imageName = req.params.imageName
   const readStream = fs.createReadStream(`images/${imageName}`)
   readStream.pipe(res)
 })
-
 
 router.patch("/editprofile/:userid", async (req, res) => {
   
@@ -303,5 +290,5 @@ router.patch("/editprofile/:userid", async (req, res) => {
 
 });
 
-
 module.exports = router
+

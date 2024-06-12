@@ -21,9 +21,7 @@ const mongoDB = process.env.MONGODB_URI || dev_db_url;
 mongoose.connect(mongoDB);
 
 
-
 const SERVER_URL = process.env.SERVER_URL;
-
 
 
 const userSchema = new mongoose.Schema ({
@@ -110,7 +108,6 @@ const messageSchema = new mongoose.Schema ({
 
 const Message = new mongoose.model("Message", messageSchema);
 
-
 /* END OF MONGOOSE */
 
 /* MULTER SETUP (for storing images on db) */
@@ -118,11 +115,9 @@ var multer = require('multer');
  
 const upload = multer({ dest: 'images/' })
 
-
 /* END OF MULTER */
 
 passport.use(User.createStrategy());
-
 
 //google strategy
 passport.use(new GoogleStrategy({
@@ -145,7 +140,6 @@ async function(accessToken, refreshToken, profile, done) {
 ));
 
 
-
 // Serialize User to session
 passport.serializeUser((user, done) => {
   done(null, user.id);
@@ -164,6 +158,6 @@ passport.deserializeUser((id, done) => {
 
 
 
-
 //exporting User and Message models and upload attribute in order to use them in routes.js 
 module.exports = { User, Message, upload, passport }
+
