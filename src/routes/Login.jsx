@@ -59,7 +59,7 @@ export default function Login() {
           headers: {
               Accept: 'application/json',
               'Content-Type': 'application/json',
-              "Access-Control-Allow-Origin": "*",
+              "Access-Control-Allow-Origin": import.meta.env.VITE_BACKEND_URL,
           },
           credentials:"include" //required for sending the cookie data
       })
