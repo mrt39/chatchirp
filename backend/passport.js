@@ -72,7 +72,7 @@ const userSchema = new mongoose.Schema ({
 userSchema.plugin(passportLocalMongoose, {usernameField: "email"});
 userSchema.plugin(findOrCreate);
 
-const User = new mongoose.model("User", userSchema);
+const User = mongoose.model("User", userSchema);
 
 const messageSchema = new mongoose.Schema ({
   from: {type: [userSchema],        
@@ -106,7 +106,7 @@ const messageSchema = new mongoose.Schema ({
 },
 });
 
-const Message = new mongoose.model("Message", messageSchema);
+const Message = mongoose.model("Message", messageSchema);
 
 /* END OF MONGOOSE */
 
