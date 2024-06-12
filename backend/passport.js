@@ -72,7 +72,9 @@ const userSchema = new mongoose.Schema ({
 userSchema.plugin(passportLocalMongoose, {usernameField: "email"});
 userSchema.plugin(findOrCreate);
 
-const User = mongoose.model("users", userSchema);
+//construct the model this way to prevent the "Cannot overwrite model once compiled" error.
+const User = mongoose.models.users || mongoose.model("users", userSchema);
+
 
 const messageSchema = new mongoose.Schema ({
   from: {type: [userSchema],        
@@ -106,7 +108,8 @@ const messageSchema = new mongoose.Schema ({
 },
 });
 
-const Message = mongoose.model("messages", messageSchema);
+//construct the model this way to prevent the "Cannot overwrite model once compiled" error.
+const Message = mongoose.models.messages ||mongoose.model("messages", messageSchema);
 
 /* END OF MONGOOSE */
 
@@ -159,5 +162,5 @@ passport.deserializeUser((id, done) => {
 
 
 //exporting User and Message models and upload attribute in order to use them in routes.js 
-module.exports = { User, Message, upload, passport }
+module.exports = {User, Message, upload, passport}
 
