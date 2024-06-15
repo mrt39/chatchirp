@@ -62,7 +62,7 @@ const App = () => {
         headers: {
           "Content-Type": "application/json",
           "Access-Control-Allow-Credentials": true,
-          "Access-Control-Allow-Origin": import.meta.env.VITE_BACKEND_URL,
+          "Access-Control-Allow-Origin": "*",
         },
       })
         .then(response => {

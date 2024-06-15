@@ -103,7 +103,7 @@ export default function SignUp() {
               body: JSON.stringify({ name: filteredName, email: signUpData.email, password: signUpData.password}), 
               headers: {
                   'Content-Type': 'application/json',
-                  "Access-Control-Allow-Origin": import.meta.env.VITE_BACKEND_URL,
+                  "Access-Control-Allow-Origin": "*",
               },
               credentials:"include" //required for sending the cookie data
           })
