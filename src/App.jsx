@@ -53,7 +53,7 @@ const App = () => {
   const [snackbarOpenCondition, setSnackbarOpenCondition] = useState();
 
 
-  /* get the user data when logged in */
+  /* get the user data when logged in, also checks if the user is logged in after each refresh*/
   useEffect(() => {
     const getUser = () => {
       fetch(import.meta.env.VITE_BACKEND_URL+'/login/success', {

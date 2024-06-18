@@ -11,9 +11,7 @@ import FileInputPopover from "./Popover.jsx"
 import { clean } from 'profanity-cleaner';
 import Snackbar from "./Snackbar.jsx"
 
-
-const MessageInputBox = ({messageSent, setMessageSent, contactsBoxPeople, firstMsg, setFirstMsg, imgSubmitted, setImgSubmitted}) => {
-
+const MessageInputBox = ({messageSent, setMessageSent, contactsBoxPeople, setContactsBoxPeople, firstMsg, setFirstMsg, imgSubmitted, setImgSubmitted}) => {
 
 
   // Pass the UserContext defined in app.jsx
@@ -23,14 +21,22 @@ const MessageInputBox = ({messageSent, setMessageSent, contactsBoxPeople, firstM
   //Set initial message input value to an empty string                                                                     
   const [messageInputValue, setMessageInputValue] = useState("");
 
+  //detect when the user has clicked has either pressed enter or clicked the "send message" icon
+  const [userPressedSend, setuserPressedSend] = useState(false);
 
+  /*detect if it's the first message between the user and the person they're sending a message to.
+  arrange it as an additional state check before the useeffect, instead of toggling firstMsg state directly,
+  so that re-render of Contactsbox doesn't happen before the message is sent */  
+  const [firstMessageBetween, setfirstMessageBetween] = useState(false);
 
   function handleSend(){
-    //if the person user is sending a message to isn't in the contacts, set firstMsg state to true.
-    if (contactsBoxPeople.includes(selectedPerson)===false){
-      setFirstMsg(!firstMsg)
+    setuserPressedSend(true)
+    //if the person user is sending a message to isn't in the contacts box
+    if (! contactsBoxPeople.find(person => person._id === selectedPerson._id)){
+      setfirstMessageBetween(true)
+      console.log(firstMessageBetween)
     }
-      setMessageSent(true)
+    console.log(firstMessageBetween)
   }
     
   //useeffect to handle sending TEXT message
@@ -53,9 +59,23 @@ const MessageInputBox = ({messageSent, setMessageSent, contactsBoxPeople, firstM
       .then(async result => {
         if (result.ok){
           let response = await result.json();
-          console.log("Message sent");
           setMessageInputValue("");
-          setMessageSent(false);
+          setMessageSent(!messageSent);
+          setuserPressedSend(false)
+          //if first message between the user and the person they're sending a message to, toggle firstMsg state
+          if(firstMessageBetween===true){
+            setFirstMsg(!firstMsg)
+            setfirstMessageBetween(false)
+            console.log(firstMessageBetween)
+          }
+          /* if the person user is sending message to is in the contacsbox,
+          change the lastMsg attribute for the selectedperson within "contactsBoxPeople" state, 
+          so that the contacts box display for the last message changes in sync, after sending a message */
+          if(contactsBoxPeople.find(person => person._id === selectedPerson._id)){
+          let personIndex = contactsBoxPeople.findIndex(obj => obj._id == selectedPerson._id);
+          contactsBoxPeople[personIndex].lastMsg.message = filteredMessage  
+          setContactsBoxPeople(contactsBoxPeople)
+          }
         } else{
           throw new Error(result)
         }
@@ -65,11 +85,10 @@ const MessageInputBox = ({messageSent, setMessageSent, contactsBoxPeople, firstM
       }); 
     }
     //only trigger when message is sent
-    if (messageSent ===true){
+    if (userPressedSend ===true){
     postMessage();
     } 
-  }, [messageSent]);
-
+  }, [userPressedSend]);
 
   //when selected person changes, clear input box
   useEffect(() => {
@@ -124,12 +143,10 @@ const MessageInputBox = ({messageSent, setMessageSent, contactsBoxPeople, firstM
     }
   }, [imageSelected]);
 
-
   //function for sending the image
   function handleImgSendBtn(){
       setImgSubmitted(true);
   }
-
 
   //effect for handling posting the image
   useEffect(() => {
@@ -200,3 +217,4 @@ const MessageInputBox = ({messageSent, setMessageSent, contactsBoxPeople, firstM
 }
 
 export default MessageInputBox
+

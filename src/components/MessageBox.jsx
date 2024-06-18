@@ -18,7 +18,6 @@ import '../styles/MessageBox.css'
 import dayjs from 'dayjs'
 import MuiAvatar from "./MuiAvatar";
 
-
 const MessageBox = () => {
 
   //Pass the UserContext defined in app.jsx
@@ -31,7 +30,7 @@ const MessageBox = () => {
 
   const [loading, setLoading] = useState(true);
 
-  //whether there has been any messaging between the user and selectedperson beforehand (if first message, re-render ContactsBox so new user gets displayed) 
+  //check whether there has been any messaging between the user and selectedperson beforehand (if first message, re-render ContactsBox so new user gets displayed) 
   const [firstMsg, setFirstMsg] = useState(false);
 
   //Users that will be displayed on the contactsbox (populated by fetch within ContactsBox component)
@@ -183,6 +182,7 @@ const MessageBox = () => {
             contactsBoxPeople={contactsBoxPeople} 
             setContactsBoxPeople ={setContactsBoxPeople}
             messageSent= {messageSent}
+            messagesBetween={messagesBetween}
             />
         {/* display only if user selects a person */}
         {selectedPerson? 
@@ -264,7 +264,8 @@ const MessageBox = () => {
               firstMsg={firstMsg}
               setFirstMsg={setFirstMsg}
               imgSubmitted={imgSubmitted}
-              setImgSubmitted={setImgSubmitted}        
+              setImgSubmitted={setImgSubmitted}   
+              setContactsBoxPeople={setContactsBoxPeople}     
               />
               </MessageList.Content>
 
@@ -286,4 +287,5 @@ const MessageBox = () => {
   
     
 export default MessageBox;
+
 

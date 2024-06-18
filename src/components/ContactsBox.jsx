@@ -16,7 +16,6 @@ import MuiAvatar from "./MuiAvatar";
 
 
 
-
 const filterData = (query, contactsBoxPeople) => {
     if (!query) {
       return;
@@ -25,8 +24,7 @@ const filterData = (query, contactsBoxPeople) => {
     }
 };
 
-
-const ContactsBox = ({sidebarStyle, handleConversationClick, messageSent, conversationAvatarStyle, conversationContentStyle, firstMsg, contactsBoxPeople, setContactsBoxPeople}) => {
+const ContactsBox = ({sidebarStyle, messagesBetween, handleConversationClick, messageSent, conversationAvatarStyle, conversationContentStyle, firstMsg, contactsBoxPeople, setContactsBoxPeople}) => {
     
     // Pass the UserContext defined in app.jsx
     const { currentUser, selectedPerson, setSelectedPerson } = useContext(UserContext); 
@@ -65,9 +63,7 @@ const ContactsBox = ({sidebarStyle, handleConversationClick, messageSent, conver
         };
         getContacts();
         //add firstMsg as a dependency so that contactsbox refreshes everytime user sends a message to a user for the FIRST time.
-        //add messageSent as a dependancy so that contactsbox refreshes everytime user sends a message (so that the "lastMsg" changes)
-        }, [firstMsg, messageSent]); 
-
+        }, [firstMsg]); 
 
     //useeffect for search function
     useEffect(() => {
@@ -86,7 +82,6 @@ const ContactsBox = ({sidebarStyle, handleConversationClick, messageSent, conver
         }  
 
     }, [searchbarValue]); 
-
 
     return (
         <Sidebar position="left"  style={sidebarStyle}>
@@ -135,3 +130,4 @@ const ContactsBox = ({sidebarStyle, handleConversationClick, messageSent, conver
 }
 
 export default ContactsBox;
+
