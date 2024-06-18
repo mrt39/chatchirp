@@ -8,9 +8,6 @@
     font-size: 30px;
 }
 
-.css-1d6a3hl-MuiPaper-root-MuiAppBar-root { 
-    position: static !important;
-}
 
 /* using inherit for adapting to theme */
 .cs-main-container{

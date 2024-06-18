@@ -1,37 +1,32 @@
-/* .css-1t8l2tu-MuiInputBase-input-MuiOutlinedInput-input{
+ input[name="email"], input[name="password"]{
     color: var(--bs-emphasis-color) !important; 
-} */
+ }
 
-.loginSignupTextField .css-1t8l2tu-MuiInputBase-input-MuiOutlinedInput-input{
-   color: var(--bs-emphasis-color) !important; 
-}
-
-.css-ijul54-MuiTypography-root{
+ label[data-shrink="false"][for="search-bar"] {
     color: inherit !important;
+    margin-left: 33px;
 }
 
-.css-i4bv87-MuiSvgIcon-root{
-    fill: var(--bs-emphasis-color) !important;
-
-}
-
-.css-14s5rfu-MuiFormLabel-root-MuiInputLabel-root{
-    color: inherit !important;
-}
-
-.css-1d3z3hw-MuiOutlinedInput-notchedOutline{
+.MuiOutlinedInput-notchedOutline{
     border-color: var(--bs-secondary-color) !important; 
 }
+/* when the focus is on input, change outline's border color */
+input[name="email"]:focus + .MuiOutlinedInput-notchedOutline{
+    border-color: #1976d2 !important;
+ }
 
+ input[name="password"]:focus+ .MuiOutlinedInput-notchedOutline{
+    border-color: #1976d2 !important;
+ }
 
-.css-11lq3yg-MuiGrid-root{
+#email-label, #password-label{
+    color: inherit !important;
+}
+
+.loginSignupLinkContainer{
     justify-content: center;
     align-items: center;
     margin-top: 5px;
-}
-
-.css-md26zr-MuiInputBase-root-MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline{
-     border-color: #1976d2 !important; 
 }
 
 #lockIcon1{
@@ -59,7 +54,3 @@
     text-decoration-color: rgba(25, 118, 210, 0.4);
 }
 
-
-.css-md26zr-MuiInputBase-root-MuiOutlinedInput-root.Mui-error .MuiOutlinedInput-notchedOutline{
-    border-color: #d32f2f !important;
-}

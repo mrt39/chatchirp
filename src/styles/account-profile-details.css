@@ -8,12 +8,13 @@
     color: #2B2B2B !important;
 }
 
-.css-sghohy-MuiButtonBase-root-MuiButton-root{
+.MuiCardActions-root > .MuiButton-containedPrimary.MuiButton-sizeMedium.MuiButton-containedSizeMedium{
     background-color: rgba(var(--bs-tertiary-bg-rgb)) !important;
     color: var(--bs-body-color) !important; 
     font-family: inherit !important;
 }
 
-.css-sghohy-MuiButtonBase-root-MuiButton-root.Mui-disabled{
+.MuiCardActions-root > .MuiButton-containedPrimary.MuiButton-sizeMedium.MuiButton-containedSizeMedium:disabled{
     background-color: rgba(0, 0, 0, 0.12) !important;
+    color: gray !important;
 }

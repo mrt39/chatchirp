@@ -2,7 +2,7 @@
 import { Link as RouterLink, useNavigate, Navigate, useOutletContext } from "react-router-dom";
 import { useState, useEffect, useContext } from 'react'
 import { UserContext } from '../App.jsx';
-import '../styles/Login.css'
+import '../styles/SignUp.css'
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -212,7 +212,7 @@ export default function SignUp() {
             Sign Up
           </Button>
           
-          <Grid container>
+          <Grid container className="loginSignupLinkContainer">
             <Grid item>
               <RouterLink className="signUpLink" to="/login">
                   {"Already have an account? Sign in"}

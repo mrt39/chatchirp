@@ -18,21 +18,22 @@
     width: 250px;
 }
 
-.css-9ddj71-MuiInputBase-root-MuiOutlinedInput-root{
-    color: inherit !important;
-}
 
-.css-1n4twyu-MuiInputBase-input-MuiOutlinedInput-input{
-    margin-left: 33px !important;
-}
-
-.css-1pysi21-MuiFormLabel-root-MuiInputLabel-root{
+label[data-shrink="false"][for="search-bar"] {
     color: inherit !important;
     margin-left: 33px;
 }
 
-.css-1jy569b-MuiFormLabel-root-MuiInputLabel-root{
+label[data-shrink="true"][for="search-bar"] {
     color: inherit !important;
+}
+
+.MuiInputBase-root.MuiOutlinedInput-root.MuiInputBase-colorPrimary.MuiInputBase-formControl.MuiInputBase-sizeSmall{
+    color: inherit !important;
+}
+
+.MuiInputBase-input.MuiOutlinedInput-input.MuiInputBase-inputSizeSmall{
+    margin-left: 33px !important;
 }
 
 .textfieldContainer{

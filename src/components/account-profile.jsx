@@ -97,7 +97,7 @@ export const AccountProfile = ({user, setProfileUpdated}) => {
               </div>
             </div>
           </div>
-    <CardActions>
+    <CardActions className='accountProfileCardActions'>
 
       <input 
       disabled = {user.email === "demoacc@demoacc.com" ? true : false}

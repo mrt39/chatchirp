@@ -1,0 +1,20 @@
+
+input[name="name"]{
+    color: var(--bs-emphasis-color) !important; 
+ }
+
+
+input[name="name"]:focus+ .MuiOutlinedInput-notchedOutline{
+    border-color: #1976d2 !important;
+ }
+
+
+#name-label{
+    color: inherit !important;
+}
+
+/* error color */
+input[aria-invalid="true"] + .MuiOutlinedInput-notchedOutline{
+    border-color: #d32f2f !important; 
+ }
+

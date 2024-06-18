@@ -172,7 +172,7 @@ export default function Login() {
               Sign In With Demo Account
             </Button>
 
-            <Grid container>
+            <Grid container className="loginSignupLinkContainer">
               <Grid item>
                 <RouterLink className="signUpLink" to="/signup">
                     {"Don't have an account? Sign Up"}
