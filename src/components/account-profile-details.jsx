@@ -25,6 +25,7 @@ export const AccountProfileDetails = ({user, setSnackbarOpen, invalidEmail, setI
     email: user.email,
     bio: user.bio,
   });
+  const [profileUpdateToggle, setprofileUpdateToggle] = useState(false)
 
   function handleChange (event) {
     setValues({
@@ -75,7 +76,8 @@ export const AccountProfileDetails = ({user, setSnackbarOpen, invalidEmail, setI
       return
     }
     setLoading(true)
-    setProfileUpdated(true)
+    setprofileUpdateToggle(true)
+    setProfileUpdated(false);
   }
 
 
@@ -105,16 +107,19 @@ export const AccountProfileDetails = ({user, setSnackbarOpen, invalidEmail, setI
           let response = await result.json();
           console.warn(response);
           console.log("Profile Updated!");
-          await setProfileUpdated(false);
+          await setProfileUpdated(true);
           await setSnackbarOpenCondition("profileChangeSuccess")
           await setSnackbarOpen(true)
-          await setLoading(false)
+          setLoading(false)
+          setprofileUpdateToggle(false)
+
         } else{
           console.error("There has been an error!")
-          setProfileUpdated(false);
           setSnackbarOpenCondition("failure")
           setSnackbarOpen(true)
           setLoading(false)
+          setprofileUpdateToggle(false)
+          setProfileUpdated(false);
         }  
         })
         .catch(error => {
@@ -123,10 +128,10 @@ export const AccountProfileDetails = ({user, setSnackbarOpen, invalidEmail, setI
       }
 
       //only trigger when profile is updated
-      if (profileUpdated ===true){
+      if (profileUpdateToggle ===true){
       editProfile();
       } 
-}, [profileUpdated]);
+}, [profileUpdateToggle]);
 
  
 
@@ -161,7 +166,7 @@ export const AccountProfileDetails = ({user, setSnackbarOpen, invalidEmail, setI
                   fullWidth
                   label="Name"
                   name="name"
-
+                  className='profileDetailsTextField'
                   onChange={handleChange}
                   required
                   value={values.name}
