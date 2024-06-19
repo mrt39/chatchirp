@@ -1,9 +1,10 @@
 /* eslint-disable react/prop-types */
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react';
 import * as Icon from 'react-bootstrap-icons';
-import '../styles/Navbar.css'
+import '../styles/Navbar.css';
 import MuiAvatar from "../components/MuiAvatar.jsx";
+import LogoImg from "../assets/logo.png";
 
 
 const Navbar = ({user, setCurrentUser}) => {
@@ -45,7 +46,7 @@ const Navbar = ({user, setCurrentUser}) => {
     <>
       <div className="d-flex flex-column flex-shrink-0 bg-body-tertiary" style={{width: "4.5rem"}}>
         <div className="navbarLogo">
-          <img src="../src/assets/logo.png" alt="logo" />
+          <img src={LogoImg} alt="logo" />
         </div>
       <ul className="nav nav-pills nav-flush flex-column mb-auto text-center">
       <Link to="/">
@@ -79,8 +80,6 @@ const Navbar = ({user, setCurrentUser}) => {
             </div>
         </a>
         <ul className="dropdown-menu text-small shadow">
-          <li><a className="dropdown-item" href="/profile">Profile</a></li>
-          <li></li>
           <li><a className="dropdown-item" href="#" onClick={handleSignOut}>Sign out</a></li>
         </ul>
       </div>

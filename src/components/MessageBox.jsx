@@ -17,6 +17,7 @@ import Box from '@mui/material/Box';
 import '../styles/MessageBox.css'
 import dayjs from 'dayjs'
 import MuiAvatar from "./MuiAvatar";
+import LogoImg from "../assets/logo.png";
 
 const MessageBox = () => {
 
@@ -274,7 +275,7 @@ const MessageBox = () => {
 
             </ChatContainer>
       : <div className="noPersonSelectedContainer">
-          <img src="../src/assets/logo.png" alt="logo" />
+          <img src={LogoImg} alt="logo" />
         <p>ChatChirp</p> 
       </div>
       
