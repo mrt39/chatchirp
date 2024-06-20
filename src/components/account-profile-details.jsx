@@ -177,7 +177,7 @@ export const AccountProfileDetails = ({user, setSnackbarOpen, invalidEmail, setI
                 md={6}
               >
                 <TextField
-                  disabled={loading ||user.email === "demoacc@demoacc.com" ? true : false}
+                  disabled={loading ||user.googleId|| user.email === "demoacc@demoacc.com" ? true : false}
                   fullWidth
                   error={invalidEmail}
                   helperText={invalidEmail? 'Invalid E-mail address!' : ' '}   

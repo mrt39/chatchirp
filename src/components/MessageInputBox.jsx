@@ -195,6 +195,7 @@ const MessageInputBox = ({messageSent, setMessageSent, contactsBoxPeople, setCon
       onChange={val => setMessageInputValue(val)} 
       onAttachClick={handleAttachmentClick} 
       onSend={handleSend}
+      autoFocus
       />
         <input ref={fileInputRef} type='file' name='fileInput' accept="image/*" className='fileInputMessageBox'
         onChange={handleFileInputChange}
