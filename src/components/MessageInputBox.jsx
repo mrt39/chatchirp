@@ -34,9 +34,7 @@ const MessageInputBox = ({messageSent, setMessageSent, contactsBoxPeople, setCon
     //if the person user is sending a message to isn't in the contacts box
     if (! contactsBoxPeople.find(person => person._id === selectedPerson._id)){
       setfirstMessageBetween(true)
-      console.log(firstMessageBetween)
     }
-    console.log(firstMessageBetween)
   }
     
   //useeffect to handle sending TEXT message
@@ -66,7 +64,6 @@ const MessageInputBox = ({messageSent, setMessageSent, contactsBoxPeople, setCon
           if(firstMessageBetween===true){
             setFirstMsg(!firstMsg)
             setfirstMessageBetween(false)
-            console.log(firstMessageBetween)
           }
           /* if the person user is sending message to is in the contacsbox,
           change the lastMsg attribute for the selectedperson within "contactsBoxPeople" state, 
