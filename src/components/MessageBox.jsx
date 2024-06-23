@@ -247,7 +247,7 @@ const MessageBox = () => {
                         position: "single",
                       }}>
                       {message.image?
-                      <Message.ImageContent className="msgBoxImg1" src={import.meta.env.VITE_BACKEND_URL+"/images/" + message.image} alt="image" />
+                      <Message.ImageContent className="msgBoxImg1" src={message.image} alt="image" />
                       :null}
                   </Message>
                     </MessageGroup.Messages>    
@@ -288,5 +288,6 @@ const MessageBox = () => {
   
     
 export default MessageBox;
+
 
 

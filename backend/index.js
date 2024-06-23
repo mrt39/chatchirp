@@ -7,7 +7,6 @@ const bodyParser = require("body-parser");
 const session = require('express-session');
 const {passport} = require( "./passport.js")
 
-
 //cors
 const cors = require("cors");
 
@@ -28,7 +27,6 @@ app.use(bodyParser.urlencoded({extended: true}));
 
 //serve the files in /images folder as static files
 app.use('/images', express.static('images'))
-
 
 
 
@@ -60,15 +58,14 @@ app.use(passport.session());
 
 
 
-
 /* Mount Routes */
 
 app.use("/", authRoute);
 
-
 app.listen("5000", () => {
   console.log("Server is running!");
 });
+
 
 
 

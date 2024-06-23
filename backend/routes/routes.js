@@ -9,7 +9,6 @@ const {User, Message, upload, passport} = require( "../passport.js")
 
 const CLIENT_URL = process.env.CLIENT_URL;
 
-
 router.get("/login/success", (req, res) => {
   if (req.isAuthenticated()) {
     //Send user to the frontend
@@ -62,7 +61,6 @@ router.post("/login", function(req, res){
   })
 });
 
-
 router.post('/logout',  (req, res) => {
   console.log("Logging out user:", req.user);
   if (req.isAuthenticated()) {
@@ -78,7 +76,6 @@ router.post('/logout',  (req, res) => {
     res.status(401).json( 'Not able to logout' );
 }
 });
-
 
 router.get("/messagebox/:userid", async (req, res) => {
 
@@ -210,66 +207,7 @@ router.post("/messagesent", async (req, res) => {
  
 });
 
-//tap into "upload", which we import from passport.js
-//this is a middleware function that will accept the image data from the client side form data as long as it's called image (which is exactly what we called it in the react app formData.append("image", file))
-router.post('/uploadprofilepic/:userid',  upload.single('image'),  async (req, res) => {
-
-  //once multer has successfully saved the image, we can tap into image data from req.file
-  //"req.file.filename" is the filename it's stored with in "images" folder
-  console.log(path.join(__dirname + '/../images/' + req.file.filename)) 
-
-  const imageName = req.file.filename 
-
-  const userid = req.params.userid 
-  const user = await User.findOne({_id: userid});
-  try {
-    user.uploadedpic= imageName
-    const result = await user.save();
-    console.log("image saved! filename: " +req.file.filename)
-    res.send(result)
-
-  }catch (err) {
-    res.send(err);
-  }
-
-});
-
-//image sent in message input
-router.post("/imagesent", upload.single('image'), async (req, res) => {
-
-  console.log(path.join(__dirname + '/../images/' + req.file.filename)) 
-
-  const imageName = req.file.filename 
-
-  const msgFrom = JSON.parse(req.body.from).currentUser
-  const msgTo = JSON.parse(req.body.to).selectedPerson
-
-  try {
-    if (req.isAuthenticated){
-      const newMessage = new Message({
-          from: msgFrom,
-          to: msgTo,
-          image: imageName,
-      });
-      const result = newMessage.save();
-      res.send(result)
-    } else{
-      res.send(JSON.stringify("Not authenticated!"));
-    }
-
-  } catch (err) {
-      res.send(err);
-  }
- 
-});
-
-/* ROUTE FOR RENDERING THE IMAGES */
-router.get('/images/:imageName', (req, res) => {
-  const imageName = req.params.imageName
-  const readStream = fs.createReadStream(`images/${imageName}`)
-  readStream.pipe(res)
-})
-
+//Edit user profile
 router.patch("/editprofile/:userid", async (req, res) => {
   
   const userid = req.params.userid // access URL variable
@@ -290,5 +228,100 @@ router.patch("/editprofile/:userid", async (req, res) => {
 
 });
 
+/*----------------------------- IMAGES------------------------------------- */
+
+const cloudinary = require('cloudinary').v2;
+
+// Cloudinary Configuration
+cloudinary.config({ 
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME, 
+  api_key: process.env.CLOUDINARY_API_KEY, 
+  api_secret: process.env.CLOUDINARY_API_SECRET 
+});
+
+//tap into "upload", which we import from passport.js
+//this is a middleware function that will accept the image data from the client side form data as long as it's called image (which is exactly what we called it in the react app formData.append("image", file))
+router.post('/uploadprofilepic/:userid',  upload.single('image'),  async (req, res) => {
+
+  //req.file.buffer to access the image data that's stored in the memory. we have stored it into memory in multer config in passport.js 
+  const b64 = Buffer.from(req.file.buffer).toString("base64");
+  //make data readable/usable
+  let dataURI = "data:" + req.file.mimetype + ";base64," + b64;
+
+  const imageName = req.file.filename 
+  const userid = req.params.userid 
+  const user = await User.findOne({_id: userid});
+
+  try {
+     // Upload the image to cloudinary
+     const uploadResult = await cloudinary.uploader
+     .upload(
+         dataURI, //image file to upload
+         {
+             public_id: imageName,
+         } 
+     )
+     .catch((error) => {
+         console.log(error);
+     });
+    //change the db based on upload url
+    user.uploadedpic= uploadResult.secure_url
+    const result = await user.save();
+    console.log("image saved! filename: " +req.file.filename)
+    res.send(result)
+
+  }catch (err) {
+    res.send(err);
+  }
+
+});
+
+//image sent in message input
+router.post("/imagesent", upload.single('image'), async (req, res) => {
+
+  //req.file.buffer to access the image data that's stored in the memory. we have stored it into memory in multer config in passport.js 
+  const b64 = Buffer.from(req.file.buffer).toString("base64");
+  //make data readable/usable
+  let dataURI = "data:" + req.file.mimetype + ";base64," + b64;
+
+  const imageName = req.file.filename 
+  const msgFrom = JSON.parse(req.body.from).currentUser
+  const msgTo = JSON.parse(req.body.to).selectedPerson
+
+  try {
+    if (req.isAuthenticated){
+      // Upload the image to cloudinary
+      const uploadResult = await cloudinary.uploader
+      .upload(
+          dataURI, //image file to upload
+          {
+              public_id: imageName,
+          } 
+      )
+      .catch((error) => {
+          console.log(error);
+      });
+
+      //save the image url to db
+      const newMessage = new Message({
+          from: msgFrom,
+          to: msgTo,
+          image: uploadResult.secure_url,
+      });
+      const result = newMessage.save();
+      res.send(result)
+    } else{
+      res.send(JSON.stringify("Not authenticated!"));
+    }
+
+  } catch (err) {
+      res.send(err);
+  }
+ 
+});
+
+
+
 module.exports = router
+
 

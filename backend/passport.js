@@ -20,9 +20,7 @@ const mongoDB = process.env.MONGODB_URI || dev_db_url;
 
 mongoose.connect(mongoDB);
 
-
 const SERVER_URL = process.env.SERVER_URL;
-
 
 const userSchema = new mongoose.Schema ({
     email: { 
@@ -75,7 +73,6 @@ userSchema.plugin(findOrCreate);
 //construct the model this way to prevent the "Cannot overwrite model once compiled" error.
 const User = mongoose.models.users || mongoose.model("users", userSchema);
 
-
 const messageSchema = new mongoose.Schema ({
   from: {type: [userSchema],        
     unique: false,
@@ -116,9 +113,8 @@ const Message = mongoose.models.messages ||mongoose.model("messages", messageSch
 /* MULTER SETUP (for storing images on db) */
 var multer = require('multer');
 
-/* using /tmp here as the folder for saving images. This is for deployment, as vercel doesn't allow uploading files to server 
-except when the folder is /tmp, which is the temporary storage: https://github.com/orgs/vercel/discussions/314#discussioncomment-2691930 */
-const upload = multer({ dest: '/tmp' })
+const storage = multer.memoryStorage()  // store image in memory, as we will be directly uploading it to remote without saving it to disk
+const upload = multer({storage:storage})
 
 /* END OF MULTER */
 
@@ -144,7 +140,6 @@ async function(accessToken, refreshToken, profile, done) {
   }
 ));
 
-
 // Serialize User to session
 passport.serializeUser((user, done) => {
   done(null, user.id);
@@ -162,7 +157,7 @@ passport.deserializeUser((id, done) => {
 });
 
 
-
 //exporting User and Message models and upload attribute in order to use them in routes.js 
 module.exports = {User, Message, upload, passport}
+
 

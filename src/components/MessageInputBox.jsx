@@ -13,7 +13,6 @@ import Snackbar from "./Snackbar.jsx"
 
 const MessageInputBox = ({messageSent, setMessageSent, contactsBoxPeople, setContactsBoxPeople, firstMsg, setFirstMsg, imgSubmitted, setImgSubmitted}) => {
 
-
   // Pass the UserContext defined in app.jsx
   const { currentUser, selectedPerson, setSelectedPerson } = useContext(UserContext); 
 
@@ -168,7 +167,6 @@ const MessageInputBox = ({messageSent, setMessageSent, contactsBoxPeople, setCon
           if(result.ok){
             let response = await result.json()
             console.log("Image sent");
-            console.warn(response)
             setimageFile("");
             setImgSubmitted(false);
           } else{
@@ -215,4 +213,5 @@ const MessageInputBox = ({messageSent, setMessageSent, contactsBoxPeople, setCon
 }
 
 export default MessageInputBox
+
 
