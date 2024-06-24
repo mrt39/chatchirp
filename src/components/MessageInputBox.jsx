@@ -11,7 +11,7 @@ import FileInputPopover from "./Popover.jsx"
 import { clean } from 'profanity-cleaner';
 import Snackbar from "./Snackbar.jsx"
 
-const MessageInputBox = ({messageSent, setMessageSent, contactsBoxPeople, setContactsBoxPeople, firstMsg, setFirstMsg, imgSubmitted, setImgSubmitted}) => {
+const MessageInputBox = ({messageSent, setMessageSent, contactsBoxPeople, firstMsg, setFirstMsg, imgSubmitted, setImgSubmitted, setContactsBoxPeople}) => {
 
   // Pass the UserContext defined in app.jsx
   const { currentUser, selectedPerson, setSelectedPerson } = useContext(UserContext); 

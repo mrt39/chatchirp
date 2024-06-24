@@ -266,7 +266,7 @@ const MessageBox = () => {
               setFirstMsg={setFirstMsg}
               imgSubmitted={imgSubmitted}
               setImgSubmitted={setImgSubmitted}   
-              setContactsBoxPeople={setContactsBoxPeople}     
+              setContactsBoxPeople ={setContactsBoxPeople}
               />
               </MessageList.Content>
 
