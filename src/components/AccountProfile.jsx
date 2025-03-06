@@ -6,8 +6,8 @@ import {
 } from '@mui/material';
 import { useState, useEffect } from 'react';
 import { useOutletContext } from "react-router-dom";
-import "../styles/Account-Profile.css"
-import MuiAvatar from "./MuiAvatar";
+import "../styles/AccountProfile.css"
+import MuiAvatar from "./MuiAvatar.jsx";
 import Snackbar from "./Snackbar.jsx"
 
 

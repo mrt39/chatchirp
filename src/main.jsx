@@ -2,7 +2,7 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import App from './App.jsx';
-import ErrorPage from "./routes/Error-Page.jsx";
+import ErrorPage from "./routes/ErrorPage.jsx";
 import Profile from "./routes/Profile.jsx";
 import FindPeople from "./routes/FindPeople.jsx";
 import Login from './routes/Login.jsx';

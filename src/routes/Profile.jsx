@@ -1,10 +1,10 @@
 /* eslint-disable react/prop-types */
 import { useOutletContext} from "react-router-dom";
 import { useState, useContext } from 'react'
-import { UserContext } from '../App.jsx';
+import { UserContext } from '../contexts/UserContext.jsx';
 import { Box, Container, Stack, Typography, Unstable_Grid2 as Grid } from '@mui/material';
-import { AccountProfile } from '../components/account-profile';
-import { AccountProfileDetails } from '../components/account-profile-details';
+import { AccountProfile } from '../components/AccountProfile';
+import { AccountProfileDetails } from '../components/AccountProfileDetails';
 import Snackbar from "../components/Snackbar.jsx"
 import "../styles/Profile.css"
 

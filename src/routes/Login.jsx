@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 import { Link as RouterLink } from "react-router-dom";
 import { useState, useEffect, useContext  } from 'react';
-import { UserContext } from '../App.jsx';
+import { UserContext } from '../contexts/UserContext.jsx';
 import { useOutletContext, Navigate } from "react-router-dom";
 import '../styles/Login.css'
 import Avatar from '@mui/material/Avatar';

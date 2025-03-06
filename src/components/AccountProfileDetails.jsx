@@ -12,7 +12,7 @@ import {
   TextField,
   Unstable_Grid2 as Grid
 } from '@mui/material';
-import "../styles/account-profile-details.css"
+import "../styles/AccountProfileDetails.css"
 import { clean } from 'profanity-cleaner';
 
 

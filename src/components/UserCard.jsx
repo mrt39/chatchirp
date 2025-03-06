@@ -6,7 +6,7 @@ import * as Icon from 'react-bootstrap-icons';
 import '../styles/UserCard.css'
 import MuiAvatar from "./MuiAvatar.jsx";
 import { useContext, useEffect} from 'react';
-import { UserContext } from '../App.jsx';
+import { UserContext } from '../contexts/UserContext.jsx';
 
 
 

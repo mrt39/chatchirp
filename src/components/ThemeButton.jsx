@@ -1,15 +1,13 @@
 /* eslint-disable react/prop-types */
-import { useState, useEffect } from 'react'
-import '../styles/ThemeButton.css'
-
+import { useState, useEffect } from 'react';
+import '../styles/ThemeButton.css';
+import { getThemeIconClass } from '../utilities/theme';
 
 const ThemeButton = ({setTheme, theme}) => {
-
   const [activeThemeIcon, setActiveThemeIcon] = useState("");
 
-
-  function handleThemeChange (event) {
-    setTheme(event.target.value)
+  function handleThemeChange(event) {
+    setTheme(event.target.value);
     //save the theme to localstorage so that the user selection persists. use light theme as default.
     localStorage.setItem('theme', event.target.value);
   }
@@ -27,14 +25,8 @@ const ThemeButton = ({setTheme, theme}) => {
 
   //change the active theme icon everytime the theme changes
   useEffect(() => {
-    if(theme==="light"){
-      setActiveThemeIcon("bi-sun-fill")
-    } else if(theme==="dark"){
-      setActiveThemeIcon("bi-moon-stars-fill")
-    }
-    
+    setActiveThemeIcon(theme === "light" ? "bi-sun-fill" : "bi-moon-stars-fill");
   }, [theme]);
-
 
   return (
     <>
@@ -79,6 +71,5 @@ const ThemeButton = ({setTheme, theme}) => {
     </>
   );
 };
-    
     
 export default ThemeButton;

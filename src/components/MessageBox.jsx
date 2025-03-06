@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 import { useState, useEffect, useCallback, useContext  } from 'react'
-import { UserContext } from '../App.jsx';
+import { UserContext } from '../contexts/UserContext.jsx';
 import {
   MainContainer,
   ChatContainer,
