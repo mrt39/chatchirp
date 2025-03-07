@@ -9,8 +9,8 @@ import { useOutletContext } from "react-router-dom";
 import "../styles/AccountProfile.css"
 import MuiAvatar from "./MuiAvatar.jsx";
 import Snackbar from "./Snackbar.jsx"
-
-
+import { handleImageValidation } from '../utilities/validation';
+import { uploadProfilePicture } from '../utilities/api';
 
 export const AccountProfile = ({user, setProfileUpdated}) => {
 
@@ -22,19 +22,10 @@ const [imgSubmitted, setImgSubmitted] = useState(false);
 function handleChange(event){
   const uploadedImg = event.target.files[0]
   //check the filetype to ensure it's an image. throw error if it isn't
-  if (uploadedImg["type"] != "image/x-png" && uploadedImg["type"] != "image/png" && uploadedImg["type"] != "image/jpeg") {
-    console.error("Only image files can be attached!")
-    setSnackbarOpenCondition("notAnImage")
-    setSnackbarOpen(true)
-    return
-    //if image size is > 1mb, throw error
-  }else if(uploadedImg["size"] > 1048576){
-    console.error("Image size is too big!")
-    setSnackbarOpenCondition("sizeTooBig")
-    setSnackbarOpen(true)
-    return
-  }else{
-  setUploadedImg(event.target.files[0]);
+  if (!handleImageValidation(uploadedImg, setSnackbarOpenCondition, setSnackbarOpen)) {
+    return;
+  } else {
+    setUploadedImg(event.target.files[0]);
   }
 }
 
@@ -45,32 +36,18 @@ function submitImg(){
 //effect for handling uploading image
 useEffect(() => {
 async function changeProfileImage() {       
-
   const formData = new FormData()
   formData.append("image", uploadedImg)
 
-    fetch(import.meta.env.VITE_BACKEND_URL+'/uploadprofilepic/' + user["_id"], {
-        method: "post",
-        body: formData, 
-        headers: {
-            "Access-Control-Allow-Origin": "*",
-        }
-    })
-    .then(async result =>{
-      if (result.ok){
-      let response = await result.json();
-      console.log("Image uploaded");
-      setUploadedImg(null);
-      setImgSubmitted(false);
-      setProfileUpdated(true)
-      } else{
-      throw new Error(result);
-      }
-    })
-    .catch(error => {
-      console.error('Error:', error);
-    });
-
+  try {
+    await uploadProfilePicture(user["_id"], formData);
+    console.log("Image uploaded");
+    setUploadedImg(null);
+    setImgSubmitted(false);
+    setProfileUpdated(true);
+  } catch (error) {
+    console.error('Error:', error);
+  }
 }
 //only trigger when image is sent
 if (imgSubmitted ===true){
@@ -128,4 +105,3 @@ return (
 </Card>
 )
 };
-

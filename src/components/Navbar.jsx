@@ -5,7 +5,7 @@ import * as Icon from 'react-bootstrap-icons';
 import '../styles/Navbar.css';
 import MuiAvatar from "../components/MuiAvatar.jsx";
 import LogoImg from "../assets/logo.png";
-import { logoutUser } from '../utilities/api';
+import { logoutUser } from '../utilities/auth';
 
 const Navbar = ({user, setCurrentUser}) => {
   const [currentRoute, setcurrentRoute] = useState(useLocation())
@@ -18,12 +18,11 @@ const Navbar = ({user, setCurrentUser}) => {
 
   async function handleSignOut() {
     try {
-      const response = await logoutUser();
-      console.warn(response);
+      await logoutUser();
       await setCurrentUser(null);
       navigate('/login'); //route to /login upon successful logout
     } catch (error) {
-      console.error('Error:', error);
+      console.error('Error during logout:', error);
     }
   }
 

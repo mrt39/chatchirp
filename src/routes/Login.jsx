@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 import { Link as RouterLink } from "react-router-dom";
-import { useState, useEffect, useContext  } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { UserContext } from '../contexts/UserContext.jsx';
 import { useOutletContext, Navigate } from "react-router-dom";
 import '../styles/Login.css'
@@ -15,90 +15,63 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import Snackbar from "../components/Snackbar.jsx"
 import Footer from "../components/Footer.jsx";
+import { loginWithCredentials, loginWithGoogle, loginWithDemo } from '../utilities/auth';
 
 export default function Login() {
-
-
   // Passing the UserContext defined in app.jsx
   const { currentUser, selectedPerson, setSelectedPerson } = useContext(UserContext); 
 
   const [snackbarOpenCondition, setSnackbarOpenCondition, snackbarOpen, setSnackbarOpen] = useOutletContext();
 
-
   const [clickedLogin, setClickedLogin] = useState(false);
-  const [loginData, setLoginData] = useState({ });
+  const [loginData, setLoginData] = useState({});
 
-  function handleGoogleClick () {
-      window.open(import.meta.env.VITE_BACKEND_URL+"/auth/google", "_self");
+  function handleGoogleClick() {
+    loginWithGoogle();
   }
 
-  function handleDemoSigninClick(){
-    setLoginData({email:"demoacc@demoacc.com" , password: import.meta.env.VITE_DEMOACC_PW})
-    setClickedLogin(true)
+  function handleDemoSigninClick() {
+    setLoginData({email:"demoacc@demoacc.com", password: import.meta.env.VITE_DEMOACC_PW});
+    setClickedLogin(true);
   }
 
-  function handleChange (event) {
+  function handleChange(event) {
     setLoginData({
-        ...loginData,
-        [event.target.name]: event.target.value
-  });
+      ...loginData,
+      [event.target.name]: event.target.value
+    });
   }
-
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    setClickedLogin(true)
+    setClickedLogin(true);
   };
 
   useEffect(() => {
     async function loginUser() {
-
-      fetch(import.meta.env.VITE_BACKEND_URL+'/login', {
-          method: "POST",
-          body: JSON.stringify({ email: loginData.email, password: loginData.password}), 
-          headers: {
-              Accept: 'application/json',
-              'Content-Type': 'application/json',
-              "Access-Control-Allow-Origin": "*",
-          },
-          credentials:"include" //required for sending the cookie data
-      })
-      .then(async result => {
-        if (result.ok) {
-          let response = await result.json();
-          console.warn(response);
-          setClickedLogin(false);
-          //redirect to the external URL
-            window.location.replace(import.meta.env.VITE_FRONTEND_URL); 
-        }else{
-            if (result.status === 401) {
-              console.error("Wrong e-mail or password!")
-              setSnackbarOpenCondition("wrongLoginDeets")
-              setSnackbarOpen(true)
-            }else{
-              throw new Error(result);
-          }
-          setClickedLogin(false);
-        }  
-      })
-      .catch(error =>{
-        console.error("Error:" + error)
-      })
- 
+      try {
+        await loginWithCredentials(loginData);
+        console.warn("Login successful");
+        setClickedLogin(false);
+        // Redirect to the external URL
+        window.location.replace(import.meta.env.VITE_FRONTEND_URL);
+      } catch (error) {
+        console.error("Login failed: " + error);
+        setSnackbarOpenCondition("wrongLoginDeets");
+        setSnackbarOpen(true);
+        setClickedLogin(false);
+      }
     }
-    /* only trigger when message is sent */
-    if (clickedLogin ===true){
+    
+    /* only trigger when login is attempted */
+    if (clickedLogin === true) {
       loginUser();
     } 
   }, [clickedLogin]);
 
-
-
-
   return (
-  <>
-    {currentUser? <Navigate to="/" />
-    : ""}
+    <>
+      {currentUser ? <Navigate to="/" /> : ""}
       <Container component="main" maxWidth="xs">
         <CssBaseline />
         <Box
@@ -151,7 +124,7 @@ export default function Login() {
             </Button>
             
             <Button
-            id="googleSignInBtn"
+              id="googleSignInBtn"
               type="button"
               onClick={handleGoogleClick}
               fullWidth
@@ -162,7 +135,7 @@ export default function Login() {
             </Button>
 
             <Button
-            id="signinWithDemoAcc"
+              id="signinWithDemoAcc"
               type="button"
               onClick={handleDemoSigninClick}
               fullWidth
@@ -175,7 +148,7 @@ export default function Login() {
             <Grid container className="loginSignupLinkContainer">
               <Grid item>
                 <RouterLink className="signUpLink" to="/signup">
-                    {"Don't have an account? Sign Up"}
+                  {"Don't have an account? Sign Up"}
                 </RouterLink>
               </Grid>
             </Grid>

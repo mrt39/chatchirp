@@ -17,7 +17,9 @@ import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import { UserContext } from './contexts/UserContext';
 
 // import hooks
-import { useTheme, useAuth } from './utilities/hooks';
+import { useAuth } from './utilities/hooks';
+import { useTheme } from './utilities/theme';
+
 
 const App = () => {
   const [theme, setTheme] = useTheme();

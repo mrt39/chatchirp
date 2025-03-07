@@ -1,3 +1,5 @@
+import { clean as profanityClean } from 'profanity-cleaner';
+
 //convert file to base64 for preview
 export const fileToBase64 = (file) => {
     return new Promise((resolve, reject) => {
@@ -6,10 +8,10 @@ export const fileToBase64 = (file) => {
       reader.onload = () => resolve(reader.result);
       reader.onerror = error => reject(error);
     });
-  };
+};
   
-  //create form data for image upload
-  export const createImageFormData = (image, userId, additionalData = {}) => {
+//create form data for image upload
+export const createImageFormData = (image, userId, additionalData = {}) => {
     const formData = new FormData();
     formData.append("image", image);
     formData.append("userId", userId);
@@ -19,10 +21,10 @@ export const fileToBase64 = (file) => {
     });
     
     return formData;
-  };
+};
   
-  //get appropriate icon for file type
-  export const getFileIcon = (fileType) => {
+//get appropriate icon for file type
+export const getFileIcon = (fileType) => {
     if (fileType.startsWith('image/')) {
       return 'bi-file-image';
     } else if (fileType.startsWith('video/')) {
@@ -32,4 +34,10 @@ export const fileToBase64 = (file) => {
     } else {
       return 'bi-file-earmark';
     }
-  };
+};
+
+//clean text content with profanity filter
+export const cleanTextContent = async (text, options = { keepFirstAndLastChar: true, placeholder: '#' }) => {
+    if (!text) return '';
+    return await profanityClean(text, options);
+};

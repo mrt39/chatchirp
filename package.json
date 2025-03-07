@@ -19,7 +19,7 @@
     "@mui/material": "^5.14.17",
     "bootstrap": "^5.3.3",
     "bootstrap-icons": "^1.11.3",
-    "dayjs": "^1.11.10",
+    "dayjs": "^1.11.13",
     "express": "^4.19.2",
     "express-session": "^1.18.0",
     "mongoose": "^8.3.4",

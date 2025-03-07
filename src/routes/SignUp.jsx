@@ -1,8 +1,8 @@
 /* eslint-disable react/prop-types */
 import { Link as RouterLink, useNavigate, Navigate, useOutletContext } from "react-router-dom";
-import { useState, useEffect, useContext } from 'react'
+import { useState, useEffect, useContext } from 'react';
 import { UserContext } from '../contexts/UserContext.jsx';
-import '../styles/SignUp.css'
+import '../styles/SignUp.css';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -12,131 +12,110 @@ import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
-import Snackbar from "../components/Snackbar.jsx"
+import Snackbar from "../components/Snackbar.jsx";
 import Footer from "../components/Footer.jsx";
-import { clean } from 'profanity-cleaner';
-
+import { validateEmail } from '../utilities/validation';
+import { signUpWithCredentials } from '../utilities/auth';
+import { cleanTextContent } from '../utilities/imagehelpers';
 
 export default function SignUp() {
-
   const navigate = useNavigate(); 
 
   // Passing the UserContext defined in app.jsx
   const { currentUser, selectedPerson, setSelectedPerson } = useContext(UserContext); 
-
   const [snackbarOpenCondition, setSnackbarOpenCondition, snackbarOpen, setSnackbarOpen] = useOutletContext();
-
-
   const [submitted, setSubmitted] = useState(false);
-  const [signUpData, setSignUpData] = useState({ });
+  const [signUpData, setSignUpData] = useState({});
   const [emptyNameField, setEmptyNameField] = useState(false);
   const [emptyEmailField, setEmptyEmailField] = useState(false);
   const [invalidEmailField, setInvalidEmailField] = useState(false);
   const [emptyPasswordField, setEmptyPasswordField] = useState(false);
 
-
+  // Form submission handler
   const handleSubmit = (event) => {
     event.preventDefault();
 
-    if(emptyPasswordField||invalidEmailField||emptyEmailField||emptyNameField){
-      return
-    }
-    else{
-      setSubmitted(true) 
+    if(emptyPasswordField || invalidEmailField || emptyEmailField || emptyNameField) {
+      return;
+    } else {
+      setSubmitted(true);
     }
   };
 
-  function handleChange (event) {
+  // Field change handler with validation
+  function handleChange(event) {
     //validation
-    if (event.target.name==="name"){
-        if(event.target.value ===""){
-          setEmptyNameField(true)
-        }else{
-          setEmptyNameField(false)
-        }
+    if (event.target.name === "name") {
+      setEmptyNameField(event.target.value === "");
     }
-    if(event.target.name==="email"){
-      if(event.target.value ===""){
-        setEmptyEmailField(true)
-      }else{
-        if(event.target.value.includes("@")){
-          setInvalidEmailField(false)
-        }else{
-        setInvalidEmailField(true)
-        }
-       setEmptyEmailField(false)
+    
+    if (event.target.name === "email") {
+      if (event.target.value === "") {
+        setEmptyEmailField(true);
+      } else {
+        setEmptyEmailField(false);
+        setInvalidEmailField(!validateEmail(event.target.value));
       }
     }
-    if(event.target.name==="password"){
-      if(event.target.value ===""){
-        setEmptyPasswordField(true)
-      }else{
-        setEmptyPasswordField(false)
-      }
+    
+    if (event.target.name === "password") {
+      setEmptyPasswordField(event.target.value === "");
     }
+    
     setSignUpData({
-        ...signUpData,
-        [event.target.name]: event.target.value
-  });
+      ...signUpData,
+      [event.target.name]: event.target.value
+    });
   }
 
-
-  function setEmailFieldHelperText(){
-    if(emptyEmailField){
-      return "E-mail field can not be empty."
-    }else if (invalidEmailField){
-      return "Invalid E-mail!"
-    }else{
-      return null
+  // Set appropriate help text for email field
+  function setEmailFieldHelperText() {
+    if (emptyEmailField) {
+      return "E-mail field can not be empty.";
+    } else if (invalidEmailField) {
+      return "Invalid E-mail!";
+    } else {
+      return null;
     }
   }
 
-
+  // Handle signup submission
   useEffect(() => {
-      async function registerUser() {
-          //on submit, clean the word with the profanity cleaner package
-          //https://www.npmjs.com/package/profanity-cleaner
-          const filteredName = await clean(signUpData.name, { keepFirstAndLastChar: true }); 
-
-          fetch(import.meta.env.VITE_BACKEND_URL+'/signup', {
-              method: "post",
-              body: JSON.stringify({ name: filteredName, email: signUpData.email, password: signUpData.password}), 
-              headers: {
-                  'Content-Type': 'application/json',
-                  "Access-Control-Allow-Origin": "*",
-              },
-              credentials:"include" //required for sending the cookie data
-          })
-          .then(async result => {
-            if (result.ok) {
-              let response = await result.json();
-              console.warn(response);
-              setSubmitted(false);
-              if(response.name==="UserExistsError"){
-                setSnackbarOpenCondition("alreadyRegistered")
-                setSnackbarOpen(true)
-              }else{
-                console.log("Successfully registered user!")
-                navigate("/findpeople"); 
-                //reload the page, so it re-fetches the logged in user data
-                window.location.reload();
-                setSnackbarOpenCondition("successfulRegister")
-                setSnackbarOpen(true)
-              }
-            }else{
-              console.error("There has been an error!")
-              console.error(result); 
-              setSubmitted(false);
-            }  
-          })
-          .catch (error =>{
-            console.warn("Error: " + error)
-          }) 
-
+    async function registerUser() {
+      try {
+        // Clean name with profanity filter
+        const filteredName = await cleanTextContent(signUpData.name);
+        
+        // Create signup data object
+        const registerData = {
+          name: filteredName, 
+          email: signUpData.email, 
+          password: signUpData.password
+        };
+        
+        const response = await signUpWithCredentials(registerData);
+        
+        setSubmitted(false);
+        
+        if (response.name === "UserExistsError") {
+          setSnackbarOpenCondition("alreadyRegistered");
+          setSnackbarOpen(true);
+        } else {
+          console.log("Successfully registered user!");
+          navigate("/findpeople"); 
+          window.location.reload();
+          setSnackbarOpenCondition("successfulRegister");
+          setSnackbarOpen(true);
+        }
+      } catch (error) {
+        console.error("Error during registration:", error);
+        setSubmitted(false);
       }
-      if (submitted ===true){
+    }
+    
+    if (submitted) {
       registerUser();
-      } 
+    } 
   }, [submitted]);
 
   return (

@@ -7,7 +7,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import Box from '@mui/material/Box';
 import UserCard from "./UserCard";
 import '../styles/SearchPeople.css'
-
+import { fetchAPI } from '../utilities/api';
 
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -35,13 +35,11 @@ const SearchIconWrapper = styled('div')(({ theme }) => ({
   justifyContent: 'center',
 }));
 
-
-
 const SearchBar = ({setSearchQuery}) => (
   <div className="textfieldContainer">
     <Search>
       <SearchIconWrapper>
-          <SearchIcon />
+        <SearchIcon />
       </SearchIconWrapper>
       <TextField
         id="search-bar"
@@ -56,8 +54,6 @@ const SearchBar = ({setSearchQuery}) => (
       />
     </Search>
   </div>
-
-
 );
 
 const filterData = (query, allUsers) => {
@@ -74,64 +70,53 @@ export default function SearchPeople() {
   const [allUsers, setAllUsers] = useState();
   const [loading, setLoading] = useState(true);
 
-
   useEffect(() => {
-      if(searchQuery===""){
-          setFilteredData(null)
-      }
+    if (searchQuery === "") {
+      setFilteredData(null);
+    } else if (allUsers) {
       const dataFiltered = filterData(searchQuery, allUsers);
-      setFilteredData(dataFiltered)
-  
-    }, [searchQuery]); 
+      setFilteredData(dataFiltered);
+    }
+  }, [searchQuery, allUsers]); 
 
-  
   //fetch for getting data of all people
   useEffect(() => {
-    const getMessages = () => {
-      fetch(import.meta.env.VITE_BACKEND_URL+'/getallusers', {
-      method: 'GET',
-      })
-      .then(response => {
-          if (response.ok) {
-          return response.json(); // Parse JSON when the response is successful
-          }
-          throw new Error('Network response was not ok.');
-      })
-      .then(data => {
-          setAllUsers(data)
-          setLoading(false); // Set loading to false once the data is received
-      })
-      .catch(error => {
-          console.error('Error:', error);
-          setLoading(false); 
-      });
+    const getAllUsers = async () => {
+      try {
+        const data = await fetchAPI('/getallusers', {
+          method: 'GET'
+        });
+        setAllUsers(data);
+        setLoading(false);
+      } catch (error) {
+        console.error('Error fetching users:', error);
+        setLoading(false);
+      }
     };
-    getMessages();
-    }, []); 
-
+    
+    getAllUsers();
+  }, []); 
 
   return (
     <div className="searchPeopleContainer">
       <SearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
       <div className="searchResultDisplayContainer">
-      {loading? 
-      <Box sx={{ display: 'flex' }}>
-        <CircularProgress size="5rem" />
-      </Box>
-      :
-      filteredData? 
-        filteredData.map((person) => (
-          <div
-            className="searchResults"
-            key={person._id}
-          >
-            <UserCard
-            person = {person}
-            />
-          </div>
-        ))
-        :null
-      }
+        {loading ? 
+          <Box sx={{ display: 'flex' }}>
+            <CircularProgress size="5rem" />
+          </Box>
+          :
+          filteredData ? 
+            filteredData.map((person) => (
+              <div
+                className="searchResults"
+                key={person._id}
+              >
+                <UserCard person={person} />
+              </div>
+            ))
+            : null
+        }
       </div>
     </div>
   );

@@ -1,26 +1,6 @@
 import { useState, useEffect } from 'react';
 import { fetchCurrentUser, fetchUserProfile } from './api';
 
-//hook to manage theme
-export const useTheme = () => {
-  //load the theme from localstorage so that the user selection persists. use light theme as default.
-  const savedTheme = localStorage.getItem('theme') || 'light';
-  const [theme, setTheme] = useState(savedTheme);
-
-  //change the theme by altering the data-bs-theme attribute in index.html
-  useEffect(() => {
-    document.documentElement.setAttribute('data-bs-theme', theme);
-    
-    //changes the background color of body to aliceblue with light color toggle. css in app.css
-    document.body.className = theme === 'light' ? 'light-theme' : "";
-    
-    //save the theme to localstorage so that the user selection persists
-    localStorage.setItem('theme', theme);
-  }, [theme]);
-
-  return [theme, setTheme];
-};
-
 //hook to manage user authentication
 export const useAuth = () => {
   const [currentUser, setCurrentUser] = useState(null);
@@ -50,27 +30,27 @@ export const useAuth = () => {
 
   //change the user data from the stored user data in the session, to the actual user data in the db
   useEffect(() => {
-    const getUserOnUpdate = async () => {
-      try {
-        if (!currentUser) return;
-        
-        const data = await fetchUserProfile(currentUser["_id"]);
-        setCurrentUser(data[0]);
-        setLoading(false);
-        setProfileUpdated(false);
-      } catch (error) {
-        setLoading(false);
-        console.error('Error:', error);
-        setProfileUpdated(false);
-      }
-    };
-    
-    //only call after the first fetch request is complete
-    if (firstTimeLoading === false) {
+    //skip if we're still in first loading or no current user
+    if (firstTimeLoading || !currentUser) return;
+
+    //only fetch profile when profileUpdated flag is true
+    if (profileUpdated) {
+      const getUserOnUpdate = async () => {
+        try {
+          const data = await fetchUserProfile(currentUser["_id"]);
+          setCurrentUser(data[0]);
+          setLoading(false);
+          setProfileUpdated(false);
+        } catch (error) {
+          setLoading(false);
+          console.error('Error:', error);
+          setProfileUpdated(false);
+        }
+      };
+      
       getUserOnUpdate();
     }
-    //when first fetch is complete or profile is updated, update the currentUser state
-  }, [profileUpdated, firstTimeLoading, currentUser]);
+  }, [profileUpdated, firstTimeLoading]); 
 
   return { 
     currentUser, 

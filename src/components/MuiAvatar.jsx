@@ -1,9 +1,9 @@
 /* eslint-disable react/prop-types */
 import Avatar from '@mui/material/Avatar';
-import '../styles/MuiAvatar.css'
+import '../styles/MuiAvatar.css';
 
-//give hash color to a word
-function stringToColor(string) {
+// Generate a color based on a string
+const stringToColor = (string) => {
   let hash = 0;
   let i;
 
@@ -20,35 +20,39 @@ function stringToColor(string) {
   }
 
   return color;
-}
+};
 
-function stringAvatar(name) {
+// Generate avatar properties based on a name
+const stringAvatar = (name) => {
   return {
-    children: 
-    //if there are multiple words in name
-    name.includes(" ")?
-    `${name.split(' ')[0][0]}${name.split(' ')[1][0]}`
-    : 
-    `${name[0]}`
+    children: name.includes(" ")
+      ? `${name.split(' ')[0][0]}${name.split(' ')[1][0]}`
+      : `${name[0]}`
   };
-}
+};
 
-const MuiAvatar = ({user, profilePageAvatar}) => {
-  return (
-    /* if the user has an uploadedpic or picture(from google), use it. otherwise, create an avatar from the initials and color algorithm above. */
-       user.uploadedpic || user.picture? 
-       <Avatar src={user.uploadedpic? user.uploadedpic : user.picture} 
-       //referrerPolicy is required to GET the images from google database without an error.
-       imgProps={{ referrerPolicy: "no-referrer" }} 
-       sx={profilePageAvatar? { width: 150, height: 150 } :{ width: 50, height: 50 }}
-       />
-        :
-        <Avatar 
+const MuiAvatar = ({ user, profilePageAvatar }) => {
+  // If user has uploaded pic or Google profile pic, use it. Otherwise, create an avatar from initials.
+  if (user.uploadedpic || user.picture) {
+    return (
+      <Avatar 
+        src={user.uploadedpic ? user.uploadedpic : user.picture} 
+        // referrerPolicy is required to GET the images from Google
+        imgProps={{ referrerPolicy: "no-referrer" }} 
+        sx={profilePageAvatar ? { width: 150, height: 150 } : { width: 50, height: 50 }}
+      />
+    );
+  } else {
+    return (
+      <Avatar 
         {...stringAvatar(user.name)}  
-        sx={profilePageAvatar? { bgcolor: stringToColor(user.name), width: 150, height: 150 } :{ bgcolor: stringToColor(user.name), width: 50, height: 50 }}
-        />
-  );
-}
+        sx={profilePageAvatar
+          ? { bgcolor: stringToColor(user.name), width: 150, height: 150 }
+          : { bgcolor: stringToColor(user.name), width: 50, height: 50 }
+        }
+      />
+    );
+  }
+};
 
-export default MuiAvatar
-
+export default MuiAvatar;

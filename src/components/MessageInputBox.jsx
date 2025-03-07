@@ -3,14 +3,14 @@ import { useState, useEffect, useRef, useContext } from 'react'
 import { UserContext } from '../contexts/UserContext';
 import { useOutletContext } from "react-router-dom";
 import styles from "@chatscope/chat-ui-kit-styles/dist/default/styles.min.css";
-import {
-  MessageInput
-} from "@chatscope/chat-ui-kit-react";
+import { MessageInput } from "@chatscope/chat-ui-kit-react";
 import '../styles/MessageInputBox.css'
 import FileInputPopover from "./Popover.jsx"
-import { clean } from 'profanity-cleaner';
+import { cleanTextContent } from '../utilities/imagehelpers';
 import Snackbar from "./Snackbar.jsx"
 import { sendMessage } from '../utilities/api';
+import { handleImageValidation } from '../utilities/validation';
+import { sendImageMessage } from '../utilities/api';
 
 const MessageInputBox = ({messageSent, setMessageSent, contactsBoxPeople, firstMsg, setFirstMsg, imgSubmitted, setImgSubmitted, setContactsBoxPeople}) => {
   //pass the UserContext 
@@ -29,7 +29,7 @@ const MessageInputBox = ({messageSent, setMessageSent, contactsBoxPeople, firstM
   so that re-render of Contactsbox doesn't happen before the message is sent */  
   const [firstMessageBetween, setfirstMessageBetween] = useState(false);
 
-  function handleSend(){
+  function handleSend() {
     setuserPressedSend(true);
     //if the person user is sending a message to isn't in the contacts box
     if (!contactsBoxPeople.find(person => person._id === selectedPerson._id)){
@@ -41,9 +41,8 @@ const MessageInputBox = ({messageSent, setMessageSent, contactsBoxPeople, firstM
   useEffect(() => {
     async function postMessage() {
       try {
-        //on submit, clean the word with the profanity cleaner package
-        //https://www.npmjs.com/package/profanity-cleaner
-        let filteredMessage = await clean(messageInputValue, { keepFirstAndLastChar: true, placeholder: '#' });
+        //clean message with profanity filter
+        let filteredMessage = await cleanTextContent(messageInputValue); 
         
         const result = await sendMessage(currentUser, selectedPerson, filteredMessage);
         
@@ -57,13 +56,12 @@ const MessageInputBox = ({messageSent, setMessageSent, contactsBoxPeople, firstM
           setfirstMessageBetween(false);
         }
         
-        /* if the person user is sending message to is in the contacsbox,
-        change the lastMsg attribute for the selectedperson within "contactsBoxPeople" state, 
-        so that the contacts box display for the last message changes in sync, after sending a message */
+        /* if the person user is sending message to is in the contactsbox,
+        change the lastMsg attribute for the selectedperson within "contactsBoxPeople" state */
         if(contactsBoxPeople.find(person => person._id === selectedPerson._id)){
           let personIndex = contactsBoxPeople.findIndex(obj => obj._id == selectedPerson._id);
           contactsBoxPeople[personIndex].lastMsg.message = filteredMessage;
-          setContactsBoxPeople(contactsBoxPeople);
+          setContactsBoxPeople([...contactsBoxPeople]);
         }
       } catch (error) {
         console.error('Error:', error);
@@ -93,28 +91,20 @@ const MessageInputBox = ({messageSent, setMessageSent, contactsBoxPeople, firstM
   const [imageSelected, setimageSelected] = useState(false);
 
   //when the attachment icon is clicked, click on the hidden input (type=file) element
-  function handleAttachmentClick(){
+  function handleAttachmentClick() {
     fileInputRef.current.click();
   }
 
   //when user selects an image and changes the value of the input, change the state 
-  function handleFileInputChange(event){
-    const selectedFile = event.target.files;
-    //check the filetype to ensure it's an image. throw error if it isn't
-    if (selectedFile[0]["type"] != "image/x-png" && selectedFile[0]["type"] != "image/png" && selectedFile[0]["type"] != "image/jpeg") {
-      console.error("Only image files can be attached!");
-      setSnackbarOpenCondition("notAnImage");
-      setSnackbarOpen(true);
-      return;
-      //if image size is > 1mb, throw error
-    } else if(selectedFile[0]["size"] > 1048576){
-      console.error("Image size is too big!");
-      setSnackbarOpenCondition("sizeTooBig");
-      setSnackbarOpen(true);
+  function handleFileInputChange(event) {
+    const selectedFile = event.target.files[0];
+    
+    //check the filetype to ensure it's an image and validate size
+    if (!handleImageValidation(selectedFile, setSnackbarOpenCondition, setSnackbarOpen)) {
       return;
     } else {
       setimageSelected(true);
-      setimageFile(selectedFile[0]);
+      setimageFile(selectedFile);
     }
   }
 
@@ -122,37 +112,21 @@ const MessageInputBox = ({messageSent, setMessageSent, contactsBoxPeople, firstM
   useEffect(() => {
     //only trigger if an image is selected
     if (imageSelected){
-      /* select the attachment button next to the message input box and make it the anchor for the popover to be displayed over */
       const attachmentIcon = document.querySelector('.cs-button--attachment');
       setPopOverAnchorEl(attachmentIcon);
     }
   }, [imageSelected]);
 
   //function for sending the image
-  function handleImgSendBtn(){
+  function handleImgSendBtn() {
     setImgSubmitted(true);
   }
 
   //effect for handling posting the image
   useEffect(() => {
     async function sendImage() {
-      const formData = new FormData();
-      formData.append("image", imageFile);
-      formData.append("from", JSON.stringify({currentUser}));
-      formData.append("to", JSON.stringify({selectedPerson}));
-      
       try {
-        const response = await fetch(
-          `${import.meta.env.VITE_BACKEND_URL}/imagesent`, {
-            method: "post",
-            body: formData, 
-            headers: {
-              "Access-Control-Allow-Origin": "*",
-            },
-          }
-        );
-        
-        const result = await response.json();
+        await sendImageMessage(imageFile, currentUser, selectedPerson);
         
         setMessageSent(!messageSent);
         setImgSubmitted(false);
@@ -174,7 +148,7 @@ const MessageInputBox = ({messageSent, setMessageSent, contactsBoxPeople, firstM
     }
   }, [imgSubmitted]);
     
-  //if a popover is opened from image selection, display it. otherwise don't display anything.
+  //if a popover is opened from image selection, display it, otherwise don't display anything
   return (
     <>
       <Snackbar 
@@ -213,4 +187,4 @@ const MessageInputBox = ({messageSent, setMessageSent, contactsBoxPeople, firstM
   );
 }
 
-export default MessageInputBox
+export default MessageInputBox;

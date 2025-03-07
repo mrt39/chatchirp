@@ -14,10 +14,10 @@ import {
 } from '@mui/material';
 import "../styles/AccountProfileDetails.css"
 import { clean } from 'profanity-cleaner';
+import { validateEmail } from '../utilities/validation';
+import { updateProfile } from '../utilities/api';
 
-
-
-export const AccountProfileDetails = ({user, setSnackbarOpen, invalidEmail, setInvalidEmail,  setSnackbarOpenCondition, profileUpdated, setProfileUpdated}) => {
+export const AccountProfileDetails = ({user, setSnackbarOpen, invalidEmail, setInvalidEmail, setSnackbarOpenCondition, profileUpdated, setProfileUpdated}) => {
 
   const [loading, setLoading] = useState(false);
   const [values, setValues] = useState({
@@ -27,113 +27,101 @@ export const AccountProfileDetails = ({user, setSnackbarOpen, invalidEmail, setI
   });
   const [profileUpdateToggle, setprofileUpdateToggle] = useState(false)
 
-  function handleChange (event) {
+  function handleChange(event) {
     setValues({
       ...values,
       [event.target.name]: event.target.value
-  });
+    });
   }
  
   //email validation
   useEffect(() => {
-    if(values.email.includes("@")){
+    if(!values.email){
+      return;
+    }
+    
+    if (!validateEmail(values.email)){
       //if the snackbar is already opened, close it
-      setSnackbarOpen(false)
+      setSnackbarOpen(false);
       //wait until snackbar closes to change the e-mail invalid state
       setTimeout(function() {
-      setInvalidEmail(false)
+        setInvalidEmail(true);
       }, 200);
-      }
-      else{
-      setSnackbarOpen(false)
+    } else {
+      setSnackbarOpen(false);
       setTimeout(function() {
-        setInvalidEmail(true)  
+        setInvalidEmail(false);
       }, 200);
-      
-      }
+    }
   }, [values.email]);
 
-
-  function handleSubmit (event) {
+  function handleSubmit(event) {
     event.preventDefault();
+    
     //if mail address is invalid, don't update
     if(invalidEmail){
-      setSnackbarOpenCondition("wrongEmail")
-      setSnackbarOpen(true)
-      return
-    }else if(values.name.length>30){
-      setSnackbarOpenCondition("nameTooLong")
-      setSnackbarOpen(true)
-      return
-    }else if (values.bio)
-        if(values.bio.length>100){
-          setSnackbarOpenCondition("bioTooLong")
-          setSnackbarOpen(true)
-          return
-    }else if(values.email.length>50){
-      setSnackbarOpenCondition("emailTooLong")
-      setSnackbarOpen(true)
-      return
+      setSnackbarOpenCondition("wrongEmail");
+      setSnackbarOpen(true);
+      return;
+    } else if(values.name.length > 30){
+      setSnackbarOpenCondition("nameTooLong");
+      setSnackbarOpen(true);
+      return;
+    } else if (values.bio && values.bio.length > 100){
+      setSnackbarOpenCondition("bioTooLong");
+      setSnackbarOpen(true);
+      return;
+    } else if(values.email.length > 50){
+      setSnackbarOpenCondition("emailTooLong");
+      setSnackbarOpen(true);
+      return;
     }
-    setLoading(true)
-    setprofileUpdateToggle(true)
+    
+    setLoading(true);
+    setprofileUpdateToggle(true);
     setProfileUpdated(false);
   }
 
-
-    //effect for submitting the profile changes
-    useEffect(() => {
-      async function editProfile() {
+  //effect for submitting the profile changes
+  useEffect(() => {
+    async function editProfile() {
+      try {
         //on submit, clean the word with the profanity cleaner package
-        //https://www.npmjs.com/package/profanity-cleaner
-        let filteredName = await clean(values.name, { keepFirstAndLastChar: true, placeholder: '#' })
-        let filteredEmail = await clean(values.email, { keepFirstAndLastChar: true, placeholder: '#' })
-        let filteredBio = ""
+        const filteredName = await clean(values.name, { keepFirstAndLastChar: true, placeholder: '#' });
+        const filteredEmail = await clean(values.email, { keepFirstAndLastChar: true, placeholder: '#' });
+        let filteredBio = "";
+        
         if(values.bio){
-          filteredBio=await clean(values.bio, { keepFirstAndLastChar: true, placeholder: '#' })
+          filteredBio = await clean(values.bio, { keepFirstAndLastChar: true, placeholder: '#' });
         }
         
-
-        fetch(import.meta.env.VITE_BACKEND_URL+'/editprofile/' + user["_id"], {
-            method: 'PATCH',
-            body: JSON.stringify({ name: filteredName, email: filteredEmail, bio: filteredBio}), 
-            headers: {
-                'Content-Type': 'application/json',
-                "Access-Control-Allow-Origin": "*",
-            }
-        })
-        .then(async result => {
-        if (result.ok) {
-          let response = await result.json();
-          console.warn(response);
-          console.log("Profile Updated!");
-          await setProfileUpdated(true);
-          await setSnackbarOpenCondition("profileChangeSuccess")
-          await setSnackbarOpen(true)
-          setLoading(false)
-          setprofileUpdateToggle(false)
-
-        } else{
-          console.error("There has been an error!")
-          setSnackbarOpenCondition("failure")
-          setSnackbarOpen(true)
-          setLoading(false)
-          setprofileUpdateToggle(false)
-          setProfileUpdated(false);
-        }  
-        })
-        .catch(error => {
-          console.error('Error:', error);
+        await updateProfile(user._id, {
+          name: filteredName,
+          email: filteredEmail,
+          bio: filteredBio,
         });
+        
+        console.log("Profile Updated!");
+        await setProfileUpdated(true);
+        await setSnackbarOpenCondition("profileChangeSuccess");
+        await setSnackbarOpen(true);
+        setLoading(false);
+        setprofileUpdateToggle(false);
+      } catch (error) {
+        console.error("There has been an error!", error);
+        setSnackbarOpenCondition("failure");
+        setSnackbarOpen(true);
+        setLoading(false);
+        setprofileUpdateToggle(false);
+        setProfileUpdated(false);
       }
+    }
 
-      //only trigger when profile is updated
-      if (profileUpdateToggle ===true){
+    //only trigger when profile is updated
+    if (profileUpdateToggle === true){
       editProfile();
-      } 
-}, [profileUpdateToggle]);
-
- 
+    } 
+  }, [profileUpdateToggle]);
 
   return (
     <form
@@ -143,13 +131,10 @@ export const AccountProfileDetails = ({user, setSnackbarOpen, invalidEmail, setI
     >
       <Card
       className='profileDetails'>
-        {loading? 
-        <CircularProgress
-        size={57}/>
-        :
-        <CardHeader
-          title="Details"
-        />
+        {loading ? 
+          <CircularProgress size={57}/>
+          :
+          <CardHeader title="Details"/>
         }
         <CardContent sx={{ pt: 0 }}>
           <Box sx={{ m: -1.5 }}>
@@ -162,7 +147,7 @@ export const AccountProfileDetails = ({user, setSnackbarOpen, invalidEmail, setI
                 md={6}
               >
                 <TextField
-                  disabled={loading ||user.email === "demoacc@demoacc.com" ? true : false} 
+                  disabled={loading || user.email === "demoacc@demoacc.com" ? true : false} 
                   fullWidth
                   label="Name"
                   name="name"
@@ -177,10 +162,10 @@ export const AccountProfileDetails = ({user, setSnackbarOpen, invalidEmail, setI
                 md={6}
               >
                 <TextField
-                  disabled={loading ||user.googleId|| user.email === "demoacc@demoacc.com" ? true : false}
+                  disabled={loading || user.googleId || user.email === "demoacc@demoacc.com" ? true : false}
                   fullWidth
                   error={invalidEmail}
-                  helperText={invalidEmail? 'Invalid E-mail address!' : ' '}   
+                  helperText={invalidEmail ? 'Invalid E-mail address!' : ' '}   
                   label="E-mail Address"
                   name="email"
                   className='profileDetailsTextField'
@@ -195,7 +180,7 @@ export const AccountProfileDetails = ({user, setSnackbarOpen, invalidEmail, setI
                 md={12}
               >
                 <TextField
-                  disabled={loading ||user.email === "demoacc@demoacc.com" ? true : false}
+                  disabled={loading || user.email === "demoacc@demoacc.com" ? true : false}
                   fullWidth
                   id="bio"
                   label="Bio"
@@ -208,19 +193,18 @@ export const AccountProfileDetails = ({user, setSnackbarOpen, invalidEmail, setI
                   value={values.bio}
                 />
               </Grid>
-
             </Grid>
           </Box>
         </CardContent>
         <Divider />
         <CardActions sx={{ justifyContent: 'flex-end' }}>
           <Button 
-          disabled={loading ||user.email === "demoacc@demoacc.com" ? true : false}
-          variant="contained"
-          onClick={handleSubmit}>
+            disabled={loading || user.email === "demoacc@demoacc.com" ? true : false}
+            variant="contained"
+            onClick={handleSubmit}
+          >
             Save details
           </Button>
-
         </CardActions>
       </Card>
     </form>
