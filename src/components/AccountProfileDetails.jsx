@@ -14,7 +14,7 @@ import {
 } from '@mui/material';
 import "../styles/AccountProfileDetails.css"
 import { clean } from 'profanity-cleaner';
-import { validateEmail } from '../utilities/validation';
+import { validateEmail } from '../utilities/formValidation';
 import { updateProfile } from '../utilities/api';
 
 export default function AccountProfileDetails({user, setSnackbarOpen, invalidEmail, setInvalidEmail, setSnackbarOpenCondition, profileUpdated, setProfileUpdated}) {

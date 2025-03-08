@@ -70,9 +70,3 @@ export function extractUniqueDays(messageHistory) {
   //format dates as day-month-year
   return sortedDates.map(a => dayjs(parseInt(a.date)).format("D MMMM YYYY"));
 }
-
-//format text content with emojis, links, etc
-export function formatMessageContent(content) {
-  //simple implementation - could be expanded with emoji parsing, link detection, etc
-  return content;
-}

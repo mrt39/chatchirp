@@ -18,11 +18,7 @@ import '../styles/MessageBox.css'
 import MuiAvatar from "./MuiAvatar";
 import LogoImg from "../assets/logo.png";
 import { fetchMessages } from '../utilities/api';
-import { 
-  formatMessageTime, 
-  isSameDay,
-  extractUniqueDays
-} from '../utilities/format';
+import { formatMessageTime, isSameDay, extractUniqueDays } from '../utilities/dateUtils';
 
 export default function MessageBox(){
 
@@ -104,8 +100,8 @@ useEffect(() => {
     if (!selectedPerson || !currentUser) return;
     
     try {
-      //only set loading once at the beginning of the fetch
-      if (isMounted && currentPersonId === selectedPerson?._id) {
+      //only set loading when initially fetching or changing contacts, not when sending a message
+      if (isMounted && currentPersonId === selectedPerson?._id && !messagesBetween.length) {
         setLoading(true);
       }
       
@@ -152,7 +148,6 @@ useEffect(() => {
     isMounted = false;
   };
 }, [selectedPerson?._id, messageSent, imgSubmitted, currentUser?._id]); // Use IDs instead of objects 
-
 
   
   return (

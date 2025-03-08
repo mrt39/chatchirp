@@ -14,9 +14,9 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import Snackbar from "../components/Snackbar.jsx";
 import Footer from "../components/Footer.jsx";
-import { validateEmail } from '../utilities/validation';
+import { validateEmail } from '../utilities/formValidation';
+import { cleanTextContent } from '../utilities/textUtils';
 import { signUpWithCredentials } from '../utilities/auth';
-import { cleanTextContent } from '../utilities/imagehelpers';
 
 export default function SignUp() {
   const navigate = useNavigate(); 

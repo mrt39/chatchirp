@@ -6,10 +6,10 @@ import styles from "@chatscope/chat-ui-kit-styles/dist/default/styles.min.css";
 import { MessageInput } from "@chatscope/chat-ui-kit-react";
 import '../styles/MessageInputBox.css'
 import FileInputPopover from "./Popover.jsx"
-import { cleanTextContent } from '../utilities/imagehelpers';
 import Snackbar from "./Snackbar.jsx"
+import { cleanTextContent } from '../utilities/textUtils';
+import { handleImageValidation } from '../utilities/formValidation';
 import { sendMessage } from '../utilities/api';
-import { handleImageValidation } from '../utilities/validation';
 import { sendImageMessage } from '../utilities/api';
 
 export default function MessageInputBox ({messageSent, setMessageSent, contactsBoxPeople, firstMsg, setFirstMsg, imgSubmitted, setImgSubmitted, setContactsBoxPeople}) {
@@ -30,6 +30,8 @@ export default function MessageInputBox ({messageSent, setMessageSent, contactsB
   const [firstMessageBetween, setfirstMessageBetween] = useState(false);
 
   function handleSend() {
+    if (!messageInputValue.trim()) return; //don't allow sending empty messages
+    
     setuserPressedSend(true);
     //if the person user is sending a message to isn't in the contacts box
     if (!contactsBoxPeople.find(person => person._id === selectedPerson._id)){

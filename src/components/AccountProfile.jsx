@@ -9,7 +9,7 @@ import { useOutletContext } from "react-router-dom";
 import "../styles/AccountProfile.css"
 import MuiAvatar from "./MuiAvatar.jsx";
 import Snackbar from "./Snackbar.jsx"
-import { handleImageValidation } from '../utilities/validation';
+import { handleImageValidation } from '../utilities/formValidation';
 import { uploadProfilePicture } from '../utilities/api';
 
 export default function AccountProfile({user, setProfileUpdated}) {
