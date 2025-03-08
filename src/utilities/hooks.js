@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { fetchCurrentUser, fetchUserProfile } from './api';
 
 //hook to manage user authentication
-export const useAuth = () => {
+export function useAuth() {
   const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [firstTimeLoading, setFirstTimeLoading] = useState(true);
@@ -10,7 +10,7 @@ export const useAuth = () => {
 
   // get the user data when logged in, also checks if the user is logged in after each refresh
   useEffect(() => {
-    const getUser = async () => {
+    async function getUser() {
       try {
         const data = await fetchCurrentUser();
         setCurrentUser(data);
@@ -20,7 +20,7 @@ export const useAuth = () => {
         setLoading(false);
         console.error('Error:', error);
       }
-    };
+    }
     
     // only call when it's the first time loading
     if (firstTimeLoading) {
@@ -30,27 +30,26 @@ export const useAuth = () => {
 
   //change the user data from the stored user data in the session, to the actual user data in the db
   useEffect(() => {
+    async function getUserOnUpdate() {
+      try {
+        const data = await fetchUserProfile(currentUser["_id"]);
+        setCurrentUser(data[0]);
+        setLoading(false);
+        setProfileUpdated(false);
+      } catch (error) {
+        setLoading(false);
+        console.error('Error:', error);
+        setProfileUpdated(false);
+      }
+    }
     //skip if we're still in first loading or no current user
     if (firstTimeLoading || !currentUser) return;
 
     //only fetch profile when profileUpdated flag is true
     if (profileUpdated) {
-      const getUserOnUpdate = async () => {
-        try {
-          const data = await fetchUserProfile(currentUser["_id"]);
-          setCurrentUser(data[0]);
-          setLoading(false);
-          setProfileUpdated(false);
-        } catch (error) {
-          setLoading(false);
-          console.error('Error:', error);
-          setProfileUpdated(false);
-        }
-      };
-      
       getUserOnUpdate();
     }
-  }, [profileUpdated, firstTimeLoading]); 
+  }, [profileUpdated, firstTimeLoading, currentUser]); 
 
   return { 
     currentUser, 
@@ -59,10 +58,10 @@ export const useAuth = () => {
     profileUpdated, 
     setProfileUpdated 
   };
-};
+}
 
 //hook to manage message interactions
-export const useMessaging = () => {
+export function useMessaging() {
   const [selectedPerson, setSelectedPerson] = useState(null);
   const [messagesBetween, setMessagesBetween] = useState({});
   const [loading, setLoading] = useState(true);
@@ -82,4 +81,4 @@ export const useMessaging = () => {
     setMessagesBetween,
     loading
   };
-};
+}

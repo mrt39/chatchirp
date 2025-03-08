@@ -13,11 +13,11 @@ export default function FileInputPopover({popOveranchorEl, setPopOverAnchorEl, s
 
   const [open, setOpen] = useState(false);
 
-  const handleClose = () => {
+  function handleClose() {
     setOpen(false)
     setimageSelected(false);
     setPopOverAnchorEl(null);
-  };
+  }
 
   //open popover when an anchor is selected 
   useEffect(() => {
@@ -32,8 +32,6 @@ export default function FileInputPopover({popOveranchorEl, setPopOverAnchorEl, s
           handleClose()
         }
   }, [imgSubmitted]);
-
-
 
   return (
     <div>

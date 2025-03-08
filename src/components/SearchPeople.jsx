@@ -35,34 +35,36 @@ const SearchIconWrapper = styled('div')(({ theme }) => ({
   justifyContent: 'center',
 }));
 
-const SearchBar = ({setSearchQuery}) => (
-  <div className="textfieldContainer">
-    <Search>
-      <SearchIconWrapper>
-        <SearchIcon />
-      </SearchIconWrapper>
-      <TextField
-        id="search-bar"
-        className="text"
-        onInput={(e) => {
-          setSearchQuery(e.target.value);
-        }}
-        label="Enter a Name..."
-        variant="outlined"
-        placeholder="Search..."
-        size="small"
-      />
-    </Search>
-  </div>
-);
+function SearchBar({setSearchQuery}) {
+  return (
+    <div className="textfieldContainer">
+      <Search>
+        <SearchIconWrapper>
+          <SearchIcon />
+        </SearchIconWrapper>
+        <TextField
+          id="search-bar"
+          className="text"
+          onInput={(e) => {
+            setSearchQuery(e.target.value);
+          }}
+          label="Enter a Name..."
+          variant="outlined"
+          placeholder="Search..."
+          size="small"
+        />
+      </Search>
+    </div>
+  );
+}
 
-const filterData = (query, allUsers) => {
+function filterData(query, allUsers) {
   if (!query) {
     return;
   } else {
     return allUsers.filter((d) => d.name.toLowerCase().includes(query.toLowerCase()));
   }
-};
+}
 
 export default function SearchPeople() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -81,7 +83,7 @@ export default function SearchPeople() {
 
   //fetch for getting data of all people
   useEffect(() => {
-    const getAllUsers = async () => {
+    async function getAllUsers() {
       try {
         const data = await fetchAPI('/getallusers', {
           method: 'GET'
@@ -92,7 +94,7 @@ export default function SearchPeople() {
         console.error('Error fetching users:', error);
         setLoading(false);
       }
-    };
+    }
     
     getAllUsers();
   }, []); 

@@ -7,7 +7,7 @@ import {
   applyTheme 
 } from '../utilities/theme';
 
-const ThemeButton = ({setTheme, theme}) => {
+export default function ThemeButton  ({setTheme, theme})  {
   const [activeThemeIcon, setActiveThemeIcon] = useState(getThemeIconClass(theme));
 
   function handleThemeChange(event) {
@@ -64,6 +64,4 @@ const ThemeButton = ({setTheme, theme}) => {
       </div>
     </>
   );
-};
-    
-export default ThemeButton;
+}

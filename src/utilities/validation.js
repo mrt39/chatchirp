@@ -1,29 +1,29 @@
 //validate email format
-export const validateEmail = (email) => {
+export function validateEmail(email) {
   const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
   return re.test(String(email).toLowerCase());
-};
+}
 
 //validate image file type
-export const validateImageType = (file) => {
+export function validateImageType(file) {
   const validTypes = ["image/x-png", "image/png", "image/jpeg"];
   return validTypes.includes(file.type);
-};
+}
 
 //validate image size (in bytes)
-export const validateImageSize = (file, maxSize = 1048576) => { // 1MB default
+export function validateImageSize(file, maxSize = 1048576) { // 1MB default
   return file.size <= maxSize;
-};
+}
 
 //validate password strength
-export const validatePassword = (password) => {
+export function validatePassword(password) {
   //At least 8 characters, at least one letter and one number
   const re = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
   return re.test(password);
-};
+}
 
 //validate form fields
-export const validateForm = (formData, requiredFields) => {
+export function validateForm(formData, requiredFields) {
   const errors = {};
   
   requiredFields.forEach(field => {
@@ -41,10 +41,10 @@ export const validateForm = (formData, requiredFields) => {
   }
   
   return errors;
-};
+}
 
 //handle image validation for uploads
-export const handleImageValidation = (file, setSnackbarOpenCondition, setSnackbarOpen) => {
+export function handleImageValidation(file, setSnackbarOpenCondition, setSnackbarOpen) {
   //check the filetype to ensure it's an image
   if (!validateImageType(file)) {
     console.error("Only image files can be attached!");
@@ -60,4 +60,4 @@ export const handleImageValidation = (file, setSnackbarOpenCondition, setSnackba
     return false;
   }
   return true;
-};
+}

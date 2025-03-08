@@ -12,7 +12,7 @@ import { sendMessage } from '../utilities/api';
 import { handleImageValidation } from '../utilities/validation';
 import { sendImageMessage } from '../utilities/api';
 
-const MessageInputBox = ({messageSent, setMessageSent, contactsBoxPeople, firstMsg, setFirstMsg, imgSubmitted, setImgSubmitted, setContactsBoxPeople}) => {
+export default function MessageInputBox ({messageSent, setMessageSent, contactsBoxPeople, firstMsg, setFirstMsg, imgSubmitted, setImgSubmitted, setContactsBoxPeople}) {
   //pass the UserContext 
   const { currentUser, selectedPerson, setSelectedPerson } = useContext(UserContext); 
 
@@ -186,5 +186,3 @@ const MessageInputBox = ({messageSent, setMessageSent, contactsBoxPeople, firstM
     </>
   );
 }
-
-export default MessageInputBox;

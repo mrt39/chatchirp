@@ -3,7 +3,7 @@ import '../styles/MessageBox.css'
 import MessageBox from "../components/MessageBox.jsx"
 
 
-const Messages = () => {
+export default function Messages () {
 
   return (
       <div className='MessagesPageContainer'>
@@ -11,7 +11,4 @@ const Messages = () => {
           />       
       </div>
     );
-  };
-    
-    
-export default Messages;
+}

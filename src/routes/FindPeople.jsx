@@ -3,7 +3,7 @@ import SearchPeople from "../components/SearchPeople";
 import MeetPeople from "../components/MeetPeople";
 import '../styles/FindPeople.css';
 
-const FindPeople = () => {
+export default function FindPeople() {
   return (
     <div className='findPeopleContainer'>
       <h1>Find People!</h1> 
@@ -13,6 +13,4 @@ const FindPeople = () => {
       <MeetPeople /> 
     </div>
   );
-};
-    
-export default FindPeople;
+}

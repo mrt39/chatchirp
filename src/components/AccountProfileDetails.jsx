@@ -17,7 +17,7 @@ import { clean } from 'profanity-cleaner';
 import { validateEmail } from '../utilities/validation';
 import { updateProfile } from '../utilities/api';
 
-export const AccountProfileDetails = ({user, setSnackbarOpen, invalidEmail, setInvalidEmail, setSnackbarOpenCondition, profileUpdated, setProfileUpdated}) => {
+export default function AccountProfileDetails({user, setSnackbarOpen, invalidEmail, setInvalidEmail, setSnackbarOpenCondition, profileUpdated, setProfileUpdated}) {
 
   const [loading, setLoading] = useState(false);
   const [values, setValues] = useState({
@@ -209,4 +209,4 @@ export const AccountProfileDetails = ({user, setSnackbarOpen, invalidEmail, setI
       </Card>
     </form>
   );
-};
+}

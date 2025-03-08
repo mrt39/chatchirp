@@ -12,7 +12,7 @@ import Snackbar from "./Snackbar.jsx"
 import { handleImageValidation } from '../utilities/validation';
 import { uploadProfilePicture } from '../utilities/api';
 
-export const AccountProfile = ({user, setProfileUpdated}) => {
+export default function AccountProfile({user, setProfileUpdated}) {
 
 const [snackbarOpenCondition, setSnackbarOpenCondition, snackbarOpen, setSnackbarOpen] = useOutletContext();
 
@@ -104,4 +104,4 @@ return (
 </CardActions>
 </Card>
 )
-};
+}

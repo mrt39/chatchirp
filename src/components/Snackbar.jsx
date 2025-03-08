@@ -10,17 +10,17 @@ const Alert = React.forwardRef(function Alert(props, ref) {
 
 export default function CustomizedSnackbars({snackbarOpen, setSnackbarOpen, snackbarOpenCondition}) {
 
-  const handleClick = () => {
+  function handleClick() {
     setSnackbarOpen(true);
-  };
+  }
 
-  const handleClose = (event, reason) => {
+  function handleClose(event, reason) {
     if (reason === 'clickaway') {
       return;
     }
 
     setSnackbarOpen(false);
-  };
+  }
 
   return (
     <Stack spacing={2} sx={{ width: '100%' }}>

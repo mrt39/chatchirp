@@ -3,25 +3,29 @@
 import { useState, useEffect } from 'react';
 
 // get the theme from localstorage
-export const getStoredTheme = () => localStorage.getItem('theme') || 'light';
+export function getStoredTheme() { 
+  return localStorage.getItem('theme') || 'light'; 
+}
 
 // set the theme in localstorage
-export const setStoredTheme = (theme) => localStorage.setItem('theme', theme);
+export function setStoredTheme(theme) { 
+  localStorage.setItem('theme', theme); 
+}
 
 // apply theme to document
-export const applyTheme = (theme) => {
+export function applyTheme(theme) {
   document.documentElement.setAttribute('data-bs-theme', theme);
   // changes the background color of body to aliceblue with light color toggle
   document.body.className = theme === 'light' ? 'light-theme' : "";
-};
+}
 
 // get appropriate icon class for the active theme
-export const getThemeIconClass = (theme) => {
+export function getThemeIconClass(theme) {
   return theme === "light" ? "bi-sun-fill" : "bi-moon-stars-fill";
-};
+}
 
 //hook to manage theme
-export const useTheme = () => {
+export function useTheme() {
   //load the theme from localstorage so that the user selection persists. use light theme as default.
   const savedTheme = localStorage.getItem('theme') || 'light';
   const [theme, setTheme] = useState(savedTheme);
@@ -38,4 +42,4 @@ export const useTheme = () => {
   }, [theme]);
 
   return [theme, setTheme];
-};
+}

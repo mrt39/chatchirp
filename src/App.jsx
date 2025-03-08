@@ -21,7 +21,7 @@ import { useAuth } from './utilities/hooks';
 import { useTheme } from './utilities/theme';
 
 
-const App = () => {
+export default function App() {
   const [theme, setTheme] = useTheme();
   
   const { 
@@ -76,6 +76,4 @@ const App = () => {
       </UserContext.Provider>
     </div>
   );
-};
-
-export default App;
+}

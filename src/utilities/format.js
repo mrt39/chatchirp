@@ -2,21 +2,21 @@ import dayjs from 'dayjs';
 import 'dayjs/locale/en-gb'; //import locale
 
 // Custom function to check if two dates are the same day
-const isSameDate = (date1, date2) => {
+function isSameDate(date1, date2) {
   const d1 = dayjs(date1);
   const d2 = dayjs(date2);
   return d1.year() === d2.year() && 
          d1.month() === d2.month() && 
          d1.date() === d2.date();
-};
+}
 
 //format message dates for display
-export const formatMessageDate = (timestamp) => {
+export function formatMessageDate(timestamp) {
   return dayjs(timestamp).locale('en-gb').format('DD/MM/YYYY HH:mm');
-};
+}
 
 //get relative day for message grouping (today, yesterday, etc)
-export const getRelativeDay = (timestamp) => {
+export function getRelativeDay(timestamp) {
   const today = dayjs();
   const messageDate = dayjs(timestamp);
   
@@ -27,10 +27,10 @@ export const getRelativeDay = (timestamp) => {
   } else {
     return messageDate.format('DD/MM/YYYY');
   }
-};
+}
 
 //group messages by day for display
-export const groupMessagesByDay = (messages) => {
+export function groupMessagesByDay(messages) {
   const groupedMessages = {};
   
   messages.forEach(message => {
@@ -42,20 +42,20 @@ export const groupMessagesByDay = (messages) => {
   });
   
   return groupedMessages;
-};
+}
 
 //format message time (hour:minute)
-export const formatMessageTime = (timestamp) => {
+export function formatMessageTime(timestamp) {
   return dayjs(parseInt(timestamp)).format('HH:mm');
-};
+}
 
 //check if two dates are the same day
-export const isSameDay = (firstDate, secondDate) => {
+export function isSameDay(firstDate, secondDate) {
   return isSameDate(firstDate, dayjs(parseInt(secondDate)));
-};
+}
 
 //extract unique message days for grouping
-export const extractUniqueDays = (messageHistory) => {
+export function extractUniqueDays(messageHistory) {
   const uniqueArray = messageHistory.filter((value, index, self) =>
     index === self.findIndex((t) => (
       isSameDate(dayjs(parseInt(t.date)), dayjs(parseInt(value.date)))
@@ -69,10 +69,10 @@ export const extractUniqueDays = (messageHistory) => {
   
   //format dates as day-month-year
   return sortedDates.map(a => dayjs(parseInt(a.date)).format("D MMMM YYYY"));
-};
+}
 
 //format text content with emojis, links, etc
-export const formatMessageContent = (content) => {
+export function formatMessageContent(content) {
   //simple implementation - could be expanded with emoji parsing, link detection, etc
   return content;
-};
+}

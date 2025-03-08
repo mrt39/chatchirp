@@ -24,7 +24,7 @@ import {
   extractUniqueDays
 } from '../utilities/format';
 
-const MessageBox = () => {
+export default function MessageBox(){
 
   //Pass the UserContext defined in app.jsx
   const { currentUser, selectedPerson, setSelectedPerson } = useContext(UserContext); 
@@ -266,4 +266,3 @@ useEffect(() => {
   );
 }
 
-export default MessageBox;

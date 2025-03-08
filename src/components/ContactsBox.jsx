@@ -14,15 +14,15 @@ import '../styles/ContactsBox.css'
 import MuiAvatar from "./MuiAvatar";
 import { fetchContacts } from '../utilities/api';
 
-const filterData = (query, contactsBoxPeople) => {
+function filterData(query, contactsBoxPeople) {
   if (!query) {
     return;
   } else {
     return contactsBoxPeople.filter((d) => d.name.toLowerCase().includes(query.toLowerCase()));
   }
-};
+}
 
-const ContactsBox = ({sidebarStyle, messagesBetween, handleConversationClick, messageSent, conversationAvatarStyle, conversationContentStyle, firstMsg, contactsBoxPeople, setContactsBoxPeople}) => {
+export default function ContactsBox({sidebarStyle, messagesBetween, handleConversationClick, messageSent, conversationAvatarStyle, conversationContentStyle, firstMsg, contactsBoxPeople, setContactsBoxPeople}) {
     
   //pass the UserContext
   const { currentUser, selectedPerson, setSelectedPerson } = useContext(UserContext); 
@@ -39,7 +39,7 @@ const ContactsBox = ({sidebarStyle, messagesBetween, handleConversationClick, me
 
   //useffect to populate the contacts box
   useEffect(() => {
-    const getContacts = async () => {
+    async function getContacts() {
       try {
         const data = await fetchContacts(currentUser["_id"]);
         setContactsBoxPeople(data);
@@ -49,7 +49,7 @@ const ContactsBox = ({sidebarStyle, messagesBetween, handleConversationClick, me
         console.error('Error:', error);
         setLoading(false);
       }
-    };
+    }
     
     getContacts();
     //add firstMsg as a dependency so that contactsbox refreshes everytime user sends a message to a user for the FIRST time.
@@ -114,5 +114,3 @@ const ContactsBox = ({sidebarStyle, messagesBetween, handleConversationClick, me
     </Sidebar>
   );
 }
-
-export default ContactsBox;

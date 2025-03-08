@@ -7,7 +7,7 @@ import MuiAvatar from "../components/MuiAvatar.jsx";
 import LogoImg from "../assets/logo.png";
 import { logoutUser } from '../utilities/auth';
 
-const Navbar = ({user, setCurrentUser}) => {
+export default function Navbar ({user, setCurrentUser}){
   const [currentRoute, setcurrentRoute] = useState(useLocation())
   var location = useLocation();
   const navigate = useNavigate(); 
@@ -68,6 +68,4 @@ const Navbar = ({user, setCurrentUser}) => {
       </div>
     </>
   );
-};
-    
-export default Navbar;
+}

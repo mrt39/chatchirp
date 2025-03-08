@@ -3,15 +3,12 @@ import { useOutletContext} from "react-router-dom";
 import { useState, useContext } from 'react'
 import { UserContext } from '../contexts/UserContext.jsx';
 import { Box, Container, Stack, Typography, Unstable_Grid2 as Grid } from '@mui/material';
-import { AccountProfile } from '../components/AccountProfile';
-import { AccountProfileDetails } from '../components/AccountProfileDetails';
+import AccountProfile from '../components/AccountProfile';
+import AccountProfileDetails from '../components/AccountProfileDetails';
 import Snackbar from "../components/Snackbar.jsx"
 import "../styles/Profile.css"
 
-
-
-
-const Profile = () => {
+export default function Profile ()  {
 
   const [snackbarOpenCondition, setSnackbarOpenCondition, snackbarOpen, setSnackbarOpen, setCurrentUser, profileUpdated, setProfileUpdated] = useOutletContext();
   // Pass the UserContext defined in app.jsx
@@ -83,7 +80,4 @@ const Profile = () => {
   </>
 );
 }
-
-
-export default Profile;
 
