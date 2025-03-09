@@ -1,7 +1,6 @@
 /* eslint-disable react/prop-types */
-import { Link as RouterLink, useNavigate, Navigate, useOutletContext } from "react-router-dom";
-import { useState, useEffect, useContext } from 'react';
-import { UserContext } from '../contexts/UserContext.jsx';
+import { Link as RouterLink, useNavigate, Navigate } from "react-router-dom";
+import { useState, useEffect } from 'react';
 import '../styles/SignUp.css';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
@@ -17,13 +16,14 @@ import Footer from "../components/Footer.jsx";
 import { validateEmail } from '../utilities/formValidation';
 import { cleanTextContent } from '../utilities/textUtils';
 import { signUpWithCredentials } from '../utilities/auth';
+import { useAuthorization } from '../contexts/AuthorizationContext';
+import { useUI } from '../contexts/UIContext';
 
 export default function SignUp() {
   const navigate = useNavigate(); 
-
-  // Passing the UserContext defined in app.jsx
-  const { currentUser, selectedPerson, setSelectedPerson } = useContext(UserContext); 
-  const [snackbarOpenCondition, setSnackbarOpenCondition, snackbarOpen, setSnackbarOpen] = useOutletContext();
+  const { currentUser } = useAuthorization();
+  const { snackbarOpenCondition, setSnackbarOpenCondition, snackbarOpen, setSnackbarOpen } = useUI();
+  
   const [submitted, setSubmitted] = useState(false);
   const [signUpData, setSignUpData] = useState({});
   const [emptyNameField, setEmptyNameField] = useState(false);
@@ -119,95 +119,88 @@ export default function SignUp() {
   }, [submitted]);
 
   return (
-  <>
-    {currentUser? <Navigate to="/" />
-  : ""}
-    <Container component="main" maxWidth="xs">
-      <CssBaseline />
-      <Box
-        sx={{
-          marginTop: 8,
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-        }}
-      >
-        <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-          <LockOutlinedIcon id="lockIcon1" />
-        </Avatar>
-        <Typography component="h1" variant="h5">
-          Sign Up
-        </Typography>
-        <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
-        <TextField 
-            margin="normal"
-            fullWidth
-            className="loginSignupTextField"
-            id="name"
-            label="Name"
-            type="name"
-            name="name"
-            autoComplete="name"
-            autoFocus
-            required
-            onChange={handleChange}
-            error={emptyNameField}
-            helperText={emptyNameField? "Name field can not be empty." :null}
-          />
-          <TextField 
-            margin="normal"
-            fullWidth
-            className="loginSignupTextField"
-            id="email"
-            label="E-mail Address"
-            type="email"
-            name="email"
-            required
-            autoComplete="email"
-            onChange={handleChange}
-            error={emptyEmailField || invalidEmailField}
-            helperText={setEmailFieldHelperText()}
-          />
-          <TextField
-            margin="normal"
-            required
-            fullWidth
-            className="loginSignupTextField"
-            name="password"
-            label="Password"
-            type="password"
-            id="password"
-            autoComplete="current-password"
-            onChange={handleChange}
-            error={emptyPasswordField}
-            helperText={emptyPasswordField? "Password field can not be empty." :null}
-          />
-          <Button
-            type="submit"
-            fullWidth
-            variant="contained"
-            sx={{ mt: 3, mb: 2 }}
-          >
+    <>
+      {currentUser ? <Navigate to="/" /> : ""}
+      <Container component="main" maxWidth="xs">
+        <CssBaseline />
+        <Box
+          sx={{
+            marginTop: 8,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+          }}
+        >
+          <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
+            <LockOutlinedIcon id="lockIcon1" />
+          </Avatar>
+          <Typography component="h1" variant="h5">
             Sign Up
-          </Button>
-          
-          <Grid container className="loginSignupLinkContainer">
-            <Grid item>
-              <RouterLink className="signUpLink" to="/login">
+          </Typography>
+          <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+            <TextField 
+              margin="normal"
+              fullWidth
+              className="loginSignupTextField"
+              id="name"
+              label="Name"
+              type="name"
+              name="name"
+              autoComplete="name"
+              autoFocus
+              required
+              onChange={handleChange}
+              error={emptyNameField}
+              helperText={emptyNameField? "Name field can not be empty." :null}
+            />
+            <TextField 
+              margin="normal"
+              fullWidth
+              className="loginSignupTextField"
+              id="email"
+              label="E-mail Address"
+              type="email"
+              name="email"
+              required
+              autoComplete="email"
+              onChange={handleChange}
+              error={emptyEmailField || invalidEmailField}
+              helperText={setEmailFieldHelperText()}
+            />
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              className="loginSignupTextField"
+              name="password"
+              label="Password"
+              type="password"
+              id="password"
+              autoComplete="current-password"
+              onChange={handleChange}
+              error={emptyPasswordField}
+              helperText={emptyPasswordField? "Password field can not be empty." :null}
+            />
+            <Button
+              type="submit"
+              fullWidth
+              variant="contained"
+              sx={{ mt: 3, mb: 2 }}
+            >
+              Sign Up
+            </Button>
+            <Grid container className="loginSignupLinkContainer">
+              <Grid item>
+                <RouterLink className="signUpLink" to="/login">
                   {"Already have an account? Sign in"}
-              </RouterLink>
+                </RouterLink>
+              </Grid>
             </Grid>
-          </Grid>
+          </Box>
         </Box>
-      </Box>
-
-      <Snackbar
-        snackbarOpenCondition={snackbarOpenCondition}
-        snackbarOpen={snackbarOpen}
-        setSnackbarOpen={setSnackbarOpen}
-      />
-    </Container>
-    <Footer/>
-  </>
+        <Snackbar />
+      </Container>
+      <Footer/>
+    </>
   );
 }

@@ -1,20 +1,15 @@
 /* eslint-disable react/prop-types */
 import { useState, useEffect } from 'react';
 import '../styles/ThemeButton.css';
-import { 
-  getThemeIconClass, 
-  setStoredTheme, 
-  applyTheme 
-} from '../utilities/theme';
+import { getThemeIconClass } from "../utilities/theme";
+import { useThemeContext } from '../contexts/ThemeContext';
 
-export default function ThemeButton  ({setTheme, theme})  {
+export default function ThemeButton() {
+  const { theme, toggleTheme } = useThemeContext();
   const [activeThemeIcon, setActiveThemeIcon] = useState(getThemeIconClass(theme));
 
-  function handleThemeChange(event) {
-    const newTheme = event.target.value;
-    setTheme(newTheme);
-    setStoredTheme(newTheme);
-    applyTheme(newTheme);
+  function handleThemeChange() {
+    toggleTheme();
   }
 
   // Update active theme icon when theme changes

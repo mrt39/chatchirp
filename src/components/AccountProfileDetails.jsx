@@ -12,20 +12,31 @@ import {
   TextField,
   Unstable_Grid2 as Grid
 } from '@mui/material';
-import "../styles/AccountProfileDetails.css"
+import "../styles/AccountProfileDetails.css";
 import { clean } from 'profanity-cleaner';
 import { validateEmail } from '../utilities/formValidation';
 import { updateProfile } from '../utilities/api';
+import { useUI } from '../contexts/UIContext';
+import { useAuthorization } from '../contexts/AuthorizationContext';
 
-export default function AccountProfileDetails({user, setSnackbarOpen, invalidEmail, setInvalidEmail, setSnackbarOpenCondition, profileUpdated, setProfileUpdated}) {
+export default function AccountProfileDetails() {
+  const { currentUser, setProfileUpdated } = useAuthorization();
+  const { 
+    snackbarOpenCondition, 
+    setSnackbarOpenCondition, 
+    snackbarOpen, 
+    setSnackbarOpen, 
+    invalidEmail, 
+    setInvalidEmail 
+  } = useUI();
 
   const [loading, setLoading] = useState(false);
   const [values, setValues] = useState({
-    name: user.name,
-    email: user.email,
-    bio: user.bio,
+    name: currentUser.name,
+    email: currentUser.email,
+    bio: currentUser.bio,
   });
-  const [profileUpdateToggle, setprofileUpdateToggle] = useState(false)
+  const [profileUpdateToggle, setprofileUpdateToggle] = useState(false);
 
   function handleChange(event) {
     setValues({
@@ -95,7 +106,7 @@ export default function AccountProfileDetails({user, setSnackbarOpen, invalidEma
           filteredBio = await clean(values.bio, { keepFirstAndLastChar: true, placeholder: '#' });
         }
         
-        await updateProfile(user._id, {
+        await updateProfile(currentUser._id, {
           name: filteredName,
           email: filteredEmail,
           bio: filteredBio,
@@ -118,7 +129,7 @@ export default function AccountProfileDetails({user, setSnackbarOpen, invalidEma
     }
 
     //only trigger when profile is updated
-    if (profileUpdateToggle === true){
+    if (profileUpdateToggle){
       editProfile();
     } 
   }, [profileUpdateToggle]);
@@ -129,8 +140,7 @@ export default function AccountProfileDetails({user, setSnackbarOpen, invalidEma
       noValidate
       onSubmit={handleSubmit}
     >
-      <Card
-      className='profileDetails'>
+      <Card className='profileDetails'>
         {loading ? 
           <CircularProgress size={57}/>
           :
@@ -142,12 +152,9 @@ export default function AccountProfileDetails({user, setSnackbarOpen, invalidEma
               container
               spacing={3}
             >
-              <Grid
-                xs={12}
-                md={6}
-              >
+              <Grid xs={12} md={6}>
                 <TextField
-                  disabled={loading || user.email === "demoacc@demoacc.com" ? true : false} 
+                  disabled={loading || currentUser.email === "demoacc@demoacc.com" ? true : false} 
                   fullWidth
                   label="Name"
                   name="name"
@@ -157,12 +164,9 @@ export default function AccountProfileDetails({user, setSnackbarOpen, invalidEma
                   value={values.name}
                 />
               </Grid>
-              <Grid
-                xs={12}
-                md={6}
-              >
+              <Grid xs={12} md={6}>
                 <TextField
-                  disabled={loading || user.googleId || user.email === "demoacc@demoacc.com" ? true : false}
+                  disabled={loading || currentUser.googleId || currentUser.email === "demoacc@demoacc.com" ? true : false}
                   fullWidth
                   error={invalidEmail}
                   helperText={invalidEmail ? 'Invalid E-mail address!' : ' '}   
@@ -175,12 +179,9 @@ export default function AccountProfileDetails({user, setSnackbarOpen, invalidEma
                   value={values.email}
                 />
               </Grid>
-              <Grid
-                xs={12}
-                md={12}
-              >
+              <Grid xs={12} md={12}>
                 <TextField
-                  disabled={loading || user.email === "demoacc@demoacc.com" ? true : false}
+                  disabled={loading || currentUser.email === "demoacc@demoacc.com" ? true : false}
                   fullWidth
                   id="bio"
                   label="Bio"
@@ -199,7 +200,7 @@ export default function AccountProfileDetails({user, setSnackbarOpen, invalidEma
         <Divider />
         <CardActions sx={{ justifyContent: 'flex-end' }}>
           <Button 
-            disabled={loading || user.email === "demoacc@demoacc.com" ? true : false}
+            disabled={loading || currentUser.email === "demoacc@demoacc.com" ? true : false}
             variant="contained"
             onClick={handleSubmit}
           >

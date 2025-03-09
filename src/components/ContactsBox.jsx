@@ -1,6 +1,5 @@
 /* eslint-disable react/prop-types */
-import { useState, useEffect, useContext} from 'react'
-import { UserContext } from '../contexts/UserContext';
+import { useState, useEffect } from 'react';
 import styles from "@chatscope/chat-ui-kit-styles/dist/default/styles.min.css";
 import {
   Search,
@@ -10,22 +9,32 @@ import {
 } from "@chatscope/chat-ui-kit-react";
 import CircularProgress from '@mui/material/CircularProgress';
 import Box from '@mui/material/Box';
-import '../styles/ContactsBox.css'
+import '../styles/ContactsBox.css';
 import MuiAvatar from "./MuiAvatar";
 import { fetchContacts } from '../utilities/api';
+import { useMessage } from '../contexts/MessageContext';
+import { useAuthorization } from '../contexts/AuthorizationContext';
 
+//filter contacts based on search query
 function filterData(query, contactsBoxPeople) {
   if (!query) {
-    return;
+    return contactsBoxPeople;
   } else {
     return contactsBoxPeople.filter((d) => d.name.toLowerCase().includes(query.toLowerCase()));
   }
 }
 
-export default function ContactsBox({sidebarStyle, messagesBetween, handleConversationClick, messageSent, conversationAvatarStyle, conversationContentStyle, firstMsg, contactsBoxPeople, setContactsBoxPeople}) {
-    
-  //pass the UserContext
-  const { currentUser, selectedPerson, setSelectedPerson } = useContext(UserContext); 
+export default function ContactsBox({
+  sidebarStyle, 
+  handleConversationClick, 
+  conversationAvatarStyle, 
+  conversationContentStyle,
+  contactsBoxPeople, 
+  setContactsBoxPeople
+}) {
+  //use contexts instead of passing UserContext
+  const { currentUser } = useAuthorization();  
+  const { selectedPerson, setSelectedPerson, firstMsg } = useMessage();
 
   const [loading, setLoading] = useState(true);
   const [searchbarValue, setsearchbarValue] = useState("");
@@ -33,7 +42,7 @@ export default function ContactsBox({sidebarStyle, messagesBetween, handleConver
 
   //clicked person fills the "selectedPerson" state
   function handleSelectedPerson(selectedPersonId){
-    const foundperson = contactsBoxPeople.find(( person ) => person["_id"] === selectedPersonId);
+    const foundperson = contactsBoxPeople.find(person => person["_id"] === selectedPersonId);
     setSelectedPerson(foundperson);
   }
 

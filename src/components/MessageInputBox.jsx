@@ -1,22 +1,30 @@
 /* eslint-disable react/prop-types */
-import { useState, useEffect, useRef, useContext } from 'react'
-import { UserContext } from '../contexts/UserContext';
-import { useOutletContext } from "react-router-dom";
+import { useState, useEffect, useRef } from 'react';
 import styles from "@chatscope/chat-ui-kit-styles/dist/default/styles.min.css";
 import { MessageInput } from "@chatscope/chat-ui-kit-react";
-import '../styles/MessageInputBox.css'
-import FileInputPopover from "./Popover.jsx"
-import Snackbar from "./Snackbar.jsx"
+import '../styles/MessageInputBox.css';
+import FileInputPopover from "./Popover.jsx";
+import Snackbar from "./Snackbar.jsx";
 import { cleanTextContent } from '../utilities/textUtils';
 import { handleImageValidation } from '../utilities/formValidation';
-import { sendMessage } from '../utilities/api';
-import { sendImageMessage } from '../utilities/api';
+import { sendMessage, sendImageMessage } from '../utilities/api';
+import { useMessage } from '../contexts/MessageContext';
+import { useAuthorization } from '../contexts/AuthorizationContext';
+import { useUI } from '../contexts/UIContext';
 
-export default function MessageInputBox ({messageSent, setMessageSent, contactsBoxPeople, firstMsg, setFirstMsg, imgSubmitted, setImgSubmitted, setContactsBoxPeople}) {
-  //pass the UserContext 
-  const { currentUser, selectedPerson, setSelectedPerson } = useContext(UserContext); 
-
-  const [snackbarOpenCondition, setSnackbarOpenCondition, snackbarOpen, setSnackbarOpen] = useOutletContext();
+export default function MessageInputBox({contactsBoxPeople, setContactsBoxPeople}) {
+  //use our contexts instead of UserContext
+  const { currentUser } = useAuthorization();
+  const { 
+    selectedPerson, 
+    firstMsg, 
+    setFirstMsg, 
+    messageSent,
+    setMessageSent,
+    imgSubmitted,
+    setImgSubmitted
+  } = useMessage();
+  const { snackbarOpenCondition, setSnackbarOpenCondition, snackbarOpen, setSnackbarOpen } = useUI();
   
   //Set initial message input value to an empty string                                                                     
   const [messageInputValue, setMessageInputValue] = useState("");
@@ -79,112 +87,107 @@ export default function MessageInputBox ({messageSent, setMessageSent, contactsB
   //when selected person changes, clear input box
   useEffect(() => {
     setMessageInputValue("");
-  }, [selectedPerson]); 
+  }, [selectedPerson?._id]); 
     
   /* ---------------IMAGE UPLOAD FUNCTIONALITY--------------- */
   
-  //use ref to be able to select an element within a function (for displaying popover)
-  const fileInputRef = useRef(null);
-  //anchor for popover
-  const [popOveranchorEl, setPopOverAnchorEl] = useState(null);
+//use ref to be able to select an element within a function (for displaying popover)
+const fileInputRef = useRef(null);
+//anchor for popover
+const [popOveranchorEl, setPopOverAnchorEl] = useState(null);
 
-  const [imageFile, setimageFile] = useState();
-  //trigger when user selects an image
-  const [imageSelected, setimageSelected] = useState(false);
+const [imageFile, setimageFile] = useState();
+//trigger when user selects an image
+const [imageSelected, setimageSelected] = useState(false);
 
-  //when the attachment icon is clicked, click on the hidden input (type=file) element
-  function handleAttachmentClick() {
-    fileInputRef.current.click();
+//when the attachment icon is clicked, click on the hidden input (type=file) element
+function handleAttachmentClick() {
+  fileInputRef.current.click();
+}
+
+//when user selects an image and changes the value of the input, change the state 
+function handleFileInputChange(event) {
+  const selectedFile = event.target.files[0];
+  
+  //check the filetype to ensure it's an image and validate size
+  if (!handleImageValidation(selectedFile, setSnackbarOpenCondition, setSnackbarOpen)) {
+    return;
+  } else {
+    setimageSelected(true);
+    setimageFile(selectedFile);
   }
+}
 
-  //when user selects an image and changes the value of the input, change the state 
-  function handleFileInputChange(event) {
-    const selectedFile = event.target.files[0];
-    
-    //check the filetype to ensure it's an image and validate size
-    if (!handleImageValidation(selectedFile, setSnackbarOpenCondition, setSnackbarOpen)) {
-      return;
-    } else {
-      setimageSelected(true);
-      setimageFile(selectedFile);
-    }
+//when an image is selected, activate the popover
+useEffect(() => {
+  //only trigger if an image is selected
+  if (imageSelected){
+    const attachmentIcon = document.querySelector('.cs-button--attachment');
+    setPopOverAnchorEl(attachmentIcon);
   }
+}, [imageSelected]);
 
-  //when an image is selected, activate the popover
-  useEffect(() => {
-    //only trigger if an image is selected
-    if (imageSelected){
-      const attachmentIcon = document.querySelector('.cs-button--attachment');
-      setPopOverAnchorEl(attachmentIcon);
-    }
-  }, [imageSelected]);
+//function for sending the image
+function handleImgSendBtn() {
+  setImgSubmitted(true);
+}
 
-  //function for sending the image
-  function handleImgSendBtn() {
-    setImgSubmitted(true);
-  }
-
-  //effect for handling posting the image
-  useEffect(() => {
-    async function sendImage() {
-      try {
-        await sendImageMessage(imageFile, currentUser, selectedPerson);
-        
-        setMessageSent(!messageSent);
-        setImgSubmitted(false);
-        setimageSelected(false);
-        
-        //if first message between the user and the person they're sending a message to
-        if(firstMessageBetween === true){
-          setFirstMsg(!firstMsg);
-          setfirstMessageBetween(false);
-        }
-      } catch (error) {
-        console.error('Error:', error);
+//effect for handling posting the image
+useEffect(() => {
+  async function sendImage() {
+    try {
+      await sendImageMessage(imageFile, currentUser, selectedPerson);
+      
+      setMessageSent(!messageSent);
+      setImgSubmitted(false);
+      setimageSelected(false);
+      
+      //if first message between the user and the person they're sending a message to
+      if(firstMessageBetween === true){
+        setFirstMsg(!firstMsg);
+        setfirstMessageBetween(false);
       }
+    } catch (error) {
+      console.error('Error:', error);
     }
-    
-    //only send an image when imgSubmitted is true
-    if(imgSubmitted === true){
-      sendImage();
-    }
-  }, [imgSubmitted]);
-    
-  //if a popover is opened from image selection, display it, otherwise don't display anything
-  return (
-    <>
-      <Snackbar 
-        snackbarOpen={snackbarOpen} 
-        setSnackbarOpen={setSnackbarOpen}
-        snackbarOpenCondition={snackbarOpenCondition}
+  }
+  
+  //only send an image when imgSubmitted is true
+  if(imgSubmitted === true){
+    sendImage();
+  }
+}, [imgSubmitted]);
+  
+return (
+  <>
+    <Snackbar />
+    <input 
+      name="fileInput"
+      id="fileInput"
+      type="file"
+      style={{ display: 'none' }} 
+      onChange={handleFileInputChange}
+      ref={fileInputRef}
+    />
+    { popOveranchorEl != null || imageSelected ?  
+      <FileInputPopover
+        popOveranchorEl={popOveranchorEl}
+        setPopOverAnchorEl={setPopOverAnchorEl}
+        setimageSelected={setimageSelected}
+        handleImgSendBtn={handleImgSendBtn}
+        imgSubmitted={imgSubmitted}
       />
-      <input 
-        name="fileInput"
-        id="fileInput"
-        type="file"
-        style={{ display: 'none' }} 
-        onChange={handleFileInputChange}
-        ref={fileInputRef}
-      />
-      { popOveranchorEl != null || imageSelected ?  
-        <FileInputPopover
-          popOveranchorEl={popOveranchorEl}
-          setPopOverAnchorEl={setPopOverAnchorEl}
-          setimageSelected={setimageSelected}
-          handleImgSendBtn={handleImgSendBtn}
-          imgSubmitted={imgSubmitted}
-        />
-        : "" }
-      <MessageInput 
-        placeholder="Type message here" 
-        value={messageInputValue}
-        onChange={val => setMessageInputValue(val)}
-        onSend={handleSend}
-        attachButton={true}
-        onAttachClick={handleAttachmentClick}
-        disabled={popOveranchorEl != null || imageSelected ? true : false}
-        sendButton={true}
-        style={{ flexGrow: "1" }}/> 
-    </>
-  );
+      : "" }
+    <MessageInput 
+      placeholder="Type message here" 
+      value={messageInputValue}
+      onChange={val => setMessageInputValue(val)}
+      onSend={handleSend}
+      attachButton={true}
+      onAttachClick={handleAttachmentClick}
+      disabled={popOveranchorEl != null || imageSelected ? true : false}
+      sendButton={true}
+      style={{ flexGrow: "1" }}/> 
+  </>
+);
 }

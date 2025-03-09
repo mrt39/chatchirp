@@ -1,9 +1,7 @@
 /* eslint-disable react/prop-types */
-import { Link as RouterLink } from "react-router-dom";
-import { useState, useEffect, useContext } from 'react';
-import { UserContext } from '../contexts/UserContext.jsx';
-import { useOutletContext, Navigate } from "react-router-dom";
-import '../styles/Login.css'
+import { Link as RouterLink, useNavigate, Navigate } from "react-router-dom";
+import { useState, useEffect } from 'react';
+import '../styles/Login.css';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -13,15 +11,16 @@ import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
-import Snackbar from "../components/Snackbar.jsx"
+import Snackbar from "../components/Snackbar.jsx";
 import Footer from "../components/Footer.jsx";
 import { loginWithCredentials, loginWithGoogle, loginWithDemo } from '../utilities/auth';
+import { useUI } from '../contexts/UIContext';
+import { useAuthorization } from '../contexts/AuthorizationContext';
 
 export default function Login() {
-  // Passing the UserContext defined in app.jsx
-  const { currentUser, selectedPerson, setSelectedPerson } = useContext(UserContext); 
-
-  const [snackbarOpenCondition, setSnackbarOpenCondition, snackbarOpen, setSnackbarOpen] = useOutletContext();
+  const navigate = useNavigate();
+  const { currentUser } = useAuthorization();
+  const { snackbarOpenCondition, setSnackbarOpenCondition, snackbarOpen, setSnackbarOpen } = useUI();
 
   const [clickedLogin, setClickedLogin] = useState(false);
   const [loginData, setLoginData] = useState({});
@@ -69,9 +68,13 @@ export default function Login() {
     } 
   }, [clickedLogin]);
 
+  //redirect if already authenticated
+  if (currentUser) {
+    return <Navigate to="/" />;
+  }
+
   return (
     <>
-      {currentUser ? <Navigate to="/" /> : ""}
       <Container component="main" maxWidth="xs">
         <CssBaseline />
         <Box
@@ -154,14 +157,9 @@ export default function Login() {
             </Grid>
           </Box>
         </Box>
-
-        <Snackbar
-          snackbarOpenCondition={snackbarOpenCondition}
-          snackbarOpen={snackbarOpen}
-          setSnackbarOpen={setSnackbarOpen}
-        />
+        <Snackbar />
       </Container>
-      <Footer/>
+      <Footer />
     </>
   );
 }

@@ -3,23 +3,25 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useState, useEffect } from 'react';
 import * as Icon from 'react-bootstrap-icons';
 import '../styles/Navbar.css';
-import MuiAvatar from "../components/MuiAvatar.jsx";
+import MuiAvatar from "./MuiAvatar.jsx";
 import LogoImg from "../assets/logo.png";
 import { logoutUser } from '../utilities/auth';
+import { useAuthorization } from '../contexts/AuthorizationContext';
 
-export default function Navbar ({user, setCurrentUser}){
-  const [currentRoute, setcurrentRoute] = useState(useLocation())
-  var location = useLocation();
+export default function Navbar() {
+  const { currentUser, setCurrentUser } = useAuthorization();
+  const [currentRoute, setcurrentRoute] = useState(useLocation().pathname);
+  const location = useLocation();
   const navigate = useNavigate(); 
 
   useEffect(() => {
-    setcurrentRoute(location.pathname)
-  }, [location]); //only re-run the effect if count changes
+    setcurrentRoute(location.pathname);
+  }, [location]); //only re-run the effect if location changes
 
   async function handleSignOut() {
     try {
       await logoutUser();
-      await setCurrentUser(null);
+      setCurrentUser(null);
       navigate('/login'); //route to /login upon successful logout
     } catch (error) {
       console.error('Error during logout:', error);
@@ -35,7 +37,7 @@ export default function Navbar ({user, setCurrentUser}){
         <ul className="nav nav-pills nav-flush flex-column mb-auto text-center">
           <Link to="/">
             <li className="nav-item">
-              <div href="#" className={(currentRoute==="/"? "active" :"") + " nav-link py-3 border-bottom rounded-0"} aria-current="page" title="Messages"  data-bs-placement="right">
+              <div href="#" className={(currentRoute==="/"? "active" :"") + " nav-link py-3 border-bottom rounded-0"} aria-current="page" title="Messages" data-bs-placement="right">
                 <Icon.ChatLeftDots className="bi pe-none" width="24" height="24" aria-label="Messages"/>          
               </div>
             </li>
@@ -43,14 +45,14 @@ export default function Navbar ({user, setCurrentUser}){
           <Link to="/profile">
             <li>
               <div href="#" className={(currentRoute==="/profile"? "active" :"") + " nav-link py-3 border-bottom rounded-0"} title="Profile" data-bs-placement="right">
-                <Icon.PersonCircle  className="bi pe-none" width="24" height="24" aria-label="Profile"/>
+                <Icon.PersonCircle className="bi pe-none" width="24" height="24" aria-label="Profile"/>
               </div>
             </li>
           </Link>
           <Link to="/findpeople">
             <li>
-              <div href="#" className={(currentRoute==="/findpeople"? "active" :"") + " nav-link py-3 border-bottom rounded-0"}  title="Find People!"  data-bs-placement="right">
-                <Icon.PeopleFill  className="bi pe-none" width="24" height="24" role="img" aria-label="Find People!"/>
+              <div href="#" className={(currentRoute==="/findpeople"? "active" :"") + " nav-link py-3 border-bottom rounded-0"} title="Find People!" data-bs-placement="right">
+                <Icon.PeopleFill className="bi pe-none" width="24" height="24" role="img" aria-label="Find People!"/>
               </div>
             </li>
           </Link>
@@ -58,7 +60,7 @@ export default function Navbar ({user, setCurrentUser}){
         <div className="dropdown border-top">
           <a href="#" className="d-flex align-items-center justify-content-center p-3 link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
             <div className="navbarAvatar">
-              <MuiAvatar user={user} />
+              <MuiAvatar user={currentUser} />
             </div>
           </a>
           <ul className="dropdown-menu text-small shadow">
