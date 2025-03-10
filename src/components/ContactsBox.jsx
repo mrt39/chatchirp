@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import styles from "@chatscope/chat-ui-kit-styles/dist/default/styles.min.css";
 import {
   Search,
@@ -64,22 +64,29 @@ export default function ContactsBox({
     //add firstMsg as a dependency so that contactsbox refreshes everytime user sends a message to a user for the FIRST time.
   }, [firstMsg]); 
 
-  //useeffect for search function
+  //using the useMemo React hook to memoize (cache) expensive calculations so they're not re-run unnecessarily
+  //here, code memoizes the filtered contacts result to avoid filtering on every render
+  //this is especially valuable when there are  many contacts or when the component re-renders frequently
+  //useMemo only recalculates this value when searchbarValue or contactsBoxPeople changes
+  const filteredContacts = useMemo(() => {
+    //this calculation logic only runs when dependencies change, not on every render
+    //prevents unnecessary filtering operations as the user types or when other state changes
+    if(searchbarValue === "") {
+      return contactsBoxPeople; //return all contacts if search is empty
+    } else {
+      //only apply the expensive filter operation when necessary
+      return filterData(searchbarValue, contactsBoxPeople);
+    }
+  }, [searchbarValue, contactsBoxPeople]); //dependencies - only recalculate if these values change
+
+  //useeffect for search function - now using memoized filtered contacts
   useEffect(() => {
-    function contactsBoxSearch(){
-      if(searchbarValue===""){
-        setcontactsBoxPeopleDisplayed(contactsBoxPeople);
-      } else {
-        const dataFiltered = filterData(searchbarValue, contactsBoxPeople);
-        setcontactsBoxPeopleDisplayed(dataFiltered);
-      }
-    }
-    
-    // only trigger after the initial loading ends
+    //only trigger after the initial loading ends
     if (loading === false){
-      contactsBoxSearch();
+      //use the memoized result instead of calculating it again
+      setcontactsBoxPeopleDisplayed(filteredContacts);
     }
-  }, [searchbarValue]); 
+  }, [filteredContacts, loading]); 
 
   return (
     <Sidebar position="left"  style={sidebarStyle}>

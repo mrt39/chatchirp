@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import {
   MainContainer,
   ChatContainer,
@@ -45,10 +45,10 @@ export default function MessageBox() {
   const [conversationAvatarStyle, setConversationAvatarStyle] = useState({});
 
   //handle back button click in mobile view
-  const handleBackClick = () => {
+  const handleBackClick = useCallback(() => {
     setSidebarVisible(!sidebarVisible);
     setSelectedPerson(null);
-  };
+  }, [sidebarVisible, setSelectedPerson]);
 
   //handle conversation click in contact list
   const handleConversationClick = useCallback(() => {
@@ -87,6 +87,36 @@ export default function MessageBox() {
     }
   }, [sidebarVisible, selectedPerson]);
 
+  //useMemo for sorting messages by date 
+  //this prevents re-sorting the entire message array on every render
+  //especially valuable when message list is long or when UI state changes frequently
+  const sortedMessages = useMemo(() => {
+    //only sort when we have messages to sort
+    if (!messagesBetween || messagesBetween.length === 0) {
+      return [];
+    }
+    //sort by date in ascending order (oldest to newest)
+    //this is computationally expensive with large arrays
+    return [...messagesBetween].sort((message1, message2) => 
+      (message1.date > message2.date) ? 1 : (message1.date < message2.date) ? -1 : 0
+    );
+  }, [messagesBetween]); //only recalculate when messagesBetween changes
+
+  //useMemo for generating message content by day
+  //this memoizes the complex grouping of messages by day
+  //prevents regenerating this structure on every render
+  const messagesByDay = useMemo(() => {
+    if (!Array.isArray(messageDays) || messageDays.length === 0 || !sortedMessages || sortedMessages.length === 0) {
+      return [];
+    }
+
+    //create message groups by day (expensive with large message histories)
+    return messageDays.map(day => ({
+      day,
+      messages: sortedMessages.filter(message => isSameDay(day, message.date))
+    }));
+  }, [messageDays, sortedMessages]); //dependencies, only recalculate when these change
+
   return (
     <div style={{ width: "100%"}}>
       <MainContainer responsive>                
@@ -120,42 +150,38 @@ export default function MessageBox() {
               :
               <MessageList>
                 <MessageList.Content className="messageListContent">
-                  {/* Add safety check to ensure messageDays is an array before mapping */}
-                  {Array.isArray(messageDays) && messageDays.map((day) => (
+                  {/* Use memoized messagesByDay structure for rendering */}
+                  {messagesByDay.map(({ day, messages }) => (
                     <div key={day}>
                       {/* separator for each separate day of messaging */}
                       <MessageSeparator content={day} />            
-                      {/* display messages sorted by time */}
-                      {messagesBetween
-                        .sort((message1, message2) => (message1.date > message2.date) ? 1 : (message1.date < message2.date) ? -1 : 0)
-                        .map((message) => (
-                          isSameDay(day, message.date) &&
-                          <MessageGroup 
-                            key={message._id}
-                            direction={(message.to[0]._id === message.from[0]._id ? "outgoing"
-                              : (selectedPerson._id === message.from[0]._id ? "incoming" : "outgoing"))}
-                          >          
-                            <div as="Avatar" className="messageBoxAvatar">
-                              <MuiAvatar 
-                                user={message.from[0]}/>    
-                            </div>     
-                            <MessageGroup.Messages>
-                              <Message model={{
-                                message: message.image ? null : message.message,
-                                sender: message.from[0].toString(),
-                                direction: (message.to[0]._id === message.from[0]._id ? "outgoing"
-                                  : (selectedPerson._id === message.from[0]._id ? "incoming" : "outgoing")),
-                                position: "single",
-                              }}>
-                                {message.image &&
-                                  <Message.ImageContent className="msgBoxImg1" src={message.image} alt="image" />
-                                }
-                              </Message>
-                            </MessageGroup.Messages>    
-                            <MessageGroup.Footer>{formatMessageTime(message.date)}</MessageGroup.Footer>          
-                          </MessageGroup>
-                        ))
-                      }
+                      {/* display the day's messages */}
+                      {messages.map((message) => (
+                        <MessageGroup 
+                          key={message._id}
+                          direction={(message.to[0]._id === message.from[0]._id ? "outgoing"
+                            : (selectedPerson._id === message.from[0]._id ? "incoming" : "outgoing"))}
+                        >          
+                          <div as="Avatar" className="messageBoxAvatar">
+                            <MuiAvatar 
+                              user={message.from[0]}/>    
+                          </div>     
+                          <MessageGroup.Messages>
+                            <Message model={{
+                              message: message.image ? null : message.message,
+                              sender: message.from[0].toString(),
+                              direction: (message.to[0]._id === message.from[0]._id ? "outgoing"
+                                : (selectedPerson._id === message.from[0]._id ? "incoming" : "outgoing")),
+                              position: "single",
+                            }}>
+                              {message.image &&
+                                <Message.ImageContent className="msgBoxImg1" src={message.image} alt="image" />
+                              }
+                            </Message>
+                          </MessageGroup.Messages>    
+                          <MessageGroup.Footer>{formatMessageTime(message.date)}</MessageGroup.Footer>          
+                        </MessageGroup>
+                      ))}
                     </div>
                   ))}
   

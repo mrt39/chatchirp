@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { styled, alpha } from '@mui/material/styles';
 import SearchIcon from "@mui/icons-material/Search";
 import TextField from "@mui/material/TextField";
@@ -68,18 +68,25 @@ function filterData(query, allUsers) {
 
 export default function SearchPeople() {
   const [searchQuery, setSearchQuery] = useState("");
-  const [filteredData, setFilteredData] = useState([]);
   const [allUsers, setAllUsers] = useState();
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
+  //using useMemo hook for caching the result of the calculation between renders
+  //it helps avoid expensive calculations on every render by storing a value until its dependencies change
+  //in this case, we're memoizing the user filtering operation to improve performance
+  const filteredData = useMemo(() => {
+    //this calculation will only run when searchQuery or allUsers changes, not on every render
+    //filtering through a large user list is an expensive operation
+    //filtering impacts performance especially when typing quickly in the search box
     if (searchQuery === "") {
-      setFilteredData(null);
+      return null; //no users shown when search is empty
     } else if (allUsers) {
-      const dataFiltered = filterData(searchQuery, allUsers);
-      setFilteredData(dataFiltered);
+      //only perform the filtering when user has typed something and users are loaded
+      //this prevents the costly array filtering from running on every render cycle
+      return filterData(searchQuery, allUsers);
     }
-  }, [searchQuery, allUsers]); 
+    return null;
+  }, [searchQuery, allUsers]); //dependencies that trigger recalculation when they change
 
   //fetch for getting data of all people
   useEffect(() => {
