@@ -68,8 +68,8 @@ export function MessageProvider({ children }) {
       getMessages();
     } else {
       //reset message states when no person is selected
-      setMessagesBetween({});
-      setMessageDays({});
+      setMessagesBetween([]);
+      setMessageDays([]);
     }
     
     return () => {
