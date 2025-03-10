@@ -4,57 +4,50 @@ import {
   Card,
   CardActions,
 } from '@mui/material';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import "../styles/AccountProfile.css"
 import MuiAvatar from "./MuiAvatar.jsx";
 import Snackbar from "./Snackbar.jsx"
-import { handleImageValidation } from '../utilities/formValidation';
-import { uploadProfilePicture } from '../utilities/api';
+import { createImageFormData } from '../utilities/imageUtils';
+import { useImageUpload } from '../utilities/imageUtils';
 import { useUI } from '../contexts/UIContext';
 import { useAuthorization } from '../contexts/AuthorizationContext';
+import { useUser } from '../contexts/UserContext';
 
 export default function AccountProfile() {
   const { snackbarOpenCondition, setSnackbarOpenCondition, snackbarOpen, setSnackbarOpen } = useUI();
-  const { currentUser, setProfileUpdated } = useAuthorization();
+  const { currentUser, setCurrentUser } = useAuthorization();
+  const { setProfileUpdated } = useUser();
+  
+  //use the centralized image upload hook
+  const { 
+    imageFile, 
+    handleImageSelect, 
+    isUploading, 
+    uploadProfileImage 
+  } = useImageUpload(setSnackbarOpenCondition, setSnackbarOpen);
 
-  const [uploadedImg, setUploadedImg] = useState();
-  const [imgSubmitted, setImgSubmitted] = useState(false);
-
-  function handleChange(event){
-    const uploadedImg = event.target.files[0]
-    //check the filetype to ensure it's an image. throw error if it isn't
-    if (!handleImageValidation(uploadedImg, setSnackbarOpenCondition, setSnackbarOpen)) {
-      return;
-    } else {
-      setUploadedImg(event.target.files[0]);
-    }
+  function handleChange(event) {
+    handleImageSelect(event);
   }
 
-  function submitImg(){
-    setImgSubmitted(true)
-  }
+  async function submitImg() {
+    //create form data here to pass userId directly
+    const formData = createImageFormData(imageFile, currentUser._id);
+    
+    const updatedUser = await uploadProfileImage(currentUser._id, formData, () => {
+      //callback when upload is complete
+      setProfileUpdated(true);
+    });
 
-  //effect for handling uploading image
-  useEffect(() => {
-    async function changeProfileImage() {       
-      const formData = new FormData()
-      formData.append("image", uploadedImg)
-
-      try {
-        await uploadProfilePicture(currentUser["_id"], formData);
-        console.log("Image uploaded");
-        setUploadedImg(null);
-        setImgSubmitted(false);
-        setProfileUpdated(true);
-      } catch (error) {
-        console.error('Error:', error);
-      }
+    // Update the currentUser state with the new profile picture
+    if (updatedUser && updatedUser.uploadedpic) {
+      setCurrentUser({
+        ...currentUser,
+        uploadedpic: updatedUser.uploadedpic
+      });
     }
-    //only trigger when image is sent
-    if (imgSubmitted && uploadedImg){
-      changeProfileImage();
-    } 
-  }, [imgSubmitted, uploadedImg, currentUser, setProfileUpdated]);
+  }
 
   return (
     <Card>
@@ -87,12 +80,12 @@ export default function AccountProfile() {
         {/* hide the input field and choose a label for the functionality, as input brings its own embedded css, easier to modify label*/}
         <Button 
           variant="contained"
-          disabled={currentUser.email === "demoacc@demoacc.com" ? true : false}
+          disabled={currentUser.email === "demoacc@demoacc.com" || isUploading ? true : false}
         >
           <label htmlFor="image" className="imgLbl">Choose an Image</label>
         </Button>
         <Button 
-          disabled={currentUser.email === "demoacc@demoacc.com" || !uploadedImg ? true : false}
+          disabled={currentUser.email === "demoacc@demoacc.com" || !imageFile || isUploading ? true : false}
           variant="contained"
           onClick={submitImg}
         >

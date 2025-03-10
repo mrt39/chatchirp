@@ -1,15 +1,14 @@
 /* eslint-disable react/prop-types */
 import { createContext, useState, useEffect, useContext } from 'react';
-import { fetchCurrentUser, fetchUserProfile } from '../utilities/api';
+import { fetchCurrentUser } from '../utilities/api';
 
-//context for managing user authentication state and related functions
+//context for managing user authentication state
 const AuthorizationContext = createContext();
 
 export function AuthorizationProvider({ children }) {
   const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [firstTimeLoading, setFirstTimeLoading] = useState(true);
-  const [profileUpdated, setProfileUpdated] = useState(false);
 
   //get the user data when logged in, also checks if the user is logged in after each refresh
   useEffect(() => {
@@ -31,37 +30,12 @@ export function AuthorizationProvider({ children }) {
     }
   }, [firstTimeLoading]);
 
-  //change the user data from the stored user data in the session, to the actual user data in the db
-  useEffect(() => {
-    async function getUserOnUpdate() {
-      try {
-        const data = await fetchUserProfile(currentUser["_id"]);
-        setCurrentUser(data[0]);
-        setLoading(false);
-        setProfileUpdated(false);
-      } catch (error) {
-        setLoading(false);
-        console.error('Error:', error);
-        setProfileUpdated(false);
-      }
-    }
-    //skip if we're still in first loading or no current user
-    if (firstTimeLoading || !currentUser) return;
-
-    //only fetch profile when profileUpdated flag is true
-    if (profileUpdated) {
-      getUserOnUpdate();
-    }
-  }, [profileUpdated, firstTimeLoading, currentUser]); 
-
   return (
     <AuthorizationContext.Provider 
       value={{ 
         currentUser, 
         setCurrentUser, 
-        loading, 
-        profileUpdated, 
-        setProfileUpdated 
+        loading,
       }}
     >
       {children}

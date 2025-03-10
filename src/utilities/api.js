@@ -6,23 +6,23 @@ export async function fetchAPI(endpoint, options = {}) {
     const baseURL = import.meta.env.VITE_BACKEND_URL;
     const url = `${baseURL}${endpoint}`;
     
-    // default options
-    const defaultOptions = {
-      headers: {
+    //default options
+    const fetchOptions = {...options};
+    
+    //only set default headers if not sending FormData
+    if (!(options.body instanceof FormData)) {
+      fetchOptions.headers = {
         "Content-Type": "application/json",
         "Access-Control-Allow-Origin": "*",
-      }
-    };
-    
-    // merge default options with provided options
-    const fetchOptions = {
-      ...defaultOptions,
-      ...options,
-      headers: {
-        ...defaultOptions.headers,
         ...(options.headers || {})
-      }
-    };
+      };
+    } else {
+      //for FormData, don't set Content-Type - browser will set it with boundary
+      fetchOptions.headers = {
+        "Access-Control-Allow-Origin": "*",
+        ...(options.headers || {})
+      };
+    }
     
     const response = await fetch(url, fetchOptions);
     
@@ -103,10 +103,8 @@ export async function uploadProfilePicture(userId, formData) {
   return fetchAPI(`/uploadprofilepic/${userId}`, {
     method: "post",
     body: formData, 
-    headers: {
-      // Don't set Content-Type when sending FormData, browser will set it with boundary
-      "Content-Type": undefined
-    }
+    //don't set Content-Type header when sending FormData, browser will set it with boundary
+    headers: {}    
   });
 }
 
@@ -120,9 +118,7 @@ export async function sendImageMessage(imageFile, currentUser, selectedPerson) {
   return fetchAPI('/imagesent', {
     method: "post",
     body: formData,
-    //don't set Content-Type when sending FormData
-    headers: {
-      "Content-Type": undefined
-    }
+    //don't set content-type hedaer when sending FormData
+    headers: {}
   });
 }

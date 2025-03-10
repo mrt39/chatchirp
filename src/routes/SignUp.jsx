@@ -42,7 +42,7 @@ export default function SignUp() {
     }
   };
 
-  // Field change handler with validation
+  //field change handler with validation
   function handleChange(event) {
     //validation
     if (event.target.name === "name") {

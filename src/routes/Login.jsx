@@ -125,18 +125,6 @@ export default function Login() {
             >
               Sign In
             </Button>
-            
-            <Button
-              id="googleSignInBtn"
-              type="button"
-              onClick={handleGoogleClick}
-              fullWidth
-              variant="contained"
-              sx={{ mt: 3, mb: 2 }}
-            >
-              Sign In With Google
-            </Button>
-
             <Button
               id="signinWithDemoAcc"
               type="button"
@@ -147,7 +135,16 @@ export default function Login() {
             >
               Sign In With Demo Account
             </Button>
-
+            <Button
+              id="googleSignInBtn"
+              type="button"
+              onClick={handleGoogleClick}
+              fullWidth
+              variant="contained"
+              sx={{ mt: 3, mb: 2 }}
+            >
+              Sign In With Google
+            </Button>
             <Grid container className="loginSignupLinkContainer">
               <Grid item>
                 <RouterLink className="signUpLink" to="/signup">

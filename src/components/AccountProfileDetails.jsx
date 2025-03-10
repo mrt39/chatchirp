@@ -13,14 +13,15 @@ import {
   Unstable_Grid2 as Grid
 } from '@mui/material';
 import "../styles/AccountProfileDetails.css";
-import { clean } from 'profanity-cleaner';
+import { cleanTextContent } from '../utilities/textUtils';
 import { validateEmail } from '../utilities/formValidation';
-import { updateProfile } from '../utilities/api';
 import { useUI } from '../contexts/UIContext';
 import { useAuthorization } from '../contexts/AuthorizationContext';
+import { useUser } from '../contexts/UserContext';
 
 export default function AccountProfileDetails() {
-  const { currentUser, setProfileUpdated } = useAuthorization();
+  const { currentUser, setCurrentUser } = useAuthorization();
+  const { updateUserProfile, profileLoading, setProfileUpdated } = useUser();
   const { 
     snackbarOpenCondition, 
     setSnackbarOpenCondition, 
@@ -30,7 +31,6 @@ export default function AccountProfileDetails() {
     setInvalidEmail 
   } = useUI();
 
-  const [loading, setLoading] = useState(false);
   const [values, setValues] = useState({
     name: currentUser.name,
     email: currentUser.email,
@@ -88,47 +88,54 @@ export default function AccountProfileDetails() {
       return;
     }
     
-    setLoading(true);
     setprofileUpdateToggle(true);
-    setProfileUpdated(false);
   }
 
   //effect for submitting the profile changes
   useEffect(() => {
     async function editProfile() {
       try {
-        //on submit, clean the word with the profanity cleaner package
-        const filteredName = await clean(values.name, { keepFirstAndLastChar: true, placeholder: '#' });
-        const filteredEmail = await clean(values.email, { keepFirstAndLastChar: true, placeholder: '#' });
+        //clean text content with profanity filter
+        const filteredName = await cleanTextContent(values.name);
+        const filteredEmail = await cleanTextContent(values.email);
         let filteredBio = "";
         
         if(values.bio){
-          filteredBio = await clean(values.bio, { keepFirstAndLastChar: true, placeholder: '#' });
+          filteredBio = await cleanTextContent(values.bio);
         }
         
-        await updateProfile(currentUser._id, {
+        const success = await updateUserProfile({
           name: filteredName,
           email: filteredEmail,
           bio: filteredBio,
         });
         
-        console.log("Profile Updated!");
-        await setProfileUpdated(true);
-        await setSnackbarOpenCondition("profileChangeSuccess");
-        await setSnackbarOpen(true);
-        setLoading(false);
+        if (success) {
+          //update the currentUser state with the new profile information
+          setCurrentUser({
+            ...currentUser,
+            name: filteredName,
+            email: filteredEmail,
+            bio: filteredBio
+          });
+          
+          setSnackbarOpenCondition("profileChangeSuccess");
+          setSnackbarOpen(true);
+        } else {
+          setSnackbarOpenCondition("failure");
+          setSnackbarOpen(true);
+        }
+        
         setprofileUpdateToggle(false);
       } catch (error) {
-        console.error("There has been an error!", error);
+        console.error("There has been an error:", error);
         setSnackbarOpenCondition("failure");
         setSnackbarOpen(true);
-        setLoading(false);
         setprofileUpdateToggle(false);
-        setProfileUpdated(false);
       }
     }
 
-    //only trigger when profile is updated
+    //only trigger when profile update is requested
     if (profileUpdateToggle){
       editProfile();
     } 
@@ -141,7 +148,7 @@ export default function AccountProfileDetails() {
       onSubmit={handleSubmit}
     >
       <Card className='profileDetails'>
-        {loading ? 
+        {profileLoading ? 
           <CircularProgress size={57}/>
           :
           <CardHeader title="Details"/>
@@ -154,7 +161,7 @@ export default function AccountProfileDetails() {
             >
               <Grid xs={12} md={6}>
                 <TextField
-                  disabled={loading || currentUser.email === "demoacc@demoacc.com" ? true : false} 
+                  disabled={profileLoading || currentUser.email === "demoacc@demoacc.com" ? true : false} 
                   fullWidth
                   label="Name"
                   name="name"
@@ -166,7 +173,7 @@ export default function AccountProfileDetails() {
               </Grid>
               <Grid xs={12} md={6}>
                 <TextField
-                  disabled={loading || currentUser.googleId || currentUser.email === "demoacc@demoacc.com" ? true : false}
+                  disabled={profileLoading || currentUser.googleId || currentUser.email === "demoacc@demoacc.com" ? true : false}
                   fullWidth
                   error={invalidEmail}
                   helperText={invalidEmail ? 'Invalid E-mail address!' : ' '}   
@@ -181,7 +188,7 @@ export default function AccountProfileDetails() {
               </Grid>
               <Grid xs={12} md={12}>
                 <TextField
-                  disabled={loading || currentUser.email === "demoacc@demoacc.com" ? true : false}
+                  disabled={profileLoading || currentUser.email === "demoacc@demoacc.com" ? true : false}
                   fullWidth
                   id="bio"
                   label="Bio"
@@ -200,7 +207,7 @@ export default function AccountProfileDetails() {
         <Divider />
         <CardActions sx={{ justifyContent: 'flex-end' }}>
           <Button 
-            disabled={loading || currentUser.email === "demoacc@demoacc.com" ? true : false}
+            disabled={profileLoading || currentUser.email === "demoacc@demoacc.com" ? true : false}
             variant="contained"
             onClick={handleSubmit}
           >

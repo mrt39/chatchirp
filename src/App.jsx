@@ -13,6 +13,7 @@ import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 //import context providers
 import { ThemeProvider } from './contexts/ThemeContext';
 import { AuthorizationProvider, useAuthorization } from './contexts/AuthorizationContext';
+import { UserProvider } from './contexts/UserContext';
 import { MessageProvider } from './contexts/MessageContext';
 import { UIProvider } from './contexts/UIContext';
 
@@ -44,13 +45,15 @@ function AppContent() {
 export default function App() {
   return (
     <ThemeProvider>
-      <AuthorizationProvider>
-        <UIProvider>
-          <MessageProvider>
-            <AppContent />
-          </MessageProvider>
-        </UIProvider>
-      </AuthorizationProvider>
+      <UIProvider>
+        <AuthorizationProvider>
+          <UserProvider>
+            <MessageProvider>
+              <AppContent />
+            </MessageProvider>
+          </UserProvider>
+        </AuthorizationProvider>
+      </UIProvider>
     </ThemeProvider>
   );
 }

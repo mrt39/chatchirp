@@ -34,7 +34,7 @@ export default function MessageBox() {
     imgSubmitted
   } = useMessage();
 
-  //Users that will be displayed on the contactsbox (populated by fetch within ContactsBox component)
+  //users that will be displayed on the contactsbox (populated by fetch within ContactsBox component)
   const [contactsBoxPeople, setContactsBoxPeople] = useState([]);
 
   //responsive UI states
