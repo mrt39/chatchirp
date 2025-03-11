@@ -95,6 +95,7 @@ export async function updateProfile(userId, userData) {
   return fetchAPI(`/editprofile/${userId}`, {
     method: 'PATCH',
     body: JSON.stringify(userData),
+    credentials: "include"
   });
 }
 

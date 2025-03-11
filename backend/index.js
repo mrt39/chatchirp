@@ -1,19 +1,24 @@
 //jshint esversion:6
-require('dotenv').config()
+require('dotenv').config();
 const express = require("express");
 const bodyParser = require("body-parser");
-
-//hashing, cookies 
-const session = require('express-session');
-const {passport} = require( "./passport.js")
-
-//cors
 const cors = require("cors");
 
-//require other js files
-const authRoute = require("./routes/routes.js");
+//import configurations
+const { connectDB } = require('./configuration/db');
+const passport = require('./configuration/passport');
+const sessionConfig = require('./configuration/session');
 
+//import routes
+const routes = require("./routes/allRoutes"); //import centralized routes
+
+//initialize express app
 const app = express();
+
+//connect to database
+connectDB();
+
+//middleware
 app.use(
   cors({
     origin: true,
@@ -25,48 +30,20 @@ app.use(
 app.use(express.json());
 app.use(bodyParser.urlencoded({extended: true}));
 
-//serve the files in /images folder as static files
-app.use('/images', express.static('images'))
+//serve static files
+app.use('/images', express.static('images'));
 
+app.set('trust proxy', 1); //needed for production
 
-
-app.set('trust proxy', 1); //add this for production
-
-//storing session in mongodb because storing it in client is unstable for production
-//(works fine for development but starts to randomly log people out in production, when deployed to server)
-const MongoDBStore = require('connect-mongodb-session')(session);
-const dev_db_url = "mongodb://127.0.0.1:27017/chatChirpUserDB"
-const store = new MongoDBStore({
-  uri: process.env.MONGODB_URI || dev_db_url,
-  collection: 'mySessions'
-});
-
-app.use(session({
-    secret: process.env.SECRET,
-    resave: false,
-    saveUninitialized: true,
-    proxy: true, //add this for production
-    store: store, //store to mongodb
-    cookie: {
-      secure: false, //set to true in production if served over HTTPS, "false" for development
-      sameSite: 'strict' // "none" for production, "strict" for development
-  }
-}));
-
+//session and auth setup
+app.use(sessionConfig);
 app.use(passport.initialize());
 app.use(passport.session());
 
+//mount routes
+app.use("/", routes);
 
-
-/* Mount Routes */
-
-app.use("/", authRoute);
-
+//start server
 app.listen("5000", () => {
   console.log("Server is running!");
 });
-
-
-
-
-
