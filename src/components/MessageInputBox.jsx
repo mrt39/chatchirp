@@ -10,6 +10,7 @@ import { sendMessage } from '../utilities/api';
 import { useMessage } from '../contexts/MessageContext';
 import { useAuthorization } from '../contexts/AuthorizationContext';
 import { useUI } from '../contexts/UIContext';
+import { useContacts } from '../contexts/ContactsContext'; //import contacts context to use addNewContact function
 
 export default function MessageInputBox({contactsBoxPeople, setContactsBoxPeople}) {
   //use our contexts
@@ -24,6 +25,9 @@ export default function MessageInputBox({contactsBoxPeople, setContactsBoxPeople
     setImgSubmitted
   } = useMessage();
   const { snackbarOpenCondition, setSnackbarOpenCondition, snackbarOpen, setSnackbarOpen } = useUI();
+  //get addNewContact function from ContactsContext
+  //this function will allow to add a new contact to the contacts list immediately, without requiring a page reload or additional API calls
+  const { addNewContact, updateContactLastMessage } = useContacts();
   
   //Set initial message input value to an empty string                                                                     
   const [messageInputValue, setMessageInputValue] = useState("");
@@ -67,19 +71,26 @@ export default function MessageInputBox({contactsBoxPeople, setContactsBoxPeople
         
         const result = await sendMessage(currentUser, selectedPerson, filteredMessage);
         
-        setMessageInputValue("");
-        setMessageSent(!messageSent);
-        setuserPressedSend(false);
-        
-        //if first message between the user and the person they're sending a message to, toggle firstMsg state
+        //if this is the first message with a new contact, add them to the contacts list
+        //this ensures the contact appears immediately in the ContactsBox, without requiring app reload or additional API calls
         if(firstMessageBetween === true){
+          //add the selected person to contacts using the context function
+          //this will update both in-memory state and session storage cache, making the contact immediately visible in the UI
+          addNewContact(selectedPerson);
+          
           setFirstMsg(!firstMsg);
           setfirstMessageBetween(false);
         }
         
-        /* if the person user is sending message to is in the contactsbox,
-        change the lastMsg attribute for the selectedperson within "contactsBoxPeople" state */
+        setMessageInputValue("");
+        setMessageSent(!messageSent);
+        setuserPressedSend(false);
+        
+        //if the person user is sending message to is in the contactsbox, change the lastMsg attribute for the selectedperson within "contactsBoxPeople" state 
         if(contactsBoxPeople.find(person => person._id === selectedPerson._id)){
+          //call the updateContactLastMessage function to update both context state and cache, adding the lastMsg attribute properly
+          updateContactLastMessage(selectedPerson._id, filteredMessage);
+
           let personIndex = contactsBoxPeople.findIndex(obj => obj._id == selectedPerson._id);
           contactsBoxPeople[personIndex].lastMsg.message = filteredMessage;
           setContactsBoxPeople([...contactsBoxPeople]);
@@ -134,14 +145,21 @@ export default function MessageInputBox({contactsBoxPeople, setContactsBoxPeople
     
     sendImage(currentUser, selectedPerson, () => {
       //callback when send is complete
-      setMessageSent(!messageSent);
-      setImgSubmitted(false);
-      setimageSelected(false);
       
+      //if this is the first message to a new contact, add them to the contacts list
+      //this ensures consistent behavior between text and image messages, so contacts appear in the ContactsBox immediately regardless of message type
       if (firstMessageBetween) {
+        //add the selected person to contacts using the context function
+        //this makes the new contact immediately visible in ContactsBox
+        addNewContact(selectedPerson);
+        
         setFirstMsg(!firstMsg);
         setfirstMessageBetween(false);
       }
+      
+      setMessageSent(!messageSent);
+      setImgSubmitted(false);
+      setimageSelected(false);
     });
   }
   

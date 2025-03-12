@@ -16,8 +16,8 @@ export function ContactsProvider({ children }) {
   
   //useref to track fetch status to prevent duplicate API calls
   //using refs here because:
-  //- it will persist between renders but don't trigger re-renders when modified
-  //- it will store complex objects with multiple properties
+  //- it will persist between renders without triggering re-renders when modified
+  //- it will store contacts objects with multiple properties
   //- its values are accessible synchronously within callbacks and effects
   const requestStateRef = useRef({
     inProgress: false, //tracks if a fetch is currently in progress
@@ -94,29 +94,58 @@ export function ContactsProvider({ children }) {
   }, [currentUser?._id, contacts.length]); //dependencies that trigger function recreation
 
   //update an existing contact's last message without API call
-  //this function provides a way to modify contact data without API requests
-  //for immediate UI feedback when message status changes
   function updateContactLastMessage(contactId, newMessage) {
-    setContacts(prevContacts => 
-      prevContacts.map(contact => 
+    setContacts(prevContacts => {
+      //map through all contacts and update the matching one's lastMsg property
+      //this creates a new array with all contacts having the same values except the target contact
+      const updatedContacts = prevContacts.map(contact => 
         contact._id === contactId 
           ? { ...contact, lastMsg: { ...contact.lastMsg, message: newMessage } }
           : contact
-      )
-    );
+      );
+      
+      //update the cache to persist the last message change between page refreshes
+      if (currentUser?._id) {
+        cacheContacts(currentUser._id, updatedContacts);
+      }
+      
+      //return the updated contacts array to update the react state
+      return updatedContacts;
+    });
   }
 
   //add a new contact to the list without making an API call
-  //useful when sending first message to a new contact
-  //provides immediate UI update without waiting for backend call
+  //required when sending first message to a new contact
+  //provides immediate UI update without sending an API call
   function addNewContact(newContact) {
     setContacts(prevContacts => {
-      //check if contact already exists to prevent duplicates
+      //check if contact already exists to prevent dupilcates
       const exists = prevContacts.some(contact => contact._id === newContact._id);
+      
       if (!exists) {
-        //creates a new array rather than mutating existing one
-        return [newContact, ...prevContacts];
+        //add to end of list
+        const updatedContacts = [
+          ...prevContacts, 
+          //ensure contact has a valid lastMsg property to prevent UI errors
+          //creates a new object that preserves all original properties and guarantees lastMsg property exists
+          {
+            ...newContact, 
+            //if lastMsg doesn't exist or is incomplete, provide an empty message
+            //this prevents "undefined" errors when ContactsBox tries to display message content
+            lastMsg: newContact.lastMsg || { message: "" }
+          }
+        ];
+        
+        //update the cache to persist the new contact between page refreshes
+        //this ensures the contact remains visible even after page reload by storing the updated contacts list in sessionStorage
+        if (currentUser?._id) {
+          //use the cacheContacts utility to store the updated list
+          cacheContacts(currentUser._id, updatedContacts);
+        }
+        
+        return updatedContacts;
       }
+      
       return prevContacts;
     });
   }

@@ -17,6 +17,7 @@ import { UserProvider } from './contexts/UserContext';
 import { MessageProvider } from './contexts/MessageContext';
 import { UIProvider } from './contexts/UIContext';
 import { ContactsProvider } from './contexts/ContactsContext'; 
+import { AllUsersProvider } from './contexts/AllUsersContext'; 
 
 function AppContent() {
   const { currentUser, loading } = useAuthorization();
@@ -50,9 +51,11 @@ export default function App() {
         <AuthorizationProvider>
           <UserProvider>
             <ContactsProvider> 
-              <MessageProvider>
-                <AppContent />
-              </MessageProvider>
+              <AllUsersProvider> 
+                <MessageProvider>
+                  <AppContent />
+                </MessageProvider>
+              </AllUsersProvider>
             </ContactsProvider>
           </UserProvider>
         </AuthorizationProvider>

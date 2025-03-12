@@ -155,3 +155,65 @@ export function clearUserProfileCache() {
     console.error('Error clearing user profile cache:', error);
   }
 }
+
+
+//cache all users data with TTL
+//this prevents unnecessary API calls when navigating to/from the findpeople route
+export function cacheAllUsers(users) {
+  if (!users) return; //prevent storing invalid or empty data
+  
+  //create a structured cache object that includes:
+  //- the users data itself for retrieval
+  //- a timestamp to enable TTL (time-to-live) functionality
+  const cacheData = {
+    users, //the users data to cache
+    timestamp: Date.now() //record when the cache was created for TTL checks
+  };
+  
+  try {
+    //store the cache object in browser's sessionStorage
+    //sessionStorage will persist during browser session but clears when tab closes
+    sessionStorage.setItem('allUsersCache', JSON.stringify(cacheData));
+  } catch (error) {
+    //handle edge cases like storage quota exceeded or private browsing limitations
+    console.error('Error caching all users:', error);
+  }
+}
+
+//get cached users data if not expired
+//includes TTL mechanism to ensure data freshness
+export function getCachedAllUsers(ttlMinutes = 5) {
+  try {
+    //attempt to retrieve the cached users data
+    const cachedData = sessionStorage.getItem('allUsersCache');
+    if (!cachedData) return null; //early return when cache is empty
+    
+    //parse the JSON data back into an object
+    const parsedData = JSON.parse(cachedData);
+    
+    //freshness check: implement TTL (time-to-live) mechanism
+    //this ensures data doesn't become old or outdated by enforcing a maximum age
+    const now = Date.now();
+    const cacheDuration = now - parsedData.timestamp; //calculate how old the cache is
+    //compare against configured TTL (5 minutes default)
+    const cacheExpired = cacheDuration > ttlMinutes * 60 * 1000;
+    
+    //return either the cache or null if expired
+    return cacheExpired ? null : parsedData.users;
+  } catch (error) {
+    //handle any parsing errors or storage access issues
+    console.error('Error retrieving cached users:', error);
+    return null;
+  }
+}
+
+//clear all users cache
+export function clearAllUsersCache() {
+  try {
+    //completely remove the users cache entry from sessionStorage
+    sessionStorage.removeItem('allUsersCache');
+  } catch (error) {
+    //handle potential storage access issues
+    console.error('Error clearing users cache:', error);
+  }
+}

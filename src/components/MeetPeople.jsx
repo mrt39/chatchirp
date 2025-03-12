@@ -4,74 +4,56 @@ import CircularProgress from '@mui/material/CircularProgress';
 import Box from '@mui/material/Box';
 import UserCard from "./UserCard";
 import '../styles/SearchPeople.css'
-import { fetchAPI, fetchContacts } from '../utilities/api';
 import { useAuthorization } from '../contexts/AuthorizationContext';
+import { useContacts } from '../contexts/ContactsContext'; //import contacts context
+import { useAllUsers } from '../contexts/AllUsersContext'; //import all users context
 
 export default function MeetPeople() {
   const { currentUser } = useAuthorization();
-  const [allUsers, setAllUsers] = useState([]);
-  const [contactUserIds, setContactUserIds] = useState([]);
+  //use the contexts instead of direct API calls to eliminate redundant API requests by using cached allusers data
+  const { allUsers, usersLoading, fetchAllUsers } = useAllUsers();
+  const { contacts } = useContacts();
+  
   const [loading, setLoading] = useState(true);
 
-  //ref to track if we've already fetched the data to prevent duplicate requests
-  const dataFetchedRef = useRef(false);
-  //ref to store randomized users to prevent flickering (users displayed on screen changing) on re-renders
+  //ref to store randomized users to prevent flickering on re-renders
+  //this preserves the user selection between renders for a consistent UI experience
   const randomUsersRef = useRef(null);
 
-  //fetch for getting data of all users and contacts
+  //effect to coordinate data loading from contexts
   useEffect(() => {
-    //skip if we've already fetched data or there's no user
-    if (dataFetchedRef.current || !currentUser) {
-      if (!currentUser) {
-        setLoading(false);
-      }
-      return;
-    }
-
-    const fetchData = async () => {
-      if (!currentUser) return;
-      
-      try {
-        //fetch all users
-        const userData = await fetchAPI('/getallusers', {
-          method: 'GET'
-        });
-        
-        //fetch contacts (users with conversation history)
-        const contactsData = await fetchContacts(currentUser._id);
-        const contactIds = contactsData.map(contact => contact._id);
-        
-        setAllUsers(userData);
-        setContactUserIds(contactIds);
-
-        //mark that we've fetched the data
-        dataFetchedRef.current = true;
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    
-    if (currentUser) {
-      fetchData();
-    } else {
+    //check loading state from context states
+    if (usersLoading) {
+      setLoading(true);
+    } else if (allUsers && allUsers.length > 0) {
       setLoading(false);
     }
-  }, [currentUser?._id]); // Use ID instead of entire object to prevent unnecessary re-renders
+    
+    //ensure we have all users data, fetch if necessary
+    //will only trigger if the context doesn't already have the data
+    if (!allUsers || allUsers.length === 0) {
+      fetchAllUsers();
+    }
+  }, [allUsers, usersLoading, fetchAllUsers]);
 
+  //useMemo prevent same calculation to derive contact IDs from contacts
+  //this extracts IDs needed for filtering, improves performance
+  const contactUserIds = useMemo(() => {
+    return contacts.map(contact => contact._id);
+  }, [contacts]);
 
   //useMemo is used here to prevent same calculation from running on every render
-  //it only recalculates when allUsers dependency change 
+  //it only recalculates when allUsers, contactUserIds or currentUser changes
   const randomizedUsers = useMemo(() => {    
     //if data is empty, return
     if (!allUsers || allUsers.length === 0) {
-      return;
+      return [];
     } 
     
     //filter out current user and users with conversation history (they shouldn't be displayed as "new users to connect")
+    //this uses contactUserIds from the ContactsContext instead of making a separate API call
     const filteredUsers = allUsers.filter(user => 
-      user._id !== currentUser._id && !contactUserIds.includes(user._id)
+      user._id !== currentUser?._id && !contactUserIds.includes(user._id)
     );
 
     // in order to prevent redundant fetch calls, use existing random selection if available and data hasn't changed
@@ -82,6 +64,7 @@ export default function MeetPeople() {
       );
       
       //if all users are still valid, return the existing selection
+      //this prevents flickering, where displayed users change unnecessarily
       if (allUsersStillValid && randomUsersRef.current.length > 0) {
         return randomUsersRef.current;
       }
@@ -99,16 +82,15 @@ export default function MeetPeople() {
         var x = Math.floor(Math.random() * filteredUsers.length);
         let pickedUser = filteredUsers[x];
         //make sure picked user is unique before adding to results
-        //this ensures same person isn't being shown multiple times
         if (!randomUsers.includes(pickedUser)) {
           randomUsers.push(pickedUser);
         }
       }
-      //store the new selection in the ref
+      //store the new selection in the ref for future renders
       randomUsersRef.current = randomUsers;
       return randomUsers;
     }
-  }, [allUsers, contactUserIds, currentUser]); //only recalculate when these dependencies change
+  }, [allUsers, contactUserIds, currentUser]); //dependencies that will trigger recalculation
 
   return (
     <div className="searchPeopleContainer">
