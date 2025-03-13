@@ -1,10 +1,10 @@
-//context for managing contacts data with optimized API calls and caching
+/* eslint-disable react/prop-types */
 import { createContext, useState, useContext, useEffect, useRef, useCallback } from 'react';
 import { fetchContacts } from '../utilities/api';
-import { useAuthorization } from './AuthorizationContext';
 import { cacheContacts, getCachedContacts } from '../utilities/storageUtils';
+import { useAuthorization } from './AuthorizationContext';
 
-//create the context
+//context for managing contacts data with optimized API calls and caching
 const ContactsContext = createContext();
 
 export function ContactsProvider({ children }) {
@@ -51,9 +51,9 @@ export function ContactsProvider({ children }) {
       //using the function from storageUtils.js
       const cachedData = getCachedContacts(currentUser._id);
       if (cachedData && cachedData.length > 0) {
-        setContacts(cachedData); //update state with cached data
-        requestStateRef.current.initialized = true; //mark as initialized to prevent future fetches
-        return; //exit without making API call
+        setContacts(cachedData);
+        requestStateRef.current.initialized = true;
+        return;
       }
     }
     
@@ -72,13 +72,12 @@ export function ContactsProvider({ children }) {
       //only update state if this is still the current request
       //prevents older requests that complete late from overwriting newer data
       if (currentRequestId === requestStateRef.current.requestId) {
-        setContacts(data); //update state with API response
-        requestStateRef.current.initialized = true; //mark as initialized
-        requestStateRef.current.lastFetchTime = Date.now(); //record fetch time
+        setContacts(data);
+        requestStateRef.current.initialized = true;
+        requestStateRef.current.lastFetchTime = Date.now();
         
         //cache the results for future use
-        //this enables the cache-first strategy for subsequent requests
-        //and maintains data between page navigations without API calls
+        //this enables the cache-first data strategy implemented above
         cacheContacts(currentUser._id, data);
       }
     } catch (error) {
@@ -94,52 +93,62 @@ export function ContactsProvider({ children }) {
   }, [currentUser?._id, contacts.length]); //dependencies that trigger function recreation
 
   //update an existing contact's last message without API call
+  //returns a boolean indicating whether the contact was found and updated
+  //this helps app handle the case when a message comes from a new contact
   function updateContactLastMessage(contactId, newMessage) {
+    let contactFound = false; // Track whether the contact exists
+    
     setContacts(prevContacts => {
       //map through all contacts and update the matching one's lastMsg property
       //this creates a new array with all contacts having the same values except the target contact
-      const updatedContacts = prevContacts.map(contact => 
-        contact._id === contactId 
-          ? { ...contact, lastMsg: { ...contact.lastMsg, message: newMessage } }
-          : contact
-      );
+      const updatedContacts = prevContacts.map(contact => {
+        if (contact._id === contactId) {
+          contactFound = true; //mark that we found the contact
+          return { 
+            ...contact, 
+            lastMsg: { ...contact.lastMsg, message: newMessage } 
+          };
+        }
+        return contact;
+      });
       
       //update the cache to persist the last message change between page refreshes
-      if (currentUser?._id) {
+      if (contactFound && currentUser?._id) {
         cacheContacts(currentUser._id, updatedContacts);
       }
       
       //return the updated contacts array to update the react state
       return updatedContacts;
     });
+    
+    //return whether the contact was found and updated
+    //this allows MessageContext to know if it needs to add a new contact
+    return contactFound;
   }
 
   //add a new contact to the list without making an API call
-  //required when sending first message to a new contact
-  //provides immediate UI update without sending an API call
+  //this is essential when receiving the first message from a new contact
+  //or when sending first message to a new contact
   function addNewContact(newContact) {
     setContacts(prevContacts => {
-      //check if contact already exists to prevent dupilcates
+      //check if contact already exists to prevent duplicates
       const exists = prevContacts.some(contact => contact._id === newContact._id);
       
       if (!exists) {
-        //add to end of list
-        const updatedContacts = [
-          ...prevContacts, 
-          //ensure contact has a valid lastMsg property to prevent UI errors
-          //creates a new object that preserves all original properties and guarantees lastMsg property exists
-          {
-            ...newContact, 
-            //if lastMsg doesn't exist or is incomplete, provide an empty message
-            //this prevents "undefined" errors when ContactsBox tries to display message content
-            lastMsg: newContact.lastMsg || { message: "" }
-          }
-        ];
+        //create full contact object with required structure
+        //ensure it has all properties expected by the UI components
+        const contactToAdd = {
+          ...newContact,
+          //if lastMsg doesn't exist, create an empty one
+          lastMsg: newContact.lastMsg || { message: "" }
+        };
+        
+        //create a new array with the new contact added
+        //this triggers a state update and re-render
+        const updatedContacts = [...prevContacts, contactToAdd];
         
         //update the cache to persist the new contact between page refreshes
-        //this ensures the contact remains visible even after page reload by storing the updated contacts list in sessionStorage
         if (currentUser?._id) {
-          //use the cacheContacts utility to store the updated list
           cacheContacts(currentUser._id, updatedContacts);
         }
         
@@ -163,8 +172,8 @@ export function ContactsProvider({ children }) {
     //cleanup function resets state when user logs out
     return () => {
       if (!currentUser) {
+        setContacts([]);
         requestStateRef.current.initialized = false;
-        requestStateRef.current.inProgress = false;
       }
     };
   }, [currentUser?._id, fetchContactsList]); //dependencies that trigger effect re-run

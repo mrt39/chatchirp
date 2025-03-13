@@ -29,7 +29,7 @@ router.post('/uploadprofilepic/:userid', upload.single('image'), async (req, res
 });
 
 //send image in a message
-//this route handles both saving the image message to the database AND triggering the real-time socket notification to the recipient
+//this route handles both saving the image message to the database and triggering the real-time socket notification to the recipient
 router.post("/imagesent", upload.single('image'), async (req, res) => {
   const imageName = req.file.filename;
   // Parse the JSON strings back into objects
@@ -57,7 +57,7 @@ router.post("/imagesent", upload.single('image'), async (req, res) => {
         //image messages use a simpler object structure than text messages
         let recipientId = null;
         
-        //check for direct object structure
+        //check for direct object structure (most likely for images)
         if (msgTo && msgTo._id) {
           recipientId = msgTo._id;
         }
@@ -73,9 +73,18 @@ router.post("/imagesent", upload.single('image'), async (req, res) => {
           
           //also send an 'update_contacts' event to update the recipient's contacts list
           //we use a special emoji to indicate it's an image message
+          //added senderInfo to handle new contacts receiving images
           req.socketService.emitToUser(recipientId, 'update_contacts', {
-            senderId: msgFrom && msgFrom._id,
-            message: '📷 Image' //special message for images in contacts list
+            senderId: msgFrom._id,
+            message: '📷 Image', //special message for images in contacts list
+            //include complete sender info to create new contact if needed
+            senderInfo: {
+              _id: msgFrom._id,
+              name: msgFrom.name || "Unknown",
+              email: msgFrom.email || "",
+              uploadedpic: msgFrom.uploadedpic || null,
+              picture: msgFrom.picture || null
+            }
           });
         } else {
           console.log('Missing recipient ID for image message. Message to:', msgTo);

@@ -5,7 +5,7 @@ import { extractUniqueDays, formatMessageDate } from '../utilities/dateUtils';
 import { useAuthorization } from './AuthorizationContext';
 import { useContacts } from './ContactsContext'; 
 //import socket event utilities for real-time messaging
-//this is app listens for new messages in real-time
+//this is how app listens for new messages in real-time
 import { onSocketEvent, offSocketEvent } from '../utilities/socketUtilities';
 
 //context for managing messaging functionality and state
@@ -14,7 +14,8 @@ const MessageContext = createContext();
 
 export function MessageProvider({ children }) {
   const { currentUser } = useAuthorization();
-  const { updateContactLastMessage } = useContacts();
+  //use the contacts context to update contact list in real-time
+  const { updateContactLastMessage, addNewContact } = useContacts();
   const [selectedPerson, setSelectedPerson] = useState(null);
   const [messagesBetween, setMessagesBetween] = useState([]);
   const [messageDays, setMessageDays] = useState([]);
@@ -44,6 +45,7 @@ export function MessageProvider({ children }) {
         
         //only update state if component is still mounted AND we're still viewing the same person
         if (isMounted && currentPersonId === selectedPerson?._id) {
+          //handle duplicate messages (when a user messages themselves)
           if (data[0] && data[0].from[0].email === data[0].to[0].email) {
             const uniqueIds = [];
             const unique = data.filter(element => {
@@ -81,11 +83,11 @@ export function MessageProvider({ children }) {
     return () => {
       isMounted = false; //cleanup to prevent state updates after unmount
     };
-  }, [selectedPerson?._id, messageSent, imgSubmitted, currentUser?._id]); //dependencies that trigger refetch
+  }, [selectedPerson?._id, messageSent, imgSubmitted, currentUser?._id]);
 
-  // Socket Event Handling for Real-Time Messages
+  //Socket Event Handling for Real-Time Messages
   //this effect sets up and manages socket event listeners for real-time messaging
-  //it's the core of instant messaging functionality
+  //it's the core of what makes messages appear instantly without page refresh
   useEffect(() => {
     //only set up listeners if user is authenticated
     if (!currentUser?._id) return;
@@ -94,52 +96,41 @@ export function MessageProvider({ children }) {
     //this function is called whenever the server sends a 'new_message' event
     //it updates the UI immediately with the new message content
     const handleNewMessage = (message) => {
-      //verify message has the necessary structure
+      //verify message has the necessary structure before processing
       if (message && message.from && message.from[0] && message.to && message.to[0]) {
-        //dtermine if this message involves the current user (sent or received)
+        //determine if this message involves the current user (sent or received)
         const isFromCurrentUser = message.from[0]._id === currentUser._id;
         const isToCurrentUser = message.to[0]._id === currentUser._id;
         
         //process the message if it involves the current user
-        //skip messages completely unrelated to the current user
         if (isFromCurrentUser || isToCurrentUser) {
-          //check if message belongs to current open conversation
+          //check if the message is relevant to the currently viewed conversation
           //this determines whether to update the message list immediately
-          if (selectedPerson && 
-             (message.from[0]._id === selectedPerson._id || message.to[0]._id === selectedPerson._id)) {
-            
-            //add the new message to the current conversation
-            //this is what updates the UI instantly when a message arrives
-            setMessagesBetween(prev => {
-              //avoid duplicating messages by checking message IDs
-              if (prev.some(msg => msg._id === message._id)) {
-                return prev; //return unchanged if message already exists
+          const otherPersonId = isFromCurrentUser ? message.to[0]._id : message.from[0]._id;
+          const isCurrentConversation = selectedPerson && selectedPerson._id === otherPersonId;
+          
+          //if we're currently viewing the conversation this message belongs to,
+          //add it to the messagesBetween state to update the UI instantly
+          if (isCurrentConversation) {
+            setMessagesBetween(prevMessages => {
+              //only add if it's not already in the list (prevent duplicates)
+              const messageExists = prevMessages.some(m => m._id === message._id);
+              if (!messageExists) {
+                //create a new array to trigger state update and re-render
+                const newMessages = [...prevMessages, message];
+                
+                //also update the message days for proper date separators
+                setMessageDays(extractUniqueDays(newMessages));
+                
+                return newMessages;
               }
-              
-              //add the new message and sort by date
-              //this ensures messages always appear in chronological order
-              const updated = [...prev, message];
-              return updated.sort((a, b) => parseInt(a.date) - parseInt(b.date));
+              return prevMessages;
             });
-            
-            //update message days grouping if needed
-            //this ensures messages are properly grouped by date in the UI
-            setMessageDays(prev => {
-              const messageDate = new Date(parseInt(message.date));
-              const formattedDate = messageDate.toLocaleDateString('en-GB', {
-                day: 'numeric',
-                month: 'long',
-                year: 'numeric'
-              });
-              
-              if (!prev.includes(formattedDate)) {
-                return [...prev, formattedDate].sort();
-              }
-              return prev;
-            });
+          } else {
+            //message is for a different conversation than the one currently viewed
           }
           
-          //always update the contacts list regardless of if the message is in current conversation
+          //always update the contacts list regardless of whether message is in current conversation
           //this ensures the contact list shows latest messages even if user isn't viewing that conversation
           if (updateContactLastMessage) {
             //if current user sent the message, update the recipient in contacts
@@ -150,32 +141,49 @@ export function MessageProvider({ children }) {
               updateContactLastMessage(message.from[0]._id, message.message || '📷 Image');
             }
           }
+        } else {
+          //message doesn't involve current user, ignoring
         }
       }
     };
     
     //handler for contact list updates
-    //this function is called whenever a new message should update the contacts list
-    //it ensures the contacts list shows the latest message without requiring a refresh
-    const handleUpdateContacts = ({ senderId, message }) => {
-      //use the contacts context function to update the last message
-      if (updateContactLastMessage) {
-        updateContactLastMessage(senderId, message);
+    //this function is called whenever the server sends an 'update_contacts' event
+    //it ensures the contacts list shows the latest message and adds new contacts when needed
+    const handleUpdateContacts = ({ senderId, message, senderInfo }) => {
+      //first try to update an existing contact's last message
+      //updateContactLastMessage returns true if the contact was found and updated
+      const wasUpdated = updateContactLastMessage(senderId, message);
+      
+      //if the contact wasn't found (this is a new contact) and we have sender info,
+      //add the sender as a new contact to the contacts list
+      //this handles the case of receiving a message from someone not in user's contacts
+      if (!wasUpdated && senderInfo && addNewContact) {
+        //create a new contact object with the sender info and last message
+        //this ensures the new contact appears in the UI with the proper structure
+        const newContact = {
+          ...senderInfo,
+          lastMsg: { message: message }
+        };
+        
+        //add the new contact to the contacts list
+        //this will update the UI immediately to show the new conversation
+        addNewContact(newContact);
       }
     };
     
     //register socket event listeners
-    //these connect our handler functions to the socket events
-    //which enables real-time updates when messages arrive
+    //these connect our handler functions to the socket events, enabling real-time updates when messages arrive
     const newMessageRegistered = onSocketEvent('new_message', handleNewMessage);
     const updateContactsRegistered = onSocketEvent('update_contacts', handleUpdateContacts);
     
     //cleanup function to remove event listeners
+    //this prevents memory leaks and duplicate handlers when component unmounts
     return () => {
       offSocketEvent('new_message', handleNewMessage);
       offSocketEvent('update_contacts', handleUpdateContacts);
     };
-  }, [currentUser?._id, selectedPerson, updateContactLastMessage]); //dependencies that trigger effect re-run
+  }, [currentUser?._id, selectedPerson, updateContactLastMessage, addNewContact]);
 
   return (
     <MessageContext.Provider

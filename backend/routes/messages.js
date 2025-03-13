@@ -34,14 +34,14 @@ router.get("/messagesfrom/:userid_messagingid", async (req, res) => {
 });
 
 //send a message
-//this route handles both saving the message to the database AND triggering the real-time socket notification to the recipient
+//this route handles both saving the message to the database AND
+//triggering the real-time socket notification to the recipient
 router.post("/messagesent", async (req, res) => {
   try {
     //send message available only if authenticated
     if (req.isAuthenticated) {
       //debug the actual structure of req.body
-      //this identifies the format of incoming message data
-      //which can vary based on how the client sends it
+      //this helps identify the format of incoming message data, which can vary based on how the client sends it
       console.log("Message request body structure:", {
         fromStructure: req.body.from ? typeof req.body.from : 'undefined',
         toStructure: req.body.to ? typeof req.body.to : 'undefined',
@@ -49,7 +49,7 @@ router.post("/messagesent", async (req, res) => {
         toId: req.body.to && req.body.to._id ? req.body.to._id : 'missing'
       });
       
-      //save the message to the database through message utility
+      //save the message to the database through our message utility
       //this is the standard HTTP part of the message flow
       const result = await sendMessage(
         req.body.from,
@@ -61,7 +61,7 @@ router.post("/messagesent", async (req, res) => {
       //after saving the message to the database, notify the recipient in real-time
       //this is where the magic of instant messaging happens
       if (req.socketService) {
-        //extract recipient ID 
+        //extract recipient ID
         //the flexibility here is crucial because message objects can have different formats
         //depending on how they were constructed by the client
         let recipientId = null;
@@ -93,20 +93,36 @@ router.post("/messagesent", async (req, res) => {
           
           //get sender ID with similar flexibility to recipient ID extraction
           let senderId = null;
-          if (req.body.from && Array.isArray(req.body.from) && req.body.from[0] && req.body.from[0]._id) {
+          let senderInfo = null;
+          
+          //extract sender information using various possible formats
+          if (req.body.from && Array.isArray(req.body.from) && req.body.from[0]) {
             senderId = req.body.from[0]._id;
+            senderInfo = req.body.from[0];
           } else if (req.body.from && req.body.from._id) {
             senderId = req.body.from._id;
-          } else if (result && result.from && result.from[0] && result.from[0]._id) {
+            senderInfo = req.body.from;
+          } else if (result && result.from && result.from[0]) {
             senderId = result.from[0]._id;
+            senderInfo = result.from[0];
           }
           
           //also send an 'update_contacts' event to update the recipient's contacts list
           //this ensures the latest message appears in their conversation list
           if (senderId) {
+            //enhanced update_contacts event that includes complete sender information
+            //this allows the frontend to add new contacts without an API call when receiving a message from someone not in the contacts list
             req.socketService.emitToUser(recipientId, 'update_contacts', {
               senderId: senderId,
-              message: req.body.message
+              message: req.body.message,
+              //include complete sender info needed to create a new contact if needed
+              senderInfo: {
+                _id: senderId,
+                name: senderInfo.name || "Unknown",
+                email: senderInfo.email || "",
+                uploadedpic: senderInfo.uploadedpic || null,
+                picture: senderInfo.picture || null
+              }
             });
           }
         } else {
