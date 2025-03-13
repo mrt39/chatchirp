@@ -157,7 +157,6 @@ export function ContactsProvider({ children }) {
     //this condition prevents unnecessary API calls on component re-renders
     //and ensures data is only loaded once per session unless refreshed
     if (currentUser?._id && !requestStateRef.current.initialized) {
-      console.log("Initial contacts fetch triggered");
       fetchContactsList();
     }
     

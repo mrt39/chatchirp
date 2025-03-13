@@ -4,7 +4,7 @@ import { MessageInput } from "@chatscope/chat-ui-kit-react";
 import '../styles/MessageInputBox.css';
 import FileInputPopover from "./Popover.jsx";
 import Snackbar from "./Snackbar.jsx";
-import { cleanTextContent } from '../utilities/textUtils';
+import { cleanTextContent, sanitizeMessage } from '../utilities/textUtils';
 import { useImageUpload } from '../utilities/imageUtils';
 import { sendMessage } from '../utilities/api';
 import { useMessage } from '../contexts/MessageContext';
@@ -26,7 +26,8 @@ export default function MessageInputBox({contactsBoxPeople, setContactsBoxPeople
   } = useMessage();
   const { snackbarOpenCondition, setSnackbarOpenCondition, snackbarOpen, setSnackbarOpen } = useUI();
   //get addNewContact function from ContactsContext
-  //this function will allow to add a new contact to the contacts list immediately, without requiring a page reload or additional API calls
+  //this function allows us to add a new contact to the contacts list immediately
+  //without requiring a page reload or additional API calls
   const { addNewContact, updateContactLastMessage } = useContacts();
   
   //Set initial message input value to an empty string                                                                     
@@ -53,7 +54,11 @@ export default function MessageInputBox({contactsBoxPeople, setContactsBoxPeople
   } = useImageUpload(setSnackbarOpenCondition, setSnackbarOpen);
 
   function handleSend() {
-    if (!messageInputValue.trim()) return; //don't allow sending empty messages
+    //pre-sanitize the input to prevent sending empty messages
+    if (!messageInputValue || !messageInputValue.trim()) {
+      setMessageInputValue("");  //clear the input field for better UX
+      return;
+    } 
     
     setuserPressedSend(true);
     //if the person user is sending a message to isn't in the contacts box
@@ -66,16 +71,24 @@ export default function MessageInputBox({contactsBoxPeople, setContactsBoxPeople
   useEffect(() => {
     async function postMessage() {
       try {
-        //clean message with profanity filter
+        //clean message with profanity filter 
         let filteredMessage = await cleanTextContent(messageInputValue); 
+        
+        //sanitize the message using validator.js sanitization function
+        filteredMessage = sanitizeMessage(filteredMessage);
+        
+        //if sanitization returned null (empty message), don't send
+        if (!filteredMessage) {
+          setMessageInputValue("");
+          setuserPressedSend(false);
+          return;
+        }
         
         const result = await sendMessage(currentUser, selectedPerson, filteredMessage);
         
         //if this is the first message with a new contact, add them to the contacts list
-        //this ensures the contact appears immediately in the ContactsBox, without requiring app reload or additional API calls
         if(firstMessageBetween === true){
           //add the selected person to contacts using the context function
-          //this will update both in-memory state and session storage cache, making the contact immediately visible in the UI
           addNewContact(selectedPerson);
           
           setFirstMsg(!firstMsg);
@@ -86,9 +99,11 @@ export default function MessageInputBox({contactsBoxPeople, setContactsBoxPeople
         setMessageSent(!messageSent);
         setuserPressedSend(false);
         
-        //if the person user is sending message to is in the contactsbox, change the lastMsg attribute for the selectedperson within "contactsBoxPeople" state 
+        //if the person user is sending message to is in the contactsbox,
+        //update the lastMsg attribute for the selectedperson
         if(contactsBoxPeople.find(person => person._id === selectedPerson._id)){
-          //call the updateContactLastMessage function to update both context state and cache, adding the lastMsg attribute properly
+          //update the contact's last message in both context state and cache
+          //this ensures the message persists between page refreshes
           updateContactLastMessage(selectedPerson._id, filteredMessage);
 
           let personIndex = contactsBoxPeople.findIndex(obj => obj._id == selectedPerson._id);
@@ -147,10 +162,8 @@ export default function MessageInputBox({contactsBoxPeople, setContactsBoxPeople
       //callback when send is complete
       
       //if this is the first message to a new contact, add them to the contacts list
-      //this ensures consistent behavior between text and image messages, so contacts appear in the ContactsBox immediately regardless of message type
       if (firstMessageBetween) {
         //add the selected person to contacts using the context function
-        //this makes the new contact immediately visible in ContactsBox
         addNewContact(selectedPerson);
         
         setFirstMsg(!firstMsg);

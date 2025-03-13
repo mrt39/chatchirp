@@ -31,7 +31,6 @@ export function AllUsersProvider({ children }) {
     //this blocks redundant API calls if one is already happening
     //important preventing the multiple simultaneous requests observed due to re-renders
     if (requestStateRef.current.inProgress) {
-      console.log("Users fetch already in progress, skipping duplicate request");
       return;
     }
     
@@ -39,14 +38,12 @@ export function AllUsersProvider({ children }) {
     if (!forceRefresh) {
       //if already initialized and we have users, don't fetch again
       if (requestStateRef.current.initialized && allUsers.length > 0) {
-        console.log("Using already loaded users data, skipping API call");
         return;
       }
       
       //try to get from cache if not forcing refresh
       const cachedData = getCachedAllUsers();
       if (cachedData && cachedData.length > 0) {
-        console.log("Using cached users data from storage");
         setAllUsers(cachedData);
         requestStateRef.current.initialized = true;
         return;
@@ -58,7 +55,6 @@ export function AllUsersProvider({ children }) {
     //generate and store unique ID for this request
     const currentRequestId = ++requestStateRef.current.requestId;
     
-    console.log("Fetching all users from API...");
     setUsersLoading(true);
     
     try {
@@ -93,7 +89,6 @@ export function AllUsersProvider({ children }) {
     //check if we've already initialized to prevent duplicate fetches
     //this condition prevents unnecessary API calls on component re-renders
     if (!requestStateRef.current.initialized) {
-      console.log("Initial all users fetch triggered");
       fetchAllUsers();
     }
     
