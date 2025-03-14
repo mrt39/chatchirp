@@ -38,7 +38,7 @@ export default function ContactsBox({
   const { selectedPerson, setSelectedPerson } = useMessage();
   //use the contacts context instead of messageContext for contacts data
   //includes hasEmptyContacts to properly handle users with no contacts
-  const { contacts, contactsLoading, hasEmptyContacts, fetchContactsList, requestStateRef } = useContacts();
+  const { contacts, contactsLoading, hasEmptyContacts, fetchContactsList, requestStateRef, markContactAsRead } = useContacts();
 
   const [searchbarValue, setsearchbarValue] = useState("");
   const [contactsBoxPeopleDisplayed, setcontactsBoxPeopleDisplayed] = useState([]);
@@ -51,6 +51,9 @@ export default function ContactsBox({
   function handleSelectedPerson(selectedPersonId){
     const foundperson = contactsBoxPeople.find(person => person["_id"] === selectedPersonId);
     setSelectedPerson(foundperson);
+    
+    //mark contact as read when selected
+    markContactAsRead(selectedPersonId);
   }
 
   //this useffect coordinates contactslist loading based on multiple conditions
@@ -80,8 +83,8 @@ export default function ContactsBox({
   //necessary for having consistent data without unnecessary API calls
   useEffect(() => {
     if (contacts.length > 0) {
-      setContactsBoxPeople(contacts); //update local state with context data
-      setLocalLoading(false); //ensure loading indicator is turned off when data arrives
+      setContactsBoxPeople(contacts);
+      setcontactsBoxPeopleDisplayed(contacts);
     }
   }, [contacts, setContactsBoxPeople]);
 
@@ -118,11 +121,12 @@ export default function ContactsBox({
           contactsBoxPeopleDisplayed.length > 0 ?
             contactsBoxPeopleDisplayed.map((person) => (
               <Conversation 
-                //if there is a selected person, change class to highlight it
+                //determine the appropriate class based on selection and unread status
                 className={
-                  selectedPerson?
-                    (selectedPerson["_id"]===person._id? "activeContactsBox" :"")
-                  :""
+                  selectedPerson ?
+                    (selectedPerson["_id"] === person._id ? "activeContactsBox" : 
+                     (person.unread ? "unreadContactsBox" : ""))
+                  : (person.unread ? "unreadContactsBox" : "")
                 }
                 key={person._id} 
                 onClick={function() {handleConversationClick(); handleSelectedPerson(person._id)}}

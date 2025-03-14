@@ -68,7 +68,8 @@ export default function MessageBox() {
         display: "flex",
         flexBasis: "auto",
         width: "100%",
-        maxWidth: "100%"
+        maxWidth: "100%",
+        backgroundColor: "inherit"
       });
       setConversationContentStyle({
         display: "flex"

@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import { createContext, useState, useContext, useEffect, useRef, useCallback } from 'react';
+import { createContext, useState, useEffect, useContext, useRef, useCallback } from 'react';
 import { fetchContacts } from '../utilities/api';
 import { cacheContacts, getCachedContacts } from '../utilities/storageUtils';
 import { useAuthorization } from './AuthorizationContext';
@@ -111,7 +111,7 @@ export function ContactsProvider({ children }) {
   //update an existing contact's last message without API call
   //returns a boolean indicating whether the contact was found and updated
   //this helps app handle the case when a message comes from a new contact
-  function updateContactLastMessage(contactId, newMessage) {
+  function updateContactLastMessage(contactId, newMessage, isFromCurrentUser = false, isActiveContact = false) {
     let contactFound = false; // Track whether the contact exists
     
     setContacts(prevContacts => {
@@ -122,7 +122,11 @@ export function ContactsProvider({ children }) {
           contactFound = true; //mark that we found the contact
           return { 
             ...contact, 
-            lastMsg: { ...contact.lastMsg, message: newMessage } 
+            lastMsg: { ...contact.lastMsg, message: newMessage },
+            //only mark as unread if: 
+            //1. message is not from the current user, AND
+            //2. it's not the active conversation
+            unread: isFromCurrentUser ? contact.unread : (isActiveContact ? false : true)
           };
         }
         return contact;
@@ -156,7 +160,9 @@ export function ContactsProvider({ children }) {
         const contactToAdd = {
           ...newContact,
           //if lastMsg doesn't exist, create an empty one
-          lastMsg: newContact.lastMsg || { message: "" }
+          lastMsg: newContact.lastMsg || { message: "" },
+          //set unread status for new contacts
+          unread: true
         };
         
         //create a new array with the new contact added
@@ -174,6 +180,30 @@ export function ContactsProvider({ children }) {
       }
       
       return prevContacts;
+    });
+  }
+
+  //mark a contact's messages as read
+  function markContactAsRead(contactId) {
+    if (!contactId) return;
+    
+    setContacts(prevContacts => {
+      const updatedContacts = prevContacts.map(contact => {
+        if (contact._id === contactId) {
+          return { 
+            ...contact, 
+            unread: false 
+          };
+        }
+        return contact;
+      });
+      
+      //update cache
+      if (currentUser?._id) {
+        cacheContacts(currentUser._id, updatedContacts);
+      }
+      
+      return updatedContacts;
     });
   }
 
@@ -209,6 +239,7 @@ export function ContactsProvider({ children }) {
     fetchContactsList,
     updateContactLastMessage,
     addNewContact,
+    markContactAsRead,
     requestStateRef
   };
 

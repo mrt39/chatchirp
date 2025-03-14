@@ -1,16 +1,16 @@
 /* eslint-disable react/prop-types */
 import { useState, useEffect, useRef } from 'react';
-import { MessageInput } from "@chatscope/chat-ui-kit-react";
 import '../styles/MessageInputBox.css';
-import FileInputPopover from "./Popover.jsx";
-import Snackbar from "./Snackbar.jsx";
-import { cleanTextContent, sanitizeMessage } from '../utilities/textUtils';
-import { useImageUpload } from '../utilities/imageUtils';
+import { MessageInput } from "@chatscope/chat-ui-kit-react";
+import FileInputPopover from './Popover.jsx';
+import Snackbar from "./Snackbar.jsx"
 import { sendMessage } from '../utilities/api';
 import { useMessage } from '../contexts/MessageContext';
-import { useAuthorization } from '../contexts/AuthorizationContext';
 import { useUI } from '../contexts/UIContext';
-import { useContacts } from '../contexts/ContactsContext'; //import contacts context to use addNewContact function
+import { useAuthorization } from '../contexts/AuthorizationContext';
+import { useContacts } from '../contexts/ContactsContext';
+import { useImageUpload } from '../utilities/imageUtils';
+import { cleanTextContent, sanitizeMessage } from '../utilities/textUtils';
 
 export default function MessageInputBox({contactsBoxPeople, setContactsBoxPeople}) {
   //use our contexts
@@ -103,8 +103,9 @@ export default function MessageInputBox({contactsBoxPeople, setContactsBoxPeople
         //update the lastMsg attribute for the selectedperson
         if(contactsBoxPeople.find(person => person._id === selectedPerson._id)){
           //update the contact's last message in both context state and cache
-          //this ensures the message persists between page refreshes
-          updateContactLastMessage(selectedPerson._id, filteredMessage);
+          //pass true for isFromCurrentUser to prevent marking as unread
+          //pass true for isActiveContact because this is the current conversation
+          updateContactLastMessage(selectedPerson._id, filteredMessage, true, true);
 
           let personIndex = contactsBoxPeople.findIndex(obj => obj._id == selectedPerson._id);
           contactsBoxPeople[personIndex].lastMsg.message = filteredMessage;
@@ -169,6 +170,10 @@ export default function MessageInputBox({contactsBoxPeople, setContactsBoxPeople
         setFirstMsg(!firstMsg);
         setfirstMessageBetween(false);
       }
+      
+      //update the contact's last message but don't mark as unread since it's sent by activeUser(user that the logged in user is displaying conversations with)
+      //pass true for isActiveContact because this is the current conversation
+      updateContactLastMessage(selectedPerson._id, '📷 Image', true, true);
       
       setMessageSent(!messageSent);
       setImgSubmitted(false);

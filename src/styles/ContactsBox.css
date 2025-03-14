@@ -8,6 +8,16 @@
     background-color: #d5e7f5;
 }
 
+/*unread message styling with distinct color*/
+.unreadContactsBox {
+    background-color: #c1d8eb !important; /* Slightly different from .activeContactsBox */
+}
+
+.unreadContactsBox:hover {
+    color: #2b6a9b !important;
+    background-color: #c1d8eb !important;
+}
+
 .cs-conversation__name, .cs-conversation__info{
     color: inherit;
 }
@@ -50,6 +60,7 @@
 
 .noContactsMessage p {
     margin-bottom: 1rem;
+    color: inherit;
 }
 
 .findPeopleLink {

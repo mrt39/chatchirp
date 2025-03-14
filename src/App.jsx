@@ -22,6 +22,8 @@ import { AllUsersProvider } from './contexts/AllUsersContext';
 
 //import socket utilities
 import { connectSocket, authenticateSocket, disconnectSocket } from './utilities/socketUtilities';
+//import sound utilities
+import { preloadNotificationSound } from './utilities/soundUtils';
 
 function AppContent() {
   const { currentUser, loading } = useAuthorization();
@@ -45,6 +47,11 @@ function AppContent() {
       };
     }
   }, [currentUser]); //re-run effect when user changes (login/logout)
+
+  //preload notification sound when app initializes
+  useEffect(() => {
+    preloadNotificationSound();
+  }, []); //empty dependency array means this runs once when component mounts
 
   if (loading) {
     return (

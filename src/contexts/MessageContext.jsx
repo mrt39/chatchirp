@@ -1,12 +1,12 @@
 /* eslint-disable react/prop-types */
-import { createContext, useState, useContext, useEffect } from 'react';
+import { createContext, useState, useEffect, useContext } from 'react';
 import { fetchMessages } from '../utilities/api';
-import { extractUniqueDays, formatMessageDate } from '../utilities/dateUtils';
 import { useAuthorization } from './AuthorizationContext';
-import { useContacts } from './ContactsContext'; 
-//import socket event utilities for real-time messaging
-//this is how app listens for new messages in real-time
+import { useContacts } from './ContactsContext';
 import { onSocketEvent, offSocketEvent } from '../utilities/socketUtilities';
+import { formatMessageContent, sanitizeMessage } from '../utilities/textUtils';
+import { extractUniqueDays } from '../utilities/dateUtils';
+import { playNotificationSound } from '../utilities/soundUtils'; 
 
 //context for managing messaging functionality and state
 //this context handles both HTTP-based and socket-based messaging
@@ -23,6 +23,9 @@ export function MessageProvider({ children }) {
   const [messageSent, setMessageSent] = useState(false);
   const [imgSubmitted, setImgSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
+  
+  //track if the page is visible or not (user is on this tab or another tab)
+  const [isPageVisible, setIsPageVisible] = useState(!document.hidden);
 
   //handle message fetching with proper cleanup to prevent repeated API calls
   //this effect loads messages when a conversation is selected
@@ -45,27 +48,14 @@ export function MessageProvider({ children }) {
         
         //only update state if component is still mounted AND we're still viewing the same person
         if (isMounted && currentPersonId === selectedPerson?._id) {
-          //handle duplicate messages (when a user messages themselves)
-          if (data[0] && data[0].from[0].email === data[0].to[0].email) {
-            const uniqueIds = [];
-            const unique = data.filter(element => {
-              const isDuplicate = uniqueIds.includes(element._id);
-              if (!isDuplicate) {
-                uniqueIds.push(element._id);
-                return true;
-              }
-              return false;
-            });
-            setMessagesBetween(unique);
-          } else {
-            setMessagesBetween(data);
-          }
-          
-          setMessageDays(extractUniqueDays(data));
+          setMessagesBetween(data);
+          const uniqueDaysArr = extractUniqueDays(data);
+          setMessageDays(uniqueDaysArr);
           setLoading(false);
         }
       } catch (error) {
         if (isMounted && currentPersonId === selectedPerson?._id) {
+          console.error('Error fetching messages:', error);
           setLoading(false);
         }
       }
@@ -84,6 +74,22 @@ export function MessageProvider({ children }) {
       isMounted = false; //cleanup to prevent state updates after unmount
     };
   }, [selectedPerson?._id, messageSent, imgSubmitted, currentUser?._id]);
+
+  //listen for visibility change events to track if the page is visible or in background
+  useEffect(() => {
+    //function to update visibility state
+    function handleVisibilityChange() {
+      setIsPageVisible(!document.hidden);
+    }
+    
+    //add visibility change listener
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    
+    //cleanup function to remove event listener
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, []);
 
   //Socket Event Handling for Real-Time Messages
   //this effect sets up and manages socket event listeners for real-time messaging
@@ -104,45 +110,50 @@ export function MessageProvider({ children }) {
         
         //process the message if it involves the current user
         if (isFromCurrentUser || isToCurrentUser) {
-          //check if the message is relevant to the currently viewed conversation
-          //this determines whether to update the message list immediately
-          const otherPersonId = isFromCurrentUser ? message.to[0]._id : message.from[0]._id;
-          const isCurrentConversation = selectedPerson && selectedPerson._id === otherPersonId;
-          
-          //if we're currently viewing the conversation this message belongs to,
-          //add it to the messagesBetween state to update the UI instantly
-          if (isCurrentConversation) {
-            setMessagesBetween(prevMessages => {
-              //only add if it's not already in the list (prevent duplicates)
-              const messageExists = prevMessages.some(m => m._id === message._id);
-              if (!messageExists) {
-                //create a new array to trigger state update and re-render
-                const newMessages = [...prevMessages, message];
-                
-                //also update the message days for proper date separators
-                setMessageDays(extractUniqueDays(newMessages));
-                
-                return newMessages;
-              }
-              return prevMessages;
-            });
-          } else {
-            //message is for a different conversation than the one currently viewed
-          }
-          
-          //always update the contacts list regardless of whether message is in current conversation
-          //this ensures the contact list shows latest messages even if user isn't viewing that conversation
-          if (updateContactLastMessage) {
-            //if current user sent the message, update the recipient in contacts
-            //if current user received the message, update the sender in contacts
-            if (isFromCurrentUser) {
-              updateContactLastMessage(message.to[0]._id, message.message || '📷 Image');
-            } else {
-              updateContactLastMessage(message.from[0]._id, message.message || '📷 Image');
+          //if the message is received (not sent by current user)
+          if (isToCurrentUser) {
+            const senderId = message.from[0]._id;
+            
+            //check if the message is from someone other than the currently selected person
+            const isFromDifferentPerson = !selectedPerson || selectedPerson._id !== senderId;
+            
+            //play notification sound in any of these cases:
+            //1. message is from someone other than currently selected person
+            //2. the page is not visible (user is on another tab/application)
+            if (isFromDifferentPerson || !isPageVisible) {
+              //play notification sound for messages when appropriate
+              playNotificationSound();
             }
+            
+            //update the message content for real-time display
+            if (selectedPerson && selectedPerson._id === message.from[0]._id) {
+              //if we're currently viewing a conversation with this sender,
+              //add the message to the messages list immediately
+              setMessagesBetween(prevMessages => [...prevMessages, message]);
+              
+              //update message days for proper grouping in the UI
+              setMessageDays(extractUniqueDays([...messagesBetween, message]));
+            }
+            
+            //determine if this contact is currently active (selected)
+            const isActiveContact = selectedPerson && selectedPerson._id === senderId;
+            
+            //update the contact list to show the latest message
+            //pass isActiveContact to control unread status
+            updateContactLastMessage(senderId, message.message || '📷 Image', false, isActiveContact);
+          } else {
+            //for user's own sent messages in other tabs/devices
+            //update message list if viewing the relevant conversation
+            if (selectedPerson && selectedPerson._id === message.to[0]._id) {
+              setMessagesBetween(prevMessages => [...prevMessages, message]);
+              setMessageDays(extractUniqueDays([...messagesBetween, message]));
+            }
+            
+            //update contacts with the latest sent message
+            //the third parameter (true) indicates this message is from the current user
+            //the fourth parameter (true) doesn't matter for messages from current user
+            updateContactLastMessage(message.to[0]._id, message.message || '📷 Image', true, true);
           }
-        } else {
-          //message doesn't involve current user, ignoring
         }
       }
     };
@@ -151,23 +162,28 @@ export function MessageProvider({ children }) {
     //this function is called whenever the server sends an 'update_contacts' event
     //it ensures the contacts list shows the latest message and adds new contacts when needed
     const handleUpdateContacts = ({ senderId, message, senderInfo }) => {
+      //determine if this contact is currently active (selected)
+      const isActiveContact = selectedPerson && selectedPerson._id === senderId;
+      
       //first try to update an existing contact's last message
       //updateContactLastMessage returns true if the contact was found and updated
-      const wasUpdated = updateContactLastMessage(senderId, message);
+      //pass isActiveContact to prevent marking as unread if currently viewing this contact
+      const wasUpdated = updateContactLastMessage(senderId, message, false, isActiveContact);
       
-      //if the contact wasn't found (this is a new contact) and we have sender info,
-      //add the sender as a new contact to the contacts list
-      //this handles the case of receiving a message from someone not in user's contacts
+      //if the contact wasn't found and we should add a new contact
       if (!wasUpdated && senderInfo && addNewContact) {
-        //create a new contact object with the sender info and last message
-        //this ensures the new contact appears in the UI with the proper structure
+        //this is a new contact, play notification sound
+        //always play for new contacts as they are always important
+        playNotificationSound();
+        
+        //create a new contact object with unread flag set to true
         const newContact = {
           ...senderInfo,
-          lastMsg: { message: message }
+          lastMsg: { message: message },
+          unread: true
         };
         
         //add the new contact to the contacts list
-        //this will update the UI immediately to show the new conversation
         addNewContact(newContact);
       }
     };
@@ -183,7 +199,7 @@ export function MessageProvider({ children }) {
       offSocketEvent('new_message', handleNewMessage);
       offSocketEvent('update_contacts', handleUpdateContacts);
     };
-  }, [currentUser?._id, selectedPerson, updateContactLastMessage, addNewContact]);
+  }, [currentUser?._id, selectedPerson, updateContactLastMessage, addNewContact, messagesBetween, isPageVisible]);
 
   return (
     <MessageContext.Provider
