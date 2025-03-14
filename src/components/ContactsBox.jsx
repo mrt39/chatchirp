@@ -1,5 +1,6 @@
 /* eslint-disable react/prop-types */
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import styles from "@chatscope/chat-ui-kit-styles/dist/default/styles.min.css";
 import {
   Search,
@@ -36,7 +37,8 @@ export default function ContactsBox({
   const { currentUser } = useAuthorization();  
   const { selectedPerson, setSelectedPerson } = useMessage();
   //use the contacts context instead of messageContext for contacts data
-  const { contacts, contactsLoading, fetchContactsList } = useContacts();
+  //includes hasEmptyContacts to properly handle users with no contacts
+  const { contacts, contactsLoading, hasEmptyContacts, fetchContactsList, requestStateRef } = useContacts();
 
   const [searchbarValue, setsearchbarValue] = useState("");
   const [contactsBoxPeopleDisplayed, setcontactsBoxPeopleDisplayed] = useState([]);
@@ -56,19 +58,22 @@ export default function ContactsBox({
   useEffect(() => {
     //only fetch if we have a user but no contacts yet AND we're not already loading
     //checking contactsLoading ensures we don't start multiple simultaneous requests
-    if (currentUser?._id && contacts.length === 0 && !contactsLoading) {
+    //also checks for empty contacts state to prevent unnecessary fetching
+    if (currentUser?._id && contacts.length === 0 && !contactsLoading && 
+        !requestStateRef.current.emptyResponseReceived && !hasEmptyContacts) {
       fetchContactsList();
     }
     
     //set local loading state based on context loading state and contacts availability
     //this two-part logic provides a smoother UI experience than directly using contactsLoading
-    //having contacts already available immediately stops loading regardless of context state
-    if (contacts.length > 0) {
-      setLocalLoading(false); 
+    //handles empty contacts as a completed loading state to stop loading indicator
+    if (contacts.length > 0 || hasEmptyContacts || 
+        (!contactsLoading && requestStateRef.current?.initialized)) {
+      setLocalLoading(false);
     } else {
-      setLocalLoading(contactsLoading); //otherwise, sync with the context's loading state
+      setLocalLoading(contactsLoading);
     }
-  }, [currentUser, contacts.length, contactsLoading, fetchContactsList]);
+  }, [currentUser, contacts.length, contactsLoading, fetchContactsList, requestStateRef, hasEmptyContacts]);
 
   //update local state from context-provided contacts
   //this effect keeps the component's local state in sync with the context
@@ -137,8 +142,12 @@ export default function ContactsBox({
               </Conversation>
             ))
           : 
+          // display "no contacts" message with action link instead constant loading spinner
           <div as="Conversation2" className='noContactsMessage'>
-            <p>No contacts yet. Find people to chat with!</p>
+            <p>No contacts yet.</p>
+            <Link to="/findpeople" className="findPeopleLink">
+              Find people to chat with!
+            </Link>
           </div>
         }
       </ConversationList>

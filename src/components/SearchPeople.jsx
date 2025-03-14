@@ -8,6 +8,7 @@ import Box from '@mui/material/Box';
 import UserCard from "./UserCard";
 import '../styles/SearchPeople.css'
 import { fetchAPI } from '../utilities/api';
+import { useAuthorization } from '../contexts/AuthorizationContext';
 
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -70,6 +71,7 @@ export default function SearchPeople() {
   const [searchQuery, setSearchQuery] = useState("");
   const [allUsers, setAllUsers] = useState();
   const [loading, setLoading] = useState(true);
+  const { currentUser } = useAuthorization();
 
   //using useMemo hook for caching the result of the calculation between renders
   //it helps avoid expensive calculations on every render by storing a value until its dependencies change
@@ -80,13 +82,15 @@ export default function SearchPeople() {
     //filtering impacts performance especially when typing quickly in the search box
     if (searchQuery === "") {
       return null; //no users shown when search is empty
-    } else if (allUsers) {
+    } else if (allUsers&& currentUser) {
+      // First filter out the current user, then filter by search query
+      const usersWithoutCurrentUser = allUsers.filter(user => user._id !== currentUser._id);
       //only perform the filtering when user has typed something and users are loaded
       //this prevents the costly array filtering from running on every render cycle
-      return filterData(searchQuery, allUsers);
+      return filterData(searchQuery, usersWithoutCurrentUser);
     }
     return null;
-  }, [searchQuery, allUsers]); //dependencies that trigger recalculation when they change
+  }, [searchQuery, allUsers, currentUser]); //dependencies that trigger recalculation when they change
 
   //fetch for getting data of all people
   useEffect(() => {

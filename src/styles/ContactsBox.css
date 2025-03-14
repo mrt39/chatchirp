@@ -38,6 +38,32 @@
      color: inherit;
 }
 
+.noContactsMessage {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 2rem;
+    height: 100%;
+}
+
+.noContactsMessage p {
+    margin-bottom: 1rem;
+}
+
+.findPeopleLink {
+    color: #2b6a9b;
+    font-weight: bold;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.findPeopleLink:hover {
+    text-decoration: underline;
+    color: #1e4c6e;
+}
+
 @media (max-width: 768px) {
 
 .cs-main-container--responsive .cs-search{
@@ -50,4 +76,3 @@
     height: 100vh;
     color: inherit;
 }
-

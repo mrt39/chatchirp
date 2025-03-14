@@ -13,6 +13,8 @@ export function ContactsProvider({ children }) {
   //state for contacts data
   const [contacts, setContacts] = useState([]);
   const [contactsLoading, setContactsLoading] = useState(false);
+  //state to track when user has no contacts (unlike the ref which doesn't trigger re-renders)
+  const [hasEmptyContacts, setHasEmptyContacts] = useState(false);
   
   //useref to track fetch status to prevent duplicate API calls
   //using refs here because:
@@ -22,6 +24,7 @@ export function ContactsProvider({ children }) {
   const requestStateRef = useRef({
     inProgress: false, //tracks if a fetch is currently in progress
     initialized: false, //tracks if contacts have been loaded at least once in this session
+    emptyResponseReceived: false, //tracks if a valid empty response (when the user has no contacts) has been received
     requestId: 0, //used to handle race conditions between multiple API calls
     lastFetchTime: 0 //timestamp of last successful fetch for potential time-based optimizations
   });
@@ -42,7 +45,8 @@ export function ContactsProvider({ children }) {
     if (!forceRefresh) {
       //if already initialized and we have contacts, don't fetch again
       //this optimization prevents API calls when data is already available in memory
-      if (requestStateRef.current.initialized && contacts.length > 0) {
+      //also considers empty contacts as valid initialized state to prevent repeated fetching
+      if (requestStateRef.current.initialized && (contacts.length > 0 || requestStateRef.current.emptyResponseReceived)) {
         return;
       }
       
@@ -50,9 +54,14 @@ export function ContactsProvider({ children }) {
       //checks browser sessionStorage for cached contacts data
       //using the function from storageUtils.js
       const cachedData = getCachedContacts(currentUser._id);
-      if (cachedData && cachedData.length > 0) {
+      if (cachedData) {
         setContacts(cachedData);
         requestStateRef.current.initialized = true;
+        //handle empty cached contacts(no contacts) as a valid state to prevent unnecessary fetches
+        if (Array.isArray(cachedData) && cachedData.length === 0) {
+          requestStateRef.current.emptyResponseReceived = true;
+          setHasEmptyContacts(true);
+        }
         return;
       }
     }
@@ -76,6 +85,13 @@ export function ContactsProvider({ children }) {
         requestStateRef.current.initialized = true;
         requestStateRef.current.lastFetchTime = Date.now();
         
+        //track empty responses (when user has no contacts) as a valid state
+        //this prevents the infinite loading cycle for new users with no contacts
+        if (Array.isArray(data) && data.length === 0) {
+          requestStateRef.current.emptyResponseReceived = true;
+          setHasEmptyContacts(true);
+        }
+        
         //cache the results for future use
         //this enables the cache-first data strategy implemented above
         cacheContacts(currentUser._id, data);
@@ -90,7 +106,7 @@ export function ContactsProvider({ children }) {
         requestStateRef.current.inProgress = false;
       }
     }
-  }, [currentUser?._id, contacts.length]); //dependencies that trigger function recreation
+  }, [currentUser?._id, contacts.length]); 
 
   //update an existing contact's last message without API call
   //returns a boolean indicating whether the contact was found and updated
@@ -152,6 +168,8 @@ export function ContactsProvider({ children }) {
           cacheContacts(currentUser._id, updatedContacts);
         }
         
+        //reset empty contacts state when a contact is added
+        setHasEmptyContacts(false);
         return updatedContacts;
       }
       
@@ -165,7 +183,9 @@ export function ContactsProvider({ children }) {
     //only fetch if we have a user and contacts haven't been initialized
     //this condition prevents unnecessary API calls on component re-renders
     //and ensures data is only loaded once per session unless refreshed
-    if (currentUser?._id && !requestStateRef.current.initialized) {
+    //now also checks emptyResponseReceived to prevent unnecessary fetches for users with no contacts
+    if (currentUser?._id && !requestStateRef.current.initialized && 
+        !requestStateRef.current.emptyResponseReceived) {
       fetchContactsList();
     }
     
@@ -173,7 +193,10 @@ export function ContactsProvider({ children }) {
     return () => {
       if (!currentUser) {
         setContacts([]);
+        //reset empty contacts tracking state on logout
+        setHasEmptyContacts(false);
         requestStateRef.current.initialized = false;
+        requestStateRef.current.emptyResponseReceived = false; //reset the empty state flag
       }
     };
   }, [currentUser?._id, fetchContactsList]); //dependencies that trigger effect re-run
@@ -182,9 +205,11 @@ export function ContactsProvider({ children }) {
     contacts,
     setContacts,
     contactsLoading,
+    hasEmptyContacts,
     fetchContactsList,
     updateContactLastMessage,
-    addNewContact
+    addNewContact,
+    requestStateRef
   };
 
   return (
