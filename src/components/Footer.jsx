@@ -18,6 +18,9 @@ return (
         Chat UI from  
         <a href="https://chatscope.io/"> Chatscope</a>
         </div>
+        <div className='soundContainer'>
+        Message Sound Effect by <a href="https://pixabay.com/users/liecio-3298866/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=190034">LIECIO</a> &nbsp;from <a href="https://pixabay.com//?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=190034"> Pixabay</a>
+        </div>
     </footer>
 )
 }

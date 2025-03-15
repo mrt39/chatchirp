@@ -29,6 +29,7 @@ justify-self: center !important;
 }
 
 .footer p {
+user-select: none;
 background-color: cornflowerblue ;
 margin: 1.5vh;
 color: white;
@@ -77,6 +78,7 @@ transition: fill 0.2s ease;
 }
 
 .imgCreditsContainer{
+    user-select: none;
     grid-column-start: 1;
     grid-column-end: 2;
     grid-row-start: 1;
@@ -86,6 +88,22 @@ transition: fill 0.2s ease;
 }
 
 .imgCreditsContainer a{
+    margin-left: 5px;
+    color: white;
+}
+
+.soundContainer{
+    user-select: none;
+    grid-column-start: 3;
+    grid-column-end: 4;
+    grid-row-start: 1;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    margin-right: 1rem;
+}
+
+.soundContainer a{
     margin-left: 5px;
     color: white;
 }

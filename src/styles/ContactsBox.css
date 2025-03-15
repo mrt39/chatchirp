@@ -10,7 +10,7 @@
 
 /*unread message styling with distinct color*/
 .unreadContactsBox {
-    background-color: #c1d8eb !important; /* Slightly different from .activeContactsBox */
+    background-color: #9dcaee !important; /*slightly different from .activeContactsBox */
 }
 
 .unreadContactsBox:hover {
