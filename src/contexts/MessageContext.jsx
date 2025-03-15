@@ -6,7 +6,7 @@ import { useContacts } from './ContactsContext';
 import { onSocketEvent, offSocketEvent } from '../utilities/socketUtilities';
 import { formatMessageContent, sanitizeMessage } from '../utilities/textUtils';
 import { extractUniqueDays } from '../utilities/dateUtils';
-import { playNotificationSound } from '../utilities/soundUtils'; 
+import { playNotificationSound } from '../utilities/soundUtils'; //import sound utility
 
 //context for managing messaging functionality and state
 //this context handles both HTTP-based and socket-based messaging
@@ -15,7 +15,7 @@ const MessageContext = createContext();
 export function MessageProvider({ children }) {
   const { currentUser } = useAuthorization();
   //use the contacts context to update contact list in real-time
-  const { updateContactLastMessage, addNewContact } = useContacts();
+  const { updateContactLastMessage, addNewContact, contacts } = useContacts();
   const [selectedPerson, setSelectedPerson] = useState(null);
   const [messagesBetween, setMessagesBetween] = useState([]);
   const [messageDays, setMessageDays] = useState([]);
@@ -114,16 +114,19 @@ export function MessageProvider({ children }) {
           if (isToCurrentUser) {
             const senderId = message.from[0]._id;
             
-            //check if the message is from someone other than the currently selected person
-            const isFromDifferentPerson = !selectedPerson || selectedPerson._id !== senderId;
+            //convert IDs to strings for reliable comparison
+            const senderIdStr = String(senderId);
+            const selectedPersonIdStr = selectedPerson ? String(selectedPerson._id) : null;
             
-            //play notification sound in any of these cases:
-            //1. message is from someone other than currently selected person
-            //2. the page is not visible (user is on another tab/application)
-            if (isFromDifferentPerson || !isPageVisible) {
-              //play notification sound for messages when appropriate
+            //check if this message is from the currently active conversation
+            const isActiveConversation = selectedPersonIdStr === senderIdStr;
+            
+            //play sound only when:
+            //1. NOT from active conversation OR
+            //2. Page is not visible (tab in background)
+            if (!isActiveConversation || !isPageVisible) {
               playNotificationSound();
-            }
+            } 
             
             //update the message content for real-time display
             if (selectedPerson && selectedPerson._id === message.from[0]._id) {
@@ -162,18 +165,30 @@ export function MessageProvider({ children }) {
     //this function is called whenever the server sends an 'update_contacts' event
     //it ensures the contacts list shows the latest message and adds new contacts when needed
     const handleUpdateContacts = ({ senderId, message, senderInfo }) => {
-      //determine if this contact is currently active (selected)
-      const isActiveContact = selectedPerson && selectedPerson._id === senderId;
       
-      //first try to update an existing contact's last message
-      //updateContactLastMessage returns true if the contact was found and updated
-      //pass isActiveContact to prevent marking as unread if currently viewing this contact
-      const wasUpdated = updateContactLastMessage(senderId, message, false, isActiveContact);
+      //convert IDs to strings for reliable comparison
+      const senderIdStr = String(senderId);
+      const selectedPersonIdStr = selectedPerson ? String(selectedPerson._id) : null;
       
-      //if the contact wasn't found and we should add a new contact
-      if (!wasUpdated && senderInfo && addNewContact) {
-        //this is a new contact, play notification sound
-        //always play for new contacts as they are always important
+      //check if this is from the active conversation
+      const isActiveConversation = selectedPersonIdStr === senderIdStr;
+      
+      //determine if this contact is currently in an active conversation
+      const isActiveContact = isActiveConversation;
+      
+      //first check if this sender already exists in contacts
+      const existingContact = contacts.find(contact => String(contact._id) === senderIdStr);
+      
+      //this is an existing contact - use the same sound logic as in handleNewMessage
+      //only play sound if not the active conversation OR page not visible
+      //not putting playNotificationSound here, as handleNewMessage already handles it above
+      //this prevents double notifications
+      if (existingContact) {
+        //update the contact
+        updateContactLastMessage(senderId, message, false, isActiveContact);
+        //check if it's a new contact (not in contacts list)
+      } else if (senderInfo && addNewContact) {
+        //new contacts always get a notification sound regardless of visibility
         playNotificationSound();
         
         //create a new contact object with unread flag set to true
@@ -199,7 +214,7 @@ export function MessageProvider({ children }) {
       offSocketEvent('new_message', handleNewMessage);
       offSocketEvent('update_contacts', handleUpdateContacts);
     };
-  }, [currentUser?._id, selectedPerson, updateContactLastMessage, addNewContact, messagesBetween, isPageVisible]);
+  }, [currentUser?._id, selectedPerson, updateContactLastMessage, addNewContact, messagesBetween, isPageVisible, contacts]);
 
   return (
     <MessageContext.Provider

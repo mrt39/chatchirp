@@ -171,7 +171,7 @@ export default function MessageInputBox({contactsBoxPeople, setContactsBoxPeople
         setfirstMessageBetween(false);
       }
       
-      //update the contact's last message but don't mark as unread since it's sent by activeUser(user that the logged in user is displaying conversations with)
+      //update the contact's last message but don't mark as unread since it's sent by current user
       //pass true for isActiveContact because this is the current conversation
       updateContactLastMessage(selectedPerson._id, '📷 Image', true, true);
       
