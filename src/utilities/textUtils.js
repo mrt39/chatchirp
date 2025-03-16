@@ -24,9 +24,13 @@ export function sanitizeMessage(message) {
     //convert to string explicitly to handle non-string inputs
     const stringMessage = String(message);
     
+    //step 0: decode any HTML entities (like &nbsp;) to their character equivalents
+    //this prevents HTML entities from appearing in the UI
+    let sanitized = stringMessage.replace(/&nbsp;/g, ' ');
+    
     //step 1: trim leading and trailing whitespace
     //this removes spaces before and after the content
-    let sanitized = stringMessage.trim();
+    sanitized = sanitized.trim();
     
     //step 2: if the message is empty after trimming, return null
     //this prevents sending empty messages or messages with only whitespace
@@ -46,4 +50,18 @@ export function sanitizeMessage(message) {
     
     //return the sanitized message
     return sanitized;
+}
+
+//decode HTML entities in text - useful for cleaning display text that already contains entities
+//the problem solved here is when the message last sent has leading or trailing whitespaces (like " fish" and "fish " or just consists of whitespaces,
+//the lastMsg tends to show the "nbsp" entity instead of whitespace, thus showing unintended html display. 
+export function decodeHtmlEntities(text) {
+    if (!text) return '';
+    
+    //create a temporary element to leverage the browser's native entity decoding
+    const textArea = document.createElement('textarea');
+    textArea.innerHTML = text;
+    const decoded = textArea.value;
+    
+    return decoded;
 }

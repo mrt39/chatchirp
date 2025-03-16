@@ -15,6 +15,7 @@ import MuiAvatar from "./MuiAvatar";
 import { useMessage } from '../contexts/MessageContext';
 import { useAuthorization } from '../contexts/AuthorizationContext';
 import { useContacts } from '../contexts/ContactsContext'; //import the contacts context
+import { sanitizeMessage, decodeHtmlEntities } from '../utilities/textUtils'; // Import sanitizeMessage and new decodeHtmlEntities function
 
 //filter contacts based on search query
 function filterData(query, contactsBoxPeople) {
@@ -23,6 +24,19 @@ function filterData(query, contactsBoxPeople) {
   } else {
     return contactsBoxPeople.filter((d) => d.name.toLowerCase().includes(query.toLowerCase()));
   }
+}
+
+//prepare message text for display as lastMsg - handles all cases with HTML entities and whitespace
+//the problem solved here is when the message last sent has leading or trailing whitespaces (like " fish" and "fish " or just consists of whitespaces,
+//the lastMsg tends to show the "nbsp" entity instead of whitespace, thus showing unintended html display. 
+function prepareMessageForDisplay(message) {
+  if (!message) return "";
+  
+  //first decode any HTML entities that might be in the message
+  const decoded = decodeHtmlEntities(message);
+  
+  //then sanitize to handle whitespace properly
+  return sanitizeMessage(decoded) || "";
 }
 
 export default function ContactsBox({
@@ -136,11 +150,14 @@ export default function ContactsBox({
                   as="Avatar"
                   user={person}
                 />
-                {/* Added null safety check for lastMsg.message with fallback to empty string
+                {/* added null safety check for lastMsg.message (with the question mark "?") with fallback to empty string
                     This prevents rendering errors if the lastMsg object is incomplete */}
                 <Conversation.Content 
                   name={person.name} 
-                  info={person.lastMsg?.message || ""} 
+                  //if the lastMsg is an image, display "📷 Image" in the contactsbox as the last message
+                  info={person.lastMsg?.image != null ? "📷 Image" 
+                  //otherwise (if it's a text, display the text using our enhanced preparation function)
+                  : prepareMessageForDisplay(person.lastMsg?.message)} 
                   style={conversationContentStyle} 
                 />
               </Conversation>
