@@ -28,6 +28,9 @@
 
 //import the socket.io Server class
 const { Server } = require('socket.io');
+//import the cors config
+const { ALLOWED_ORIGIN, corsOptions } = require('./cors-config');
+
 
 //initialize the socket.io server and set up connection management
 //this function is called from index.js after the HTTP server is created
@@ -36,11 +39,7 @@ function initializeSocket(server) {
   //create a new Socket.io server instance attached to our HTTP server
   //these settings need to match our frontend origin to allow connections
   const io = new Server(server, {
-    cors: {
-      origin: process.env.CLIENT_URL || "http://localhost:5173", //allow connections from our frontend
-      methods: ["GET", "POST"], 
-      credentials: true //allow cookies to be sent with requests for authentication
-    }
+    cors: corsOptions
   });
   
   //create a Map to associate user IDs with their socket IDs

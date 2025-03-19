@@ -1,4 +1,4 @@
-// functions for making API calls to the backend
+//functions for making API calls to the backend
 
 //base fetch function for all api calls
 export async function fetchAPI(endpoint, options = {}) {
@@ -13,13 +13,11 @@ export async function fetchAPI(endpoint, options = {}) {
     if (!(options.body instanceof FormData)) {
       fetchOptions.headers = {
         "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*",
         ...(options.headers || {})
       };
     } else {
       //for FormData, don't set Content-Type - browser will set it with boundary
       fetchOptions.headers = {
-        "Access-Control-Allow-Origin": "*",
         ...(options.headers || {})
       };
     }
@@ -32,7 +30,7 @@ export async function fetchAPI(endpoint, options = {}) {
       if (contentType && contentType.includes("application/json")) {
         return await response.json();
       }
-      return true; // for responses with no content
+      return true; //for responses with no content
     }
     throw new Error('Network response was not ok.');
   } catch (error) {
@@ -41,25 +39,22 @@ export async function fetchAPI(endpoint, options = {}) {
   }
 }
 
-// get current logged in user data
+//get current logged in user data
 export async function fetchCurrentUser() {
   return fetchAPI('/login/success', {
     method: 'GET',
     credentials: 'include',
-    headers: {
-      "Access-Control-Allow-Credentials": true,
-    },
   });
 }
 
-// get user profile data from database
+//get user profile data from database
 export async function fetchUserProfile(userId) {
   return fetchAPI(`/profile/${userId}`, {
     method: 'GET',
   });
 }
 
-// logout user
+//logout user
 export async function logoutUser() {
   return fetchAPI('/logout', {
     method: 'POST',
@@ -67,21 +62,21 @@ export async function logoutUser() {
   });
 }
 
-// get contacts for message box
+//get contacts for message box
 export async function fetchContacts(userId) {
   return fetchAPI(`/messagebox/${userId}`, {
     method: 'GET',
   });
 }
 
-// get messages between two users
+//get messages between two users
 export async function fetchMessages(userId, selectedPersonId) {
   return fetchAPI(`/messagesfrom/${userId}_${selectedPersonId}`, {
     method: 'GET',
   });
 }
 
-// send a message
+//send a message
 export async function sendMessage(from, to, message) {
   return fetchAPI('/messagesent', {
     method: "post",
@@ -90,7 +85,7 @@ export async function sendMessage(from, to, message) {
   });
 }
 
-// update user profile
+//update user profile
 export async function updateProfile(userId, userData) {
   return fetchAPI(`/editprofile/${userId}`, {
     method: 'PATCH',
@@ -99,7 +94,7 @@ export async function updateProfile(userId, userData) {
   });
 }
 
-// upload profile picture
+//upload profile picture
 export async function uploadProfilePicture(userId, formData) {
   return fetchAPI(`/uploadprofilepic/${userId}`, {
     method: "post",

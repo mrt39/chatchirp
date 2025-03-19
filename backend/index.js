@@ -13,6 +13,8 @@ const passport = require('./configuration/passport');
 const sessionConfig = require('./configuration/session');
 //import socket initialization function
 const { initializeSocket } = require('./configuration/socket');
+//import CORS configuration from centralized file
+const { corsMiddleware } = require('./configuration/cors-config');
 
 //import routes
 const routes = require("./routes/allRoutes");
@@ -26,18 +28,8 @@ const server = http.createServer(app);
 //connect to database
 connectDB();
 
-//initialize socket.io with our HTTP server
-//this creates the WebSocket server and returns utility functions that will be used throughout the application for real-time messaging
-const socketService = initializeSocket(server);
-
-//middleware
-app.use(
-  cors({
-    origin: true,
-    methods: "GET,POST,PUT,DELETE,PATCH,OPTIONS",
-    credentials: true,
-  })
-);
+//apply CORS middleware to all routes
+app.use(corsMiddleware);
 
 app.use(express.json());
 app.use(bodyParser.urlencoded({extended: true}));
@@ -51,6 +43,10 @@ app.set('trust proxy', 1); //needed for production
 app.use(sessionConfig);
 app.use(passport.initialize());
 app.use(passport.session());
+
+//initialize socket.io with our HTTP server
+//this creates the WebSocket server and returns utility functions that will be used throughout the application for real-time messaging
+const socketService = initializeSocket(server);
 
 //make socketService available to all route handlers
 //this middleware attaches the socket utilities to the request object
@@ -67,6 +63,10 @@ app.use("/", routes);
 //start server with http server instead of express app
 //Socket.io is attached to this server instance
 //so app must start the HTTP server directly rather than the Express app
-server.listen("5000", () => {
-  console.log("Server is running with Socket.io!");
+const PORT = process.env.PORT || 5000;
+server.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });
+
+//important for deployment on vercel: export the Express app as default export
+module.exports = app;
