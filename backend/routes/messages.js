@@ -85,20 +85,16 @@ router.post("/messagesent", async (req, res) => {
         if (recipientId) {
           console.log(`Pusher notification being sent to recipient: ${recipientId}`);
           
-          //extract sender info for the notification and contact list update
-          const msgFrom = req.body.from || {};
-
           //emit the 'new_message' event to the recipient with the full message data
           //this allows the recipient's UI to update immediately with the new message
-          req.pusherService.emitToUser(recipientId, 'new_message', {
-            from: msgFrom,
-            message: req.body.message
-          });
+          //send full result object similar to what socket.io was doing
+          req.pusherService.emitToUser(recipientId, 'new_message', result);
           
           //also send an 'update_contacts' event to update the recipient's contacts list
           //this ensures the latest message appears in their conversation list
           //enhanced update_contacts event that includes complete sender information
           //this allows the frontend to add new contacts without an API call when receiving a message from someone not in the contacts list
+          const msgFrom = req.body.from || {};
           req.pusherService.emitToUser(recipientId, 'update_contacts', {
             senderId: msgFrom._id,
             message: req.body.message,
