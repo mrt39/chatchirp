@@ -3,7 +3,7 @@ import { createContext, useState, useEffect, useContext } from 'react';
 import { fetchMessages } from '../utilities/api';
 import { useAuthorization } from './AuthorizationContext';
 import { useContacts } from './ContactsContext';
-import { onSocketEvent, offSocketEvent } from '../utilities/socketUtilities';
+import { onPusherEvent, offPusherEvent } from '../utilities/pusherUtilities';
 import { formatMessageContent, sanitizeMessage } from '../utilities/textUtils';
 import { extractUniqueDays } from '../utilities/dateUtils';
 import { playNotificationSound } from '../utilities/soundUtils'; //import sound utility
@@ -11,7 +11,7 @@ import { handleNewMessage } from '../utilities/newMessageHandler';
 import { handleUpdateContacts } from '../utilities/contactUpdateHandler';
 
 //context for managing messaging functionality and state
-//this context handles both HTTP-based and socket-based messaging
+//this context handles both HTTP-based and pusher-based messaging
 const MessageContext = createContext();
 
 export function MessageProvider({ children }) {
@@ -93,8 +93,8 @@ export function MessageProvider({ children }) {
     };
   }, []);
 
-  //Socket Event Handling for Real-Time Messages
-  //this effect sets up and manages socket event listeners for real-time messaging
+  //pusher Event Handling for Real-Time Messages
+  //this effect sets up and manages pusher event listeners for real-time messaging
   //it's the core of what makes messages appear instantly without page refresh
   useEffect(() => {
     //only set up listeners if user is authenticated
@@ -123,16 +123,16 @@ export function MessageProvider({ children }) {
       });
     };
     
-    //register socket event listeners
-    //these connect our handler functions to the socket events, enabling real-time updates when messages arrive
-    const newMessageRegistered = onSocketEvent('new_message', messageHandler);
-    const updateContactsRegistered = onSocketEvent('update_contacts', contactsHandler);
+    //register pusher event listeners
+    //these connect our handler functions to the pusher events, enabling real-time updates when messages arrive
+    const newMessageRegistered = onPusherEvent('new_message', messageHandler);
+    const updateContactsRegistered = onPusherEvent('update_contacts', contactsHandler);
     
     //cleanup function to remove event listeners
     //this prevents memory leaks and duplicate handlers when component unmounts
     return () => {
-      offSocketEvent('new_message', messageHandler);
-      offSocketEvent('update_contacts', contactsHandler);
+      offPusherEvent('new_message', messageHandler);
+      offPusherEvent('update_contacts', contactsHandler);
     };
   }, [currentUser?._id, selectedPerson, updateContactLastMessage, addNewContact, messagesBetween, isPageVisible, contacts]);
 

@@ -12,7 +12,7 @@ const corsMiddleware = (req, res, next) => {
   //allowed HTTP methods
   res.header("Access-Control-Allow-Methods", "GET,HEAD,OPTIONS,POST,PUT,DELETE,PATCH");
   //allowed request headers
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization, X-CSRF-Token, Accept-Version, Content-Length, Content-MD5, Date, X-Api-Version");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization, X-CSRF-Token, Accept-Version, Content-Length, Content-MD5, Date, X-Api-Version, X-User-Id");
   
   //handle preflight OPTIONS requests by responding with 204 status (no content)
   if (req.method === "OPTIONS") {
@@ -32,7 +32,7 @@ const corsOptions = {
   //allowed HTTP methods
   methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
   //allowed request headers
-  allowedHeaders: "Origin,X-Requested-With,Content-Type,Accept,Authorization,X-CSRF-Token,Accept-Version,Content-Length,Content-MD5,Date,X-Api-Version"
+  allowedHeaders: "Origin,X-Requested-With,Content-Type,Accept,Authorization,X-CSRF-Token,Accept-Version,Content-Length,Content-MD5,Date,X-Api-Version,X-User-Id"
 };
 
 module.exports = { corsMiddleware, ALLOWED_ORIGIN, corsOptions };

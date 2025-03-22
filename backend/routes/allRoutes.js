@@ -6,6 +6,7 @@ const authRoutes = require('./auth');
 const userRoutes = require('./users');
 const messageRoutes = require('./messages');
 const imageRoutes = require('./images');
+const pusherRoutes = require('./pusher'); 
 
 //import CORS middleware
 const { ALLOWED_ORIGIN, corsOptions } = require("../configuration/cors-config");
@@ -25,5 +26,6 @@ router.use(authRoutes);
 router.use(userRoutes);
 router.use(messageRoutes);
 router.use(imageRoutes);
+router.use('/pusher', pusherRoutes); //add pusher routes
 
 module.exports = router;

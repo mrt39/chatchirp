@@ -20,8 +20,8 @@ const sessionConfig = session({
     store: store, //store to mongodb
     cookie: {
       secure: process.env.NODE_ENV === 'production', //true for production if hosted on HTTPS, false for development
-      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict' //'none' for production, 'strict' for development
-    }
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict', //'none' for production, 'strict' for development 
+    }  
 });
 
 module.exports = sessionConfig;

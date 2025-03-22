@@ -49,10 +49,10 @@ router.post("/imagesent", upload.single('image'), async (req, res) => {
       //this is the standard HTTP part of the message flow
       const result = await sendImageMessage(msgFrom, msgTo, uploadResult.secure_url);
       
-      //SOCKET.IO REAL-TIME NOTIFICATION LOGIC FOR IMAGES
+      //PUSHER REAL-TIME NOTIFICATION LOGIC FOR IMAGES
       //after saving the image message, notify recipient in real-time
       //this works the same way as text messages but with image data
-      if (req.socketService) {
+      if (req.pusherService) {
         //extract recipient ID with better error handling
         //image messages use a simpler object structure than text messages
         let recipientId = null;
@@ -62,19 +62,18 @@ router.post("/imagesent", upload.single('image'), async (req, res) => {
           recipientId = msgTo._id;
         }
         
-        //if recipient ID found, send socket notifications
+        //if recipient ID found, send pusher notifications
         if (recipientId) {
-          console.log(`Socket notification being sent to recipient: ${recipientId} for image message`);
+          console.log(`Pusher notification being sent to recipient: ${recipientId} for image message`);
           
           //emit the 'new_message' event to recipient with image message data
           //this allows the recipient's UI to update immediately with the new image
-          const delivered = req.socketService.emitToUser(recipientId, 'new_message', result);
-          console.log(`Socket image delivery status: ${delivered ? 'delivered' : 'not delivered'}`);
+          req.pusherService.emitToUser(recipientId, 'new_message', result);
           
           //also send an 'update_contacts' event to update the recipient's contacts list
           //we use a special emoji to indicate it's an image message
           //added senderInfo to handle new contacts receiving images
-          req.socketService.emitToUser(recipientId, 'update_contacts', {
+          req.pusherService.emitToUser(recipientId, 'update_contacts', {
             senderId: msgFrom._id,
             message: '📷 Image', //special message for images in contacts list
             //include complete sender info to create new contact if needed

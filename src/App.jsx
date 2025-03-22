@@ -20,30 +20,31 @@ import { UIProvider } from './contexts/UIContext';
 import { ContactsProvider } from './contexts/ContactsContext'; 
 import { AllUsersProvider } from './contexts/AllUsersContext'; 
 
-//import socket utilities
-import { connectSocket, authenticateSocket, disconnectSocket } from './utilities/socketUtilities';
+//import pusher utilities
+import { connectPusher, authenticateUser, disconnectPusher } from './utilities/pusherUtilities';
 //import sound utilities
 import { preloadNotificationSound } from './utilities/soundUtils';
 
 function AppContent() {
   const { currentUser, loading } = useAuthorization();
 
-  //initialize socket connection when user logs in
+  //initialize pusher connection when user logs in
   //this effect establishes the websocket connection and authenticates it
   //it runs when the user authenticates and cleans up when they log out
   useEffect(() => {
-    //only connect socket if user is authenticated
+    //only connect pusher if user is authenticated
     if (currentUser && currentUser._id) {
-      //create the socket connection to the backend
-      const socket = connectSocket();
+
+      //create the pusher connection to the backend
+      const pusher = connectPusher();
       
-      //authenticate the socket with the user's ID
-      //this links the socket connection to this specific user on the server
-      authenticateSocket(currentUser._id);
+      //authenticate the user with their ID
+      //this links the pusher connection to this specific user on the server
+      authenticateUser(currentUser._id);
       
-      //cleanup function to disconnect socket when component unmounts or user logs out
+      //cleanup function to disconnect pusher when component unmounts or user logs out
       return () => {
-        disconnectSocket();
+        disconnectPusher();
       };
     }
   }, [currentUser]); //re-run effect when user changes (login/logout)
