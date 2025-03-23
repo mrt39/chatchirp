@@ -1,3 +1,7 @@
+.dropdown{
+    height: fit-content;
+}
+
 .btn-bd-primary{
     background-color: #712cf9 !important;
     color: white !important;

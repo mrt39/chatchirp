@@ -5,6 +5,7 @@
     width: 100%;
     background-color: inherit !important;
     border-top: inherit !important;
+    margin-right: 10px;
 }
 
 .fileInputMessageBox{

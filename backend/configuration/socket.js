@@ -1,3 +1,14 @@
+/*
+ * Socket functionality has been removed from this application and is no longer in use.
+ * WebSocket-based implementations, such as those using Socket.IO, are not supported on Vercel deployments
+ * due to Vercel's serverless architecture, which does not accommodate long-running connections like WebSockets.
+ * https://vercel.com/guides/do-vercel-serverless-functions-support-websocket-connections
+ *
+ * This application has transitioned to using Pusher for real-time messaging and functionality.
+ * The socket configuration files remain in the codebase for backward compatibility and reference purposes,
+ * but they are no longer active or maintained. All real-time features are now handled via Pusher.
+ */
+
 /**
  * SOCKET.IO SERVER IMPLEMENTATION
  * 

@@ -202,6 +202,7 @@ export default function MessageInputBox({contactsBoxPeople, setContactsBoxPeople
         />
         : "" }
       <MessageInput 
+        autoFocus
         placeholder="Type message here" 
         value={messageInputValue}
         onChange={val => setMessageInputValue(val)}

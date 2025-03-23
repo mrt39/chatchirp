@@ -187,6 +187,10 @@ export default function MessageBox() {
                   ))}
   
                   <MessageInputBox
+                    //the key property forces a complete remount of MessageInputBox when selectedPerson changes
+                    //this is required for getting the autoFocus functionality working on MessageInputBox
+                    //which will make the textbox automatically focus when the contact the user has chosen changes
+                    key={selectedPerson?._id} 
                     contactsBoxPeople={contactsBoxPeople}  
                     setContactsBoxPeople={setContactsBoxPeople}
                   />
