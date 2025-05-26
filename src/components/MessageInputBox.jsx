@@ -150,6 +150,14 @@ export default function MessageInputBox({contactsBoxPeople, setContactsBoxPeople
     }
   }, [imageSelected]);
 
+  //reset file input when image selection is cleared
+  useEffect(() => {
+    //when imageSelected becomes false (popover closed), reset the file input
+    if (!imageSelected && fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  }, [imageSelected]);
+
   //function for sending the image
   function handleImgSendBtn() {
     setImgSubmitted(true);
