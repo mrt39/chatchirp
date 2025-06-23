@@ -1,7 +1,7 @@
 //CORS configuration
 
 //define the allowed origin for CORS, using environment variable if available or fallback to production URL
-const ALLOWED_ORIGIN = process.env.CLIENT_URL || "https://www.chatchirp.online";
+const ALLOWED_ORIGIN = process.env.CLIENT_URL || "https://www.chatchirp.chat";
 
 //custom CORS middleware function for manual CORS handling
 const corsMiddleware = (req, res, next) => {

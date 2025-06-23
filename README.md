@@ -4,7 +4,7 @@
 
 <h2>🖥️ Live Preview</h2>
 
-https://www.chatchirp.online/
+https://www.chatchirp.chat/
 
 <h2>📓 Description</h2>
 A RESTful messaging app that allows users to connect and chat with other users.
