@@ -4,7 +4,7 @@
 
 <h2>🖥️ Live Preview</h2>
 
-https://chatchirp.chat/
+https://chatchirp.online/
 
 <h2>📓 Description</h2>
 A RESTful, high-performance, real-time messaging platform that delivers instant communication experiences through advanced WebSocket architecture. Built with scalability in mind, ChatChirp leverages Pusher for real-time messaging, sophisticated caching mechanisms, and intelligent state management to provide users with lightning-fast message delivery, instant notifications, and multi-device synchronization. 
